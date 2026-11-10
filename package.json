@@ -5,6 +5,6 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test --test-isolation=none tests/*.test.mjs",
-    "check": "node --check dist/app.js && node --check dist/age.js && node --check server.mjs"
+    "check": "node --check dist/app.js && node --check dist/age.js && node --check dist/profile.js && node --check dist/avatars.js && node --check server.mjs"
   }
 }

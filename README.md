@@ -2,6 +2,19 @@
 
 Aplikacja dla telefonu trzymanego pionowo. Zawiera wybór ciąży lub okresu po porodzie, przeliczanie dni / tygodni / miesięcy, drogę ciąży (42 punkty), drogę dziecka (52 punkty), edycję wieku i daty oraz karty etapów przygotowane do uzupełnienia w kolejnej wersji.
 
+## Profil i ustawienia
+
+- Profil jest informacyjny: imię, płeć, aktualny wiek, pierwsze uruchomienie, liczba różnych otwartych etapów i dni z aplikacją.
+- Imię jest opcjonalne. Pole mieści do 200 znaków, także imię, drugie imię i nazwisko. Obsługuje litery Unicode, spacje, łączniki i apostrofy; blokuje cyfry i inne symbole. Przy wklejaniu niedozwolone znaki są pomijane. Długie nazwy są zawijane w profilu i karcie etapu; na górze mapy zajmują maksymalnie dwa wiersze.
+- Płeć: chłopiec, dziewczynka lub nieoznaczono. Każdy wariant ma dopasowany obrazek. Imię pojawia się nad mapą i w nagłówkach kart etapów.
+- Imię i płeć zmienisz przez ikonę ustawień albo **Mój profil → Ustawienia i korekta danych**. Korekta wieku i daty ma oddzielny ekran w ustawieniach. Wiek aktualizuje się automatycznie; codzienna edycja nie jest potrzebna.
+- Opcja korekty etapu jest schowana w rozwijanej sekcji „Etap rodzicielstwa”. Przejście po porodzie zachowuje dane dziecka oraz statystyki.
+- Każdy punkt jest liczony raz dla danej mapy. Otwarcie punktu nie oznacza wykonania formalności.
+- Dotychczasowe profile zachowują zapisany wiek. Wcześniej nie było statystyk, więc datę pierwszego uruchomienia pokazujemy jako nieznaną i zbieramy statystyki od aktualizacji.
+- Wybór ciąży lub dziecka na pierwszym ekranie zmienia tylko zaznaczenie, bez przebudowy całego widoku.
+
+Naprawione dekoracje są osobnymi obrazkami z przezroczystością: smoczek, miś i body. Zastępują przycięte ilustracje na mapie dziecka. Przebieg i numeracja map pozostają bez zmian. [Pliki i prompty ilustracji](ILUSTRACJE.md).
+
 ## Test na telefonie
 
 1. Na komputerze uruchom plik **Uruchom.cmd** z głównego folderu projektu. Wymagany Node.js (na tym komputerze jest już zainstalowany). Nie trzeba instalować zależności.
