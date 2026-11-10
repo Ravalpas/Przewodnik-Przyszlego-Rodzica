@@ -1,0 +1,10 @@
+{
+  "name": "przewodnik-przyszlej-mamy",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test --test-isolation=none tests/*.test.mjs",
+    "check": "node --check dist/app.js && node --check dist/age.js && node --check server.mjs"
+  }
+}
