@@ -15,7 +15,9 @@ const saveAge=()=>page.getByRole('button',{name:/Zapisz korektę/}).click();
 const saveName=()=>page.getByRole('button',{name:/Zapisz dane dziecka/}).click();
 try{
   await page.clock.install({time:new Date('2026-11-10T10:00:00+01:00')});
+  await context.addInitScript(()=>{if(!localStorage.getItem('ppm-test-reset'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-10-01',name:'Stare dane'}));});
   await page.goto('http://127.0.0.1:3000');await page.getByRole('button',{name:/Zaczynamy/}).waitFor();
+  assert.equal(await data(),null,'Old test profile was cleared');
   const welcome=await page.locator('.welcome').elementHandle();
   await page.locator('[data-mode="child"]').click();assert.ok(await welcome.evaluate(el=>el.isConnected));
   assert.equal(await page.locator('[data-mode="child"]').getAttribute('aria-pressed'),'true');
@@ -27,8 +29,8 @@ try{
   assert.equal(await page.locator('#edit-age').count(),0);
   const offset=await page.evaluate(()=>{const s=document.querySelector('.map-scroll').getBoundingClientRect(),n=document.querySelector('.current .node-disc').getBoundingClientRect();return Math.abs(n.top+n.height/2-s.top-s.height/2);});assert.ok(offset<3);
   for(let i=0;i<2;i++){await page.locator('.map-node.current').click();await close();}
-  assert.equal((await data()).openedStages.length,1);assert.ok((await data()).firstUsedAt);
-  await page.locator('#nav-profile').click();assert.equal(await page.locator('.usage-stats strong').first().textContent(),'1');assert.equal(await page.locator('dialog input').count(),0);
+  assert.equal('openedStages' in (await data()),false);assert.ok((await data()).firstUsedAt);
+  await page.locator('#nav-profile').click();assert.equal(await page.locator('.usage-stats strong').first().textContent(),'12');assert.equal(await page.locator('.usage-stats span').first().textContent(),'Zaliczone etapy');assert.equal(await page.locator('dialog input').count(),0);
   await page.locator('#profile-settings').click();await page.locator('#child-name').fill('Rafał1@!');assert.equal(await page.locator('#child-name').inputValue(),'Rafał');
   await page.locator('#child-name').press('End');await page.locator('#child-name').pressSequentially('2!');assert.equal(await page.locator('#child-name').inputValue(),'Rafał');
   await page.locator('input[name="gender"][value="boy"]').check();await saveName();assert.equal(await page.locator('.child-name').textContent(),'Rafał');
@@ -39,7 +41,10 @@ try{
   await correct();await page.locator('#anchor-date').fill('2099-01-01');await saveAge();assert.ok(await page.locator('#form-error').textContent());await close();
   await page.locator('#edit-top').click();await page.locator('.stage-correction summary').click();await page.locator('#birth-settings').click();await page.getByRole('button',{name:/Przejdź na drogę dziecka/}).click();
   assert.equal(await page.locator('.map-node').count(),52);assert.equal(await page.locator('.map-node.current').getAttribute('data-week'),'1');assert.equal((await data()).gender,'boy');assert.equal((await data()).name,'Rafał');
-  await page.locator('#nav-today').click();await close();assert.equal((await data()).openedStages.length,2);
+  await page.locator('#nav-today').click();await close();await page.locator('#nav-profile').click();assert.equal(await page.locator('.usage-stats strong').first().textContent(),'42');await close();
+  assert.equal((await page.locator('.map-tail').textContent()).includes('aktualizuje się również później'),false);
+  assert.equal(await page.locator('.tail-heart').evaluate(el=>getComputedStyle(el).color),'rgb(232, 65, 85)');
+  await correct();await page.locator('#age-value').fill('21');await saveAge();await page.locator('#nav-profile').click();assert.equal(await page.locator('.usage-stats strong').first().textContent(),'45');await close();
   await correct();await page.locator('#age-value').fill('62');await saveAge();await checkpoint('pacifier');assert.equal(await page.locator('.map-artwork image').count(),3);
   await page.locator('#nav-profile').click();await checkpoint('profile');await page.locator('#profile-settings').click();
   await page.locator('#child-name').fill('Anna Maria Żółć-Kowalska');await page.locator('input[name="gender"][value="girl"]').check();await checkpoint('settings');await saveName();
@@ -54,5 +59,5 @@ try{
   await page.evaluate(()=>localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-10-01'})));await page.reload();await page.locator('.map-node.current').waitFor();await page.locator('#nav-profile').click();assert.ok((await page.locator('dialog').textContent()).includes('Brak danych sprzed aktualizacji'));await close();
   await page.evaluate(()=>localStorage.clear());await page.reload();await page.locator('[data-mode="child"]').click();await page.getByRole('button',{name:/Zaczynamy/}).click();assert.equal((await page.locator('#age-unit').textContent()).includes('ciąży'),false);
   await page.locator('#age-value').fill('3');await page.locator('#age-unit').selectOption('months');await page.getByRole('button',{name:/Pokaż moją drogę/}).click();
-  assert.deepEqual(errors,[]);console.log('PASS: stable onboarding DOM, both maps, settings corrections, Unicode/long/empty names, all three avatars, unique counters, migration/persistence, birth transition, automatic day/week rollover, replacement artwork, 320/390/430px views, no browser errors.');
+  assert.deepEqual(errors,[]);console.log('PASS: one-time reset and later persistence; completed stages include pregnancy; opening cards does not change progress; red heart and concise map footer; mobile profile, identity, dates and automatic age regression checks.');
 }finally{await browser.close();}

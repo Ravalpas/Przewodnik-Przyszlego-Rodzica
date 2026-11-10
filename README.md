@@ -4,13 +4,13 @@ Aplikacja dla telefonu trzymanego pionowo. Zawiera wybór ciąży lub okresu po 
 
 ## Profil i ustawienia
 
-- Profil jest informacyjny: imię, płeć, aktualny wiek, pierwsze uruchomienie, liczba różnych otwartych etapów i dni z aplikacją.
+- Profil jest informacyjny: imię, płeć, aktualny wiek, pierwsze uruchomienie, zaliczone etapy i dni z aplikacją.
 - Imię jest opcjonalne. Pole mieści do 200 znaków, także imię, drugie imię i nazwisko. Obsługuje litery Unicode, spacje, łączniki i apostrofy; blokuje cyfry i inne symbole. Przy wklejaniu niedozwolone znaki są pomijane. Długie nazwy są zawijane w profilu i karcie etapu; na górze mapy zajmują maksymalnie dwa wiersze.
 - Płeć: chłopiec, dziewczynka lub nieoznaczono. Każdy wariant ma dopasowany obrazek. Imię pojawia się nad mapą i w nagłówkach kart etapów.
 - Imię i płeć zmienisz przez ikonę ustawień albo **Mój profil → Ustawienia i korekta danych**. Korekta wieku i daty ma oddzielny ekran w ustawieniach. Wiek aktualizuje się automatycznie; codzienna edycja nie jest potrzebna.
 - Opcja korekty etapu jest schowana w rozwijanej sekcji „Etap rodzicielstwa”. Przejście po porodzie zachowuje dane dziecka oraz statystyki.
-- Każdy punkt jest liczony raz dla danej mapy. Otwarcie punktu nie oznacza wykonania formalności.
-- Dotychczasowe profile zachowują zapisany wiek. Wcześniej nie było statystyk, więc datę pierwszego uruchomienia pokazujemy jako nieznaną i zbieramy statystyki od aktualizacji.
+- Zaliczone etapy wynikają z upływu czasu. W ciąży to ukończone tygodnie (maksymalnie 42); po porodzie to 42 etapy ciąży plus ukończone tygodnie życia z mapy dziecka (maksymalnie 52). Przykład: dziecko ma 3 pełne tygodnie → 45 zaliczonych etapów. Otwieranie punktów nie wpływa na licznik i nie jest rejestrowane.
+- Na prośbę użytkownika ta wersja jednorazowo zeruje zapisany profil podczas pierwszego wczytania aktualizacji. Po ponownym wprowadzeniu informacji kolejne odświeżenia zachowują dane. Reset dotyczy tylko klucza profilu tej aplikacji.
 - Wybór ciąży lub dziecka na pierwszym ekranie zmienia tylko zaznaczenie, bez przebudowy całego widoku.
 
 Naprawione dekoracje są osobnymi obrazkami z przezroczystością: smoczek, miś i body. Zastępują przycięte ilustracje na mapie dziecka. Przebieg i numeracja map pozostają bez zmian. [Pliki i prompty ilustracji](ILUSTRACJE.md).

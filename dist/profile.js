@@ -15,13 +15,12 @@ export function normalizeProfile(value, {now=new Date().toISOString(),isNew=fals
   if(!value||!['pregnancy','child'].includes(value.mode)) throw new Error('Wybierz etap swojej drogi.');
   ageAt(value.anchor);
   const validTimestamp=s=>typeof s==='string'&&!Number.isNaN(Date.parse(s))&&Date.parse(s)<=Date.parse(now);
-  const stages=Array.isArray(value.openedStages)?[...new Set(value.openedStages.filter(s=>/^(pregnancy|child):\d+$/.test(s)&&Number(s.split(':')[1])>=1&&Number(s.split(':')[1])<=(s.startsWith('pregnancy')?42:52)))]:[];
   let name='';try{name=validateName(value.name);}catch{/* Keep older age data even if optional identity data is malformed. */}
-  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,openedStages:stages};
+  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now};
 }
-export function markOpened(profile,week) {
-  const key=`${profile.mode}:${week}`;
-  return {...profile,openedStages:[...new Set([...profile.openedStages,key])]};
+export function completedStages(profile,today=todayString()) {
+  const weeks=ageAt(profile.anchor,today).weeks;
+  return profile.mode==='pregnancy'?Math.min(42,weeks):42+Math.min(52,weeks);
 }
 export function usageDays(profile,today=todayString()) {
   return Math.max(1,dayNumber(today)-dayNumber(todayString(new Date(profile.statsStartedAt)))+1);
