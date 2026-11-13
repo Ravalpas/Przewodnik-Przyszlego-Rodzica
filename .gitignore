@@ -4,3 +4,7 @@ artifacts/
 .sites-runtime/
 .sites-checkout/
 *.log
+.data/
+dist/server/
+dist/.openai/
+.env

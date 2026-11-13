@@ -16,7 +16,9 @@ export function normalizeProfile(value, {now=new Date().toISOString(),isNew=fals
   ageAt(value.anchor);
   const validTimestamp=s=>typeof s==='string'&&!Number.isNaN(Date.parse(s))&&Date.parse(s)<=Date.parse(now);
   let name='';try{name=validateName(value.name);}catch{/* Keep older age data even if optional identity data is malformed. */}
-  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now};
+  const validDate=date=>{try{dayNumber(date);return date;}catch{return null;}};
+  const dates=Object.fromEntries(['birthCardDate','peselDate','parentalLeaveDate'].map(key=>[key,validDate(value.dates?.[key])]).filter(([,date])=>date));
+  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,pregnancyStart:value.mode==='pregnancy'?value.anchor:validDate(value.pregnancyStart),dueDate:validDate(value.dueDate),conceptionDate:validDate(value.conceptionDate),birthTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(value.birthTime||'')?value.birthTime:'',dates,completedTasks:Array.isArray(value.completedTasks)?[...new Set(value.completedTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)))]:[]};
 }
 export function completedStages(profile,today=todayString()) {
   const weeks=ageAt(profile.anchor,today).weeks;

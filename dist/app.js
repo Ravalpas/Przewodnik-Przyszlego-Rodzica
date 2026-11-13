@@ -2,6 +2,7 @@ import { STORAGE_KEY, todayString, anchorFromAge, ageAt, ageText, validateProfil
 import { cleanName, validateName, normalizeProfile, completedStages, usageDays } from './profile.js';
 import { resetForFreshStart } from './reset.js';
 import { avatar, genderLabel } from './avatars.js';
+import { createPlanner,refreshIcon } from './planner.js';
 
 const app = document.querySelector('#app');
 const sheet = document.querySelector('#sheet');
@@ -23,6 +24,9 @@ const modeName = mode => mode==='pregnancy'?'Droga ciąży':'Pierwszy rok razem'
 const maxWeeks = mode => mode==='pregnancy'?42:52;
 const escape = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday = todayString(), toastTimer, storageAvailable = true;
+let activeTab='map';
+const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify});
+planner.setOnChange(()=>{if(profile)renderJourney(false);});
 const sessionStartedAt=new Date().toISOString();
 try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }
 
@@ -81,8 +85,13 @@ function renderJourney(center=true) {
   const age=ageAt(profile.anchor),mode=profile.mode, map=maps[mode], total=maxWeeks(mode),beyond=age.stage>total;
   app.innerHTML=`<header class="app-header"><div class="top-row">${brand()}<button id="edit-top" class="icon-button" aria-label="Ustawienia">${icon('settings')}</button></div><section class="journey-summary" aria-label="Twój obecny etap"><div class="summary-top"><span>${modeName(mode)}</span><small>${Math.min(age.weeks,total)} / ${total} tyg.</small></div><div class="child-summary">${avatar(profile.gender)}<div><div class="child-name" title="${escape(profile.name)}">${escape(profile.name)||'Twoje dziecko'}</div><h1>${beyond?'Kolejny rozdział przed Wami':`${age.stage}. tydzień ${stageName(mode)}`}</h1></div></div><div class="summary-bottom"><p>${ageText(age)} ${mode==='pregnancy'?'ciąży':'razem'}</p><span class="auto-age">Wiek aktualizuje się sam</span></div><div class="progress-track" role="progressbar" aria-label="Upływ czasu na mapie" aria-valuenow="${Math.min(age.weeks,total)}" aria-valuemin="0" aria-valuemax="${total}"><div style="width:${Math.min(100,age.weeks/total*100)}%"></div></div></section></header><main class="map-scroll" id="map-scroll" aria-label="${modeName(mode)}"><div class="map-lead"><span class="eyebrow">Każdy tydzień to mały wielki krok</span><p>Dotknij numeru, aby otworzyć etap.</p><div class="legend"><span><i></i>Minione</span><span><i class="now"></i>Teraz</span><span><i class="later"></i>Przed Wami</span></div></div><div class="map-canvas"><img class="map-image" src="assets/${mode==='pregnancy'?'mapa-ciazy.png':'mapa-dziecka.png'}" width="${map.width}" height="${map.height}" alt="Ilustrowana, kręta droga ${mode==='pregnancy'?'ciąży':'pierwszego roku życia'}"><svg class="map-overlay" viewBox="0 0 ${map.width} ${map.height}" aria-label="Tygodnie ${stageName(mode)}">${mapArtwork(mode)}${map.points.map((p,i)=>nodeSvg(p,i,age)).join('')}</svg></div><section class="map-tail"><strong>${mode==='pregnancy'?'Nowy rozdział zaczyna się tutaj':'Rok pełen małych wielkich chwil'} <span class="tail-heart" aria-hidden="true">♥</span></strong><p>${mode==='pregnancy'?'Gdy dziecko będzie już z Wami, ustaw datę urodzenia i przejdź na jego własną drogę.':'Ta mapa obejmuje pierwsze 52 tygodnie życia.'}</p>${mode==='pregnancy'?'<button id="birth-tail" class="secondary">Dziecko jest już z nami</button>':''}</section></main><button id="recenter" class="recenter">${icon('target')}Mój tydzień</button><nav class="bottom-nav" aria-label="Nawigacja główna"><button class="nav-item active" id="nav-map" aria-current="page"><span class="nav-icon">${icon('route')}</span>Moja droga</button><button class="nav-item" id="nav-today"><span class="nav-icon">${icon('target')}</span>Na dziś</button><button class="nav-item" id="nav-profile"><span class="nav-icon">${icon('user')}</span>Mój profil</button></nav>`;
   app.querySelector('#edit-top').addEventListener('click',openSettings);
+  const topActions=document.createElement('div');topActions.className='top-actions';
+  const refreshButton=document.createElement('button');refreshButton.id='refresh-sources';refreshButton.className='refresh-sources';refreshButton.setAttribute('aria-label','Odśwież oficjalne informacje');refreshButton.innerHTML=refreshIcon()+'<span>Odśwież</span>';refreshButton.addEventListener('click',planner.refresh);
+  const settings=app.querySelector('#edit-top');settings.before(topActions);topActions.append(refreshButton,settings);
+  const calendarButton=document.createElement('button');calendarButton.className='nav-item';calendarButton.id='nav-calendar';calendarButton.innerHTML=`<span class="nav-icon">${icon('calendar')}</span>Kalendarz`;
+  app.querySelector('#nav-today').after(calendarButton);calendarButton.addEventListener('click',showCalendar);
   app.querySelector('#nav-profile').addEventListener('click',openProfile);
-  app.querySelector('#nav-map').addEventListener('click',()=>centerCurrent(true));
+  app.querySelector('#nav-map').addEventListener('click',()=>{activeTab='map';app.querySelector('#map-scroll').hidden=false;app.querySelector('#calendar-view')?.remove();app.querySelector('#recenter').hidden=false;updateNav();centerCurrent(true);});
   app.querySelector('#nav-today').addEventListener('click',()=>openStage(Math.min(age.stage,total),beyond));
   app.querySelector('#recenter').addEventListener('click',()=>centerCurrent(true));
   app.querySelector('#birth-tail')?.addEventListener('click',openBirth);
@@ -93,13 +102,16 @@ function renderJourney(center=true) {
   const layout=()=>{
     const scroll=app.querySelector('#map-scroll');scroll.style.top=`${app.querySelector('.app-header').offsetHeight}px`;
     const bottom=app.querySelector('.bottom-nav').offsetHeight;scroll.style.bottom=`${bottom}px`;app.querySelector('#recenter').style.bottom=`${bottom+16}px`;
+    const calendar=app.querySelector('#calendar-view');if(calendar){calendar.style.top=scroll.style.top;calendar.style.bottom=scroll.style.bottom;}
     const first=map.points[0].y*scroll.clientWidth/map.width;
     app.querySelector('.map-lead').style.paddingTop=`${Math.max(24,scroll.clientHeight/2-first-54)}px`;
   };
   layout();
   resizeObserver=new ResizeObserver(()=>{layout();});resizeObserver.observe(app);
-  if(center)requestAnimationFrame(()=>centerCurrent());
+  if(activeTab==='calendar')showCalendar();else if(center)requestAnimationFrame(()=>centerCurrent());
 }
+function updateNav(){for(const id of ['nav-map','nav-calendar']){const b=app.querySelector('#'+id),selected=id===(activeTab==='calendar'?'nav-calendar':'nav-map');b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}}
+function showCalendar(){activeTab='calendar';app.querySelector('#map-scroll').hidden=true;app.querySelector('#recenter').hidden=true;let view=app.querySelector('#calendar-view');if(!view){view=document.createElement('main');view.id='calendar-view';view.className='calendar-view';view.setAttribute('aria-label','Kalendarz rodzica');app.querySelector('.bottom-nav').before(view);}view.style.top=app.querySelector('#map-scroll').style.top;view.style.bottom=app.querySelector('#map-scroll').style.bottom;view.innerHTML=planner.calendarHtml();planner.bindCalendar(view);updateNav();}
 function centerCurrent(smooth=false) {
   if(!profile)return;
   const scroll=app.querySelector('#map-scroll');if(!scroll)return;
@@ -119,8 +131,9 @@ function openStage(week,beyond=false) {
   const age=ageAt(profile.anchor),current=week===age.stage,completed=week<age.stage;
   const label=current?'Twój obecny etap':completed?'Ten tydzień jest już za Wami':'Ten etap jeszcze przed Wami';
   const start=(week-1)*7,end=week*7-1;
-  sheetContent('Tydzień po tygodniu',`<section class="stage-detail ${!current&&!completed?'future':''}"><div class="stage-identity">${avatar(profile.gender)}<div class="week-medallion" aria-hidden="true">${week}</div></div><span class="status-pill">${label}</span><h3>${profile.name?`${escape(profile.name)} – `:''}${week}. tydzień ${stageName(profile.mode)}</h3><p>${start}–${end} dni ${stageName(profile.mode)} · każdy etap to 7 dni.</p>${beyond?'<p>Obecny wiek jest już poza zakresem tej mapy.</p>':''}<div class="placeholder-card"><strong>Tu pojawi się przewodnik na ten tydzień</strong><p>Treści etapów przygotujemy w kolejnej wersji aplikacji.</p><div class="topic-list"><span>Formalności</span><span>Świadczenia</span><span>Wskazówki</span><span>Na co uważać</span></div></div><button class="primary" id="return-map">Wróć na moją drogę ${icon('arrow')}</button></section>`);
+  sheetContent('Tydzień po tygodniu',`<section class="stage-detail ${!current&&!completed?'future':''}"><div class="stage-identity">${avatar(profile.gender)}<div class="week-medallion" aria-hidden="true">${week}</div></div><span class="status-pill">${label}</span><h3>${profile.name?`${escape(profile.name)} – `:''}${week}. tydzień ${stageName(profile.mode)}</h3><p>${start}–${end} dni ${stageName(profile.mode)} · każdy etap to 7 dni.</p>${beyond?'<p>Obecny wiek jest już poza zakresem tej mapy.</p>':''}${planner.stageHtml(profile.mode,week)}<button class="primary" id="return-map">Wróć na moją drogę ${icon('arrow')}</button></section>`);
   sheet.querySelector('#return-map').addEventListener('click',()=>sheet.close());
+  planner.bind(sheet);
 }
 function openProfile() {
   const age=ageAt(profile.anchor),mode=profile.mode;
@@ -140,6 +153,7 @@ function openSettings() {
   name.addEventListener('compositionend',()=>name.dispatchEvent(new Event('input')));
   form.addEventListener('submit',event=>{event.preventDefault();try{const saved=persist({name:validateName(name.value),gender:form.elements.gender.value});const position=app.querySelector('#map-scroll').scrollTop;sheet.close();renderJourney(false);app.querySelector('#map-scroll').scrollTop=position;notify(saved?'Zapisano dane dziecka.':'Dane ustawiono. Zapisywanie jest niedostępne.');}catch(e){setError(e.message);}});
   sheet.querySelector('#correct-age').addEventListener('click',openAgeCorrection);
+  const datesButton=document.createElement('button');datesButton.id='settings-calendar-dates';datesButton.className='settings-row';datesButton.innerHTML=`${icon('calendar')}<span>Daty i terminy kalendarza<small>Poród, karta urodzenia, PESEL i urlop</small></span>${icon('arrow')}`;sheet.querySelector('#correct-age').after(datesButton);datesButton.addEventListener('click',planner.openDates);
   sheet.querySelector('#birth-settings')?.addEventListener('click',openBirth);
   sheet.querySelector('#change-pregnancy')?.addEventListener('click',openPregnancyChange);
 }
@@ -172,6 +186,7 @@ window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY&&event.newV
 
 try {
   const response=await fetch('assets/map-points.json');if(!response.ok)throw new Error('map');maps=await response.json();
+  await planner.load();
   profile?renderJourney():showWelcome();
 } catch {
   app.innerHTML='<main class="welcome"><h1>Nie udało się wczytać drogi</h1><p>Sprawdź połączenie i odśwież aplikację.</p><button id="retry" class="primary">Spróbuj ponownie</button></main>';

@@ -1,5 +1,7 @@
 # Przewodnik Przyszłej Mamy — wersja mobilna
 
+Aktualny opis kalendarza, oficjalnych kart, panelu weryfikacji, harmonogramu 00:00 i wdrożenia kontenerowego: [AKTUALIZACJE.md](AKTUALIZACJE.md).
+
 Aplikacja dla telefonu trzymanego pionowo. Zawiera wybór ciąży lub okresu po porodzie, przeliczanie dni / tygodni / miesięcy, drogę ciąży (42 punkty), drogę dziecka (52 punkty), edycję wieku i daty oraz karty etapów przygotowane do uzupełnienia w kolejnej wersji.
 
 ## Profil i ustawienia

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
+    "build": "node scripts/build-worker.mjs",
     "test": "node --test --test-isolation=none tests/*.test.mjs",
-    "check": "node --check dist/app.js && node --check dist/age.js && node --check dist/profile.js && node --check dist/avatars.js && node --check dist/reset.js && node --check server.mjs"
+    "check": "node --check dist/app.js && node --check dist/age.js && node --check dist/profile.js && node --check dist/planner.js && node --check dist/timeline.js && node --check backend/monitor.mjs && node --check backend/api.mjs && node --check server.mjs"
   }
 }

@@ -1,0 +1,495 @@
+{
+  "version": "2026-11-13.1",
+  "reviewedAt": "2026-11-13",
+  "sources": [
+    {
+      "id": "usc",
+      "name": "Gov.pl · Urząd Stanu Cywilnego",
+      "url": "https://www.gov.pl/web/gov/zglos-urodzenie-dziecka",
+      "quote": "W ciągu 21 dni od wystawienia karty urodzenia.",
+      "section": "Kiedy zgłaszasz",
+      "discover": true
+    },
+    {
+      "id": "insurance",
+      "name": "Pacjent.gov.pl · ubezpieczenie",
+      "url": "https://pacjent.gov.pl/aktualnosc/zglos-dziecko-do-ubezpieczenia",
+      "quote": "nadania nowo narodzonemu dziecku numeru PESEL",
+      "section": "Kiedy zgłosić dziecko"
+    },
+    {
+      "id": "800",
+      "name": "ZUS · 800+",
+      "url": "https://www.zus.pl/pl/swiadczenia/swiadczenia-dla-rodzin/swiadczenie-wychowawcze-800-plus",
+      "quote": "w ciągu 3 miesięcy od dnia urodzenia dziecka",
+      "section": "Od kiedy przysługuje prawo do świadczenia?"
+    },
+    {
+      "id": "becikowe",
+      "name": "Gov.pl · becikowe",
+      "url": "https://www.gov.pl/web/gov/uzyskaj-becikowe",
+      "quote": "Złóż wniosek w ciągu 12 miesięcy od urodzenia dziecka.",
+      "section": "Kiedy składasz wniosek"
+    },
+    {
+      "id": "parental",
+      "name": "Gov.pl · świadczenie rodzicielskie",
+      "url": "https://www.gov.pl/web/gov/uzyskaj-swiadczenie-rodzicielskie",
+      "quote": "3 miesięcy",
+      "section": "Kiedy składasz wniosek"
+    },
+    {
+      "id": "maternity",
+      "name": "ZUS · zasiłek macierzyński",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/wysokosc",
+      "quote": "21 dni po porodzie",
+      "section": "Wysokość zasiłku"
+    },
+    {
+      "id": "father",
+      "name": "MRPiPS · urlop ojcowski",
+      "url": "https://www.gov.pl/web/rodzina/urlop-ojcowski",
+      "quote": "do ukończenia przez dziecko 12. miesiąca życia",
+      "section": "Wymiar urlopu"
+    },
+    {
+      "id": "leave",
+      "name": "MRPiPS · urlop rodzicielski",
+      "url": "https://www.gov.pl/web/rodzina/urlop-rodzicielski",
+      "quote": "21 dni",
+      "section": "Wniosek o urlop rodzicielski"
+    },
+    {
+      "id": "active",
+      "name": "ZUS · Aktywny Rodzic",
+      "url": "https://www.zus.pl/pl/baza-wiedzy/aktywnyrodzic/pytania-i-odpowiedzi",
+      "quote": "mniej niż 12 miesięcy",
+      "section": "Aktywnie w żłobku"
+    },
+    {
+      "id": "care",
+      "name": "Ministerstwo Zdrowia · standard opieki",
+      "url": "https://www.gov.pl/web/zdrowie/standardy-opieki-okoloporodowej",
+      "quote": "7 maja 2026 r.",
+      "section": "Standardy opieki okołoporodowej",
+      "discover": true
+    },
+    {
+      "id": "prenatal",
+      "name": "Pacjent.gov.pl · badania prenatalne",
+      "url": "https://pacjent.gov.pl/program-profilaktyczny/program-badan-prenatalnych",
+      "quote": "11",
+      "section": "Program badań prenatalnych"
+    },
+    {
+      "id": "vaccines26",
+      "name": "GIS · program szczepień 2026",
+      "url": "https://www.gov.pl/web/gis/program-szczepien-ochronnych-na-2026-rok",
+      "quote": "2026",
+      "section": "Program Szczepień Ochronnych",
+      "discover": true
+    },
+    {
+      "id": "vaccines27",
+      "name": "GIS · program szczepień 2027",
+      "url": "https://www.gov.pl/web/gis/program-szczepien-ochronnych-na-2027-rok",
+      "quote": "2027",
+      "section": "Program Szczepień Ochronnych",
+      "discover": true
+    },
+    {
+      "id": "balance",
+      "name": "Pacjent.gov.pl · badania dziecka",
+      "url": "https://pacjent.gov.pl/zapobiegaj/zaprowadz-dziecko-na-bilans-zdrowia",
+      "quote": "12",
+      "section": "Bilanse zdrowia dziecka"
+    },
+    {
+      "id": "work",
+      "name": "Państwowa Inspekcja Pracy",
+      "url": "https://www.pip.gov.pl/dla-pracodawcow/porady-prawne/rodzicielstwo",
+      "quote": "badania lekarskie",
+      "section": "Uprawnienia pracownicy w ciąży"
+    },
+    {
+      "id": "krus",
+      "name": "KRUS · zasiłek macierzyński",
+      "url": "https://www.gov.pl/web/krus/zasilek-macierzynski",
+      "quote": "3 miesięcy",
+      "section": "Zasiłek macierzyński"
+    }
+  ],
+  "events": [
+    {
+      "id": "care-start",
+      "mode": "pregnancy",
+      "title": "Pierwsza opieka i dokumentacja ciąży",
+      "kind": "Opieka zdrowotna",
+      "source": "care",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 69
+      },
+      "description": "Umów opiekę nad ciążą, ustal jej wiek i plan badań z lekarzem lub położną. Zachowuj dokumentację. Harmonogram standardu opieki jest harmonogramem świadczeń, a nie administracyjnym obowiązkiem matki."
+    },
+    {
+      "id": "care-document",
+      "mode": "pregnancy",
+      "title": "Dokumentacja do becikowego",
+      "kind": "Warunek świadczenia",
+      "source": "becikowe",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 69
+      },
+      "description": "Przy ubieganiu się o becikowe znaczenie ma pozostawanie pod opieką medyczną najpóźniej od 10. tygodnia ciąży do porodu. Obowiązują warunki dochodowe i wyjątki, np. dla opiekunów i adopcji. Sprawdź pełne zasady i zachowaj dokumentację."
+    },
+    {
+      "id": "prenatal-first",
+      "mode": "pregnancy",
+      "title": "Pierwsze badania prenatalne",
+      "kind": "Zalecane badania",
+      "source": "prenatal",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 77
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 97
+      },
+      "description": "Sprawdź termin badań pierwszego trymestru w programie badań prenatalnych. Okno medyczne ustal z prowadzącym ciążę; badania są dostępne w programie także dla kobiet poniżej 35. roku życia."
+    },
+    {
+      "id": "prenatal-second",
+      "mode": "pregnancy",
+      "title": "Badania prenatalne drugiego trymestru",
+      "kind": "Zalecane badania",
+      "source": "prenatal",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 126
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 160
+      },
+      "description": "Zaplanuj badanie drugiego trymestru w oknie wskazanym w programie. Termin i zakres dobiera osoba prowadząca ciążę. Kalendarz nie zastępuje indywidualnego planu opieki."
+    },
+    {
+      "id": "glucose",
+      "mode": "pregnancy",
+      "title": "Badanie w kierunku cukrzycy ciążowej",
+      "kind": "Opieka zdrowotna",
+      "source": "care",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 168
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 202
+      },
+      "description": "W standardowym harmonogramie opieki przewidziano badanie w kierunku cukrzycy ciążowej w okresie 24.–28. tygodnia. Uzgodnij ze specjalistą datę i przygotowanie do badania; w określonych sytuacjach badania wykonuje się wcześniej."
+    },
+    {
+      "id": "education",
+      "mode": "pregnancy",
+      "title": "Położna i przygotowanie do porodu",
+      "kind": "Przysługująca opieka",
+      "source": "care",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 279
+      },
+      "description": "Wybierz położną POZ i korzystaj z edukacji przedporodowej. Standard obowiązujący od maja 2026 r. przewiduje edukację od stwierdzenia ciąży. Przygotuj pytania, plan porodu i organizację opieki po wypisie."
+    },
+    {
+      "id": "work-rights",
+      "mode": "pregnancy",
+      "title": "Twoje prawa w pracy w czasie ciąży",
+      "kind": "Uprawnienia pracownicze",
+      "source": "work",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 293
+      },
+      "description": "Jeżeli pracujesz na umowę o pracę, sprawdź uprawnienia dotyczące badań, pracy nocnej, nadgodzin i warunków pracy. Inne zasady mogą dotyczyć umów cywilnoprawnych lub działalności. Samo wyświetlenie karty nie potwierdza uprawnienia."
+    },
+    {
+      "id": "usc",
+      "mode": "child",
+      "title": "Zgłoś urodzenie dziecka w USC",
+      "kind": "Obowiązek urzędowy",
+      "source": "usc",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birthCardDate",
+        "days": 21
+      },
+      "description": "Zgłoś narodziny w ciągu 21 dni od wystawienia karty urodzenia. Termin liczymy od karty, nie automatycznie od dnia porodu. Urząd rejestruje urodzenie oraz realizuje powiązane czynności, m.in. nadanie PESEL. Podaj datę karty w ustawieniach terminów."
+    },
+    {
+      "id": "insurance",
+      "mode": "child",
+      "title": "Zgłoś dziecko do ubezpieczenia zdrowotnego",
+      "kind": "Obowiązek urzędowy",
+      "source": "insurance",
+      "start": {
+        "anchor": "peselDate",
+        "days": 0
+      },
+      "end": {
+        "anchor": "peselDate",
+        "days": 7
+      },
+      "description": "Pacjent.gov.pl wskazuje 7 dni od nadania PESEL noworodkowi. Zgłoś dziecko przez właściwego płatnika, np. pracodawcę, lub odpowiednią drogą dla swojej sytuacji. Rejestracja w USC nie zastępuje tego zgłoszenia. Po zmianie pracy rodzica może być potrzebne ponowne zgłoszenie."
+    },
+    {
+      "id": "maternity-choice",
+      "mode": "child",
+      "title": "Sprawdź wariant zasiłku macierzyńskiego",
+      "kind": "Termin finansowy",
+      "source": "maternity",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "days": 21
+      },
+      "description": "Jeśli masz prawo do zasiłku macierzyńskiego, sprawdź wniosek dotyczący uśrednionej wysokości zasiłku składany do 21 dni po porodzie. Nie jest to ogólny termin na nabycie urlopu. Właściwy płatnik i warunki zależą od sytuacji ubezpieczeniowej."
+    },
+    {
+      "id": "800-newborn",
+      "mode": "child",
+      "title": "800+ od dnia narodzin",
+      "kind": "Termin wyrównania",
+      "source": "800",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 3
+      },
+      "description": "Wniosek złożony w ciągu 3 miesięcy od narodzin pozwala uzyskać 800+ od dnia urodzenia. Późniejszy wniosek może nadal być możliwy, ale może zmienić okres wypłaty. Sprawdź warunki uprawnienia oraz właściwy okres świadczeniowy."
+    },
+    {
+      "id": "parental-benefit",
+      "mode": "child",
+      "title": "Świadczenie rodzicielskie — sprawdź uprawnienie",
+      "kind": "Świadczenie warunkowe",
+      "source": "parental",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 3
+      },
+      "description": "Świadczenie może dotyczyć rodziców bez prawa do zasiłku macierzyńskiego. Złożenie wniosku w ciągu 3 miesięcy ma znaczenie dla przyznania świadczenia od miesiąca narodzin. To nie jest dodatkowe świadczenie należne każdej rodzinie."
+    },
+    {
+      "id": "becikowe",
+      "mode": "child",
+      "title": "Złóż wniosek o becikowe, jeśli spełniasz warunki",
+      "kind": "Świadczenie warunkowe",
+      "source": "becikowe",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 12
+      },
+      "description": "Wniosek należy złożyć w ciągu 12 miesięcy od urodzenia. Sprawdź kryterium dochodowe, dokumentację opieki medycznej oraz wyjątki. Przygotuj dokumenty wcześniej, zamiast czekać do końca okresu."
+    },
+    {
+      "id": "father-leave",
+      "mode": "child",
+      "title": "Zaplanuj wykorzystanie urlopu ojcowskiego",
+      "kind": "Uprawnienie pracownicze",
+      "source": "father",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 12,
+        "days": -1
+      },
+      "description": "Pracownik–ojciec może skorzystać z urlopu ojcowskiego przed ukończeniem przez dziecko 12 miesięcy. Wniosek składa się co najmniej 7 dni przed rozpoczęciem. Potrzebny jest czas także na wykorzystanie urlopu — nie odkładaj planowania do ostatniego dnia."
+    },
+    {
+      "id": "parental-leave",
+      "mode": "child",
+      "title": "Wniosek o planowany urlop rodzicielski",
+      "kind": "Uprawnienie pracownicze",
+      "source": "leave",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "parentalLeaveDate",
+        "days": -21
+      },
+      "description": "Wniosek o urlop rodzicielski składa się co najmniej 21 dni przed rozpoczęciem urlopu. Wpisz planowany początek w ustawieniach terminów. To termin odrębny od wyboru wysokości zasiłku po porodzie."
+    },
+    {
+      "id": "krus-benefit",
+      "mode": "child",
+      "title": "KRUS — zasiłek macierzyński",
+      "kind": "Świadczenie warunkowe",
+      "source": "krus",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 3
+      },
+      "description": "Jeżeli dotyczy Cię ubezpieczenie rolnicze, sprawdź zasiłek macierzyński KRUS. Termin wniosku wpływa na miesiąc, od którego ustala się prawo. Porównaj zasady z własną sytuacją; świadczenia nie należy traktować jako powszechnego dodatku."
+    },
+    {
+      "id": "vaccine-newborn",
+      "mode": "child",
+      "title": "Szczepienia i dokumentacja ze szpitala",
+      "kind": "Profilaktyka zdrowotna",
+      "source": "vaccines",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "days": 6
+      },
+      "description": "Sprawdź w dokumentacji wypisowej wykonane szczepienia noworodka oraz dalszy plan. Program obejmuje m.in. szczepienia przeciw WZW B i gruźlicy. Nie zakładamy, że każde dziecko otrzymało dawki w identycznym dniu; plan ustala personel medyczny."
+    },
+    {
+      "id": "vaccine-six-weeks",
+      "mode": "child",
+      "title": "Uzgodnij kolejne szczepienia w POZ",
+      "kind": "Profilaktyka zdrowotna",
+      "source": "vaccines",
+      "start": {
+        "anchor": "birth",
+        "days": 42
+      },
+      "end": {
+        "anchor": "birth",
+        "days": 55
+      },
+      "description": "Po ukończeniu 6 tygodni rozpoczyna się kolejny etap standardowego harmonogramu szczepień. Umów kwalifikację i uzgodnij schemat z POZ. Rzeczywiste terminy zależą od preparatów, wcześniejszych dawek i sytuacji dziecka. To przypomnienie do zaplanowania opieki, nie indywidualne zlecenie szczepienia."
+    },
+    {
+      "id": "control-nine",
+      "mode": "child",
+      "title": "Kontrola zdrowia w 9. miesiącu",
+      "kind": "Zalecana profilaktyka",
+      "source": "balance",
+      "start": {
+        "anchor": "birth",
+        "months": 8
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 9,
+        "days": -1
+      },
+      "description": "Zaplanuj ocenę rozwoju i zdrowia dziecka w POZ w ramach profilaktyki odpowiedniej do wieku. Przynieś książeczkę zdrowia i pytania do lekarza. Wizyty kontrolnej nie oznaczamy jako administracyjnego obowiązku rodzica."
+    },
+    {
+      "id": "control-year",
+      "mode": "child",
+      "title": "Kontrola zdrowia około pierwszych urodzin",
+      "kind": "Zalecana profilaktyka",
+      "source": "balance",
+      "start": {
+        "anchor": "birth",
+        "months": 11
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 12
+      },
+      "description": "Uzgodnij kontrolę zdrowia około 12. miesiąca życia oraz dalszy harmonogram profilaktyki i szczepień. Pierwsze urodziny liczymy kalendarzowo, niezależnie od 52 punktów na mapie."
+    },
+    {
+      "id": "active-parent",
+      "mode": "child",
+      "title": "Przygotuj się do programu Aktywny Rodzic",
+      "kind": "Świadczenie warunkowe",
+      "source": "active",
+      "start": {
+        "anchor": "birth",
+        "months": 10
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 12
+      },
+      "description": "Porównaj warianty programu przed ukończeniem pierwszego roku. Aktywni rodzice w pracy i aktywnie w domu dotyczą zasadniczo wieku od 12 miesięcy; aktywnie w żłobku może przysługiwać także wcześniej. Samo ukończenie roku nie potwierdza prawa do świadczenia."
+    },
+    {
+      "id": "postnatal-care",
+      "mode": "child",
+      "title": "Położna i opieka po porodzie",
+      "kind": "Przysługująca opieka",
+      "source": "care",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "days": 41
+      },
+      "description": "Skontaktuj się z wybraną położną POZ i ustal wizyty patronażowe oraz pomoc w połogu. Standard przewiduje pierwszą wizytę w ciągu 48 godzin, z wyjątkiem sobót, niedziel i świąt, od otrzymania przez położną zgłoszenia urodzenia lub wypisu matki. Sam dzień porodu nie pozwala obliczyć dokładnego terminu wizyty. Przy pobycie dziecka w szpitalu obowiązują dodatkowe zasady."
+    },
+    {
+      "id": "800-renewal",
+      "mode": "child",
+      "title": "800+ na kolejny okres świadczeniowy",
+      "kind": "Termin kalendarzowy",
+      "source": "800",
+      "recurring": "800",
+      "start": {
+        "anchor": "birth",
+        "days": 0
+      },
+      "end": {
+        "anchor": "birth",
+        "months": 12
+      },
+      "description": "Okres świadczeniowy trwa od 1 czerwca do 31 maja kolejnego roku. Wnioski na następny okres są przyjmowane od 1 lutego. Złożenie do 30 kwietnia służy zachowaniu ciągłości wypłat; termin do 30 czerwca ma znaczenie dla prawa od czerwca. Dla noworodka może być potrzebny wniosek na dwa okresy. Sprawdź aktualne zasady ZUS."
+    }
+  ]
+}

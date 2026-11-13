@@ -1,0 +1,14 @@
+services:
+  ppm:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      TZ: Europe/Warsaw
+      PPM_STARTUP_CHECK: "1"
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+    volumes:
+      - ppm-data:/app/data
+volumes:
+  ppm-data:
