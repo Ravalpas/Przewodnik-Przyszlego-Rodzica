@@ -81,16 +81,18 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}
   return {
     read:async()=>({...await read(),nextCheckAt:nextMidnight(clock())}),
     refresh:reason=>{if(!running)running=exclusive(()=>perform(reason||'manual')).finally(()=>running=null);return running;},
-    review:({sourceId,hash,patches=[],replacementUrl})=>exclusive(async()=>{
+    review:({sourceId,hash,patches=[],replacementUrl,quote,section})=>exclusive(async()=>{
       if(running)throw new Error('Poczekaj na zakończenie odświeżania.');
       const state=await read(),source=state.sources[sourceId];
+      const previousCatalog=structuredClone(state.catalog);
       const definition=state.catalog.sources.find(s=>s.id===sourceId);
-      if(!definition||!source||hash!==(source.pending?.hash||source.currentHash))throw new Error('Zmiana jest już nieaktualna. Odśwież listę.');
+      if(!definition||!source||(hash||null)!==(source.pending?.hash||source.currentHash||null))throw new Error('Zmiana jest już nieaktualna. Odśwież listę.');
       if(replacementUrl&&replacementUrl!==definition.url){if(!safeOfficial(replacementUrl))throw new Error('Wymagany adres oficjalnego źródła HTTPS.');const replacement=await sourceSnapshot({...definition,url:replacementUrl},fetcher);if(replacement.status!=='ok')throw new Error('Nowe źródło jest niedostępne.');definition.url=replacementUrl;source.pending={hash:replacement.hash,text:replacement.text};}
       if(!source.pending&&source.newLinks?.length)source.pending={hash:source.currentHash,text:source.acceptedText};
       if(!source.pending)throw new Error('Brak nowej wersji do zatwierdzenia.');
       if(!Array.isArray(patches)||patches.length>30)throw new Error('Nieprawidłowa lista zmian.');
-      state.revisions=[{at:clock().toISOString(),sourceId,catalog:structuredClone(state.catalog)},...(state.revisions||[])].slice(0,10);
+      state.revisions=[{at:clock().toISOString(),sourceId,catalog:previousCatalog},...(state.revisions||[])].slice(0,10);
+      for(const [key,value]of Object.entries({quote,section}))if(value!==undefined){if(typeof value!=='string'||!value.trim()||value.length>250)throw new Error('Fragment i sekcja źródła muszą mieć 1–250 znaków.');definition[key]=value.trim();}
       for(const patch of patches){const event=state.catalog.events.find(e=>e.id===patch.id&&(e.source===sourceId||e.source==='vaccines'&&sourceId.startsWith('vaccines')));if(!event)throw new Error('Karta nie należy do tego źródła.');
         if(typeof patch.description!=='string'||patch.description.length<20||patch.description.length>3000)throw new Error('Opis powinien mieć 20–3000 znaków.');
         if(!patch.end||!['birth','pregnancy','birthCardDate','peselDate','parentalLeaveDate','dueDate'].includes(patch.end.anchor)||!Number.isInteger(patch.end.days??0)||Math.abs(patch.end.days??0)>1000||!Number.isInteger(patch.end.months??0)||Math.abs(patch.end.months??0)>24)throw new Error('Nieprawidłowa reguła terminu.');

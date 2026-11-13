@@ -25,6 +25,12 @@ test('manual requests coalesce and scheduled runs execute once per Warsaw date',
   const f=setup();await Promise.all([f.monitor.refresh('manual'),f.monitor.refresh('manual')]);assert.equal(f.requests(),1);
   await f.monitor.refresh('scheduled');const count=f.requests();await f.monitor.refresh('scheduled');assert.equal(f.requests(),count);
 });
+test('a removed source can be replaced by another official address with reviewed rules and fragment',async()=>{
+  const f=setup();await f.monitor.refresh();const oldUrl=f.data().catalog.sources[0].url;
+  f.change('Brak',404);await f.monitor.refresh();const hash=f.data().sources.usc.currentHash;
+  f.change(html('Nowa oficjalna strona. '));await f.monitor.review({sourceId:'usc',hash,replacementUrl:'https://www.gov.pl/web/gov/nowy-poradnik',quote:'Nowa oficjalna strona.',section:'Terminy',patches:[]});
+  assert.equal(f.data().catalog.sources[0].url,'https://www.gov.pl/web/gov/nowy-poradnik');assert.equal(f.data().revisions[0].catalog.sources[0].url,oldUrl);assert.equal(f.data().catalog.sources[0].quote,'Nowa oficjalna strona.');
+});
 test('00:00 Warsaw follows civil time across DST instead of a fixed 24-hour interval',()=>{
   assert.equal(nextMidnight(new Date('2026-11-13T10:00:00Z')),'2026-11-13T23:00:00.000Z');
   assert.equal(nextMidnight(new Date('2026-03-28T23:00:00Z')),'2026-03-29T22:00:00.000Z');
