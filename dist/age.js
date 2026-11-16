@@ -1,3 +1,4 @@
+import {quantity} from './polish.js';
 export const STORAGE_KEY = 'ppm-profile-v1';
 const DAY = 86400000;
 export function todayString(date = new Date()) {
@@ -42,6 +43,5 @@ export function validateProfile(profile, today = todayString()) {
 }
 export function ageText(age) {
   const w=age.weeks, d=age.extraDays;
-  const weekWord = w===1?'tydzień':w%10>=2&&w%10<=4&&!(w%100>=12&&w%100<=14)?'tygodnie':'tygodni';
-  return `${w} ${weekWord}${d?` i ${d} ${d===1?'dzień':'dni'}`:''}`;
+  return `${quantity(w,'weeks')}${d?` i ${quantity(d,'days')}`:''}`;
 }

@@ -1,0 +1,8 @@
+.stage-choice{min-height:106px;gap:12px;padding:12px 14px}
+.stage-choice>span:nth-child(2){min-width:0;flex:1}
+.choice-symbol{width:70px;height:78px;background:transparent;border-radius:0}
+.child-choice .choice-symbol{background:transparent}
+.choice-symbol img{display:block;width:88px;height:88px;max-width:none;object-fit:contain;flex-shrink:0}
+.stage-choice strong{line-height:1.35}
+.stage-choice small{line-height:1.45;display:block}
+@media(max-width:350px){.stage-choice{gap:9px;padding:10px;min-height:96px}.choice-symbol{width:60px;height:72px}.choice-symbol img{width:86px;height:86px}.stage-choice strong{font-size:13px}.stage-choice small{font-size:11px}}

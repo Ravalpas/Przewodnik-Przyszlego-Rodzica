@@ -8,7 +8,7 @@ await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','completed-s
 try{
   await page.goto('http://127.0.0.1:3001');await page.locator('.map-node.current').waitFor();
   await page.locator('.map-node.current').click();assert.ok(await page.locator('dialog [data-event="usc"]').count());
-  await page.locator('dialog [data-event="usc"]').click();assert.ok((await page.locator('.event-detail').textContent()).includes('16 lis 2026'));
+  await page.locator('dialog [data-event="usc"]').click();assert.ok((await page.locator('.event-detail').textContent()).includes('16 listopada 2026'));
   assert.ok((await page.locator('.official-source a').getAttribute('href')).includes('#:~:text='));
   assert.equal(await page.locator('.important-icon path').first().getAttribute('stroke'),'#3275e7');
   await page.getByRole('button',{name:'Zamknij',exact:true}).click();await page.locator('#nav-calendar').click();

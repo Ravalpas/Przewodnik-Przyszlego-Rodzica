@@ -1,4 +1,21 @@
-# Poprawione ilustracje mapy
+# Ilustracje aplikacji
+
+## Wybór etapu przy pierwszym uruchomieniu
+
+Nowe ilustracje wykonano wbudowanym narzędziem imagegen. Pliki PNG zachowują przezroczystość i margines wokół całej postaci; interfejs wyświetla je z `object-fit: contain`, bez przycinania. Styl: miękkie pastelowe formy i delikatne światło, zgodne z dekoracjami mapy.
+
+- `dist/assets/onboarding-pregnancy.png` — przyszła mama w różowej sukience.
+- `dist/assets/onboarding-baby.png` — noworodek w miętowym otulaczu, ilustracja neutralna płciowo.
+
+### Prompt: oczekujemy dziecka
+
+Use case: stylized-concept. Create ONE isolated illustration for a Polish mobile parenting app onboarding choice 'Expecting a baby'. STYLE: match the app's soft, rounded, polished pastel cartoon illustrations, like a caramel teddy bear with a white heart, subtle glossy highlights and a delicate white rim. Subject: a friendly visibly pregnant woman with warm brown hair tied in a loose bun, eyes gently smiling, a muted rose pink maternity dress, one hand resting lovingly on her belly. Show the complete seated three-quarter figure with all limbs intact. Simple clear silhouette readable at 80px. Soft lilac, blush pink and warm peach palette with a tiny turquoise accent. Gentle tasteful parenting illustration, no emoji style and no photographic features. Center the entire figure on a square genuinely transparent canvas, with 15% empty margin on every edge. No background scene, no text, no lettering, no numbers, no border, no watermark.
+
+### Prompt: dziecko jest już z nami
+
+Use case: stylized-concept. Create ONE isolated illustration for a Polish mobile parenting app onboarding choice 'Our baby is here'. STYLE: match the app's soft, rounded, polished pastel cartoon illustrations, like a caramel teddy bear with a white heart, subtle glossy highlights and a delicate white rim. Subject: a peaceful happy newborn baby nestled in a mint turquoise swaddle, cute warm peach face, one small brown curl, closed smiling eyes, rounded cheeks, a tiny white heart on the swaddle. Gender neutral. Complete little bundled body with soft rounded base, no cropped parts. Simple clear silhouette readable at 80px. Palette mint turquoise, soft lilac and warm peach. Gentle tasteful parenting illustration, no emoji style and no photographic features. Center the entire baby on a square genuinely transparent canvas, with 15% empty margin on every edge. No background scene, no text, no lettering, no numbers, no border, no watermark.
+
+## Poprawione ilustracje mapy
 
 Tryb: wbudowane narzędzie imagegen, nowe obrazki na podstawie stylu ilustracji źródłowych. Wszystkie trzy pliki mają kanał przezroczystości, pełny obrys i margines. Oryginalne mapy i folder `szablony` nie były modyfikowane. Interfejs nakłada obrazki na uszkodzone dekoracje, zachowując trasę i punkty.
 
