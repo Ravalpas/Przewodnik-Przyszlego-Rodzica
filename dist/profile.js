@@ -1,4 +1,5 @@
 import { ageAt, todayString, dayNumber } from './age.js';
+import { PROTECTED_EVENT_IDS } from './event-policy.js';
 export const GENDERS = ['unspecified','boy','girl'];
 export const NAME_LIMIT = 200;
 const allowedName = /^[\p{L}\p{M} '\u2019\u02bc\-\u2010\u2011]*$/u;
@@ -18,7 +19,8 @@ export function normalizeProfile(value, {now=new Date().toISOString(),isNew=fals
   let name='';try{name=validateName(value.name);}catch{/* Keep older age data even if optional identity data is malformed. */}
   const validDate=date=>{try{dayNumber(date);return date;}catch{return null;}};
   const dates=Object.fromEntries(['birthCardDate','peselDate','parentalLeaveDate'].map(key=>[key,validDate(value.dates?.[key])]).filter(([,date])=>date));
-  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,pregnancyStart:value.mode==='pregnancy'?value.anchor:validDate(value.pregnancyStart),dueDate:validDate(value.dueDate),conceptionDate:validDate(value.conceptionDate),birthTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(value.birthTime||'')?value.birthTime:'',dates,completedTasks:Array.isArray(value.completedTasks)?[...new Set(value.completedTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)))]:[]};
+  const notApplicableTasks=Array.isArray(value.notApplicableTasks)?[...new Set(value.notApplicableTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)&&!PROTECTED_EVENT_IDS.has(id)))]:[];
+  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,pregnancyStart:value.mode==='pregnancy'?value.anchor:validDate(value.pregnancyStart),dueDate:validDate(value.dueDate),conceptionDate:validDate(value.conceptionDate),birthTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(value.birthTime||'')?value.birthTime:'',dates,notApplicableTasks,completedTasks:Array.isArray(value.completedTasks)?[...new Set(value.completedTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)))]:[]};
 }
 export function completedStages(profile,today=todayString()) {
   const weeks=ageAt(profile.anchor,today).weeks;

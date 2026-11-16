@@ -1,4 +1,5 @@
 import { todayString,dayNumber,shiftDate } from './age.js';
+import { eventPolicy } from './event-policy.js';
 export function addMonths(value,months){const [y,m,d]=value.split('-').map(Number),target=new Date(Date.UTC(y,m-1+months,1));target.setUTCDate(Math.min(d,new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate()));return target.toISOString().slice(0,10);}
 export function pregnancyStart(profile){return profile.mode==='pregnancy'?profile.anchor:profile.pregnancyStart||null;}
 export function birthDate(profile){return profile.mode==='child'?profile.anchor:null;}
@@ -20,9 +21,11 @@ export function datedEvents(catalog,profile,today=todayString()) {
     }
     const sourceId=event.source==='vaccines'?(Number((start||today).slice(0,4))>=2027?'vaccines27':'vaccines26'):event.source;
     const source=catalog.sources.find(s=>s.id===sourceId);
-    const done=profile.completedTasks?.includes(event.id)||false;
+    const policy=eventPolicy(event);
+    const notApplicable=policy.canMarkNotApplicable&&(profile.notApplicableTasks?.includes(event.id)||false);
+    const done=!notApplicable&&(profile.completedTasks?.includes(event.id)||false);
     const daysLeft=end?dayNumber(end)-dayNumber(today):null;
-    return {...event,start,end,source,done,daysLeft,needsDate:!start||!end,important:!done&&daysLeft!==null&&daysLeft<=7&&daysLeft>=0};
+    return {...event,...policy,start,end,source,done,notApplicable,daysLeft,needsDate:!start||!end,important:!done&&!notApplicable&&daysLeft!==null&&daysLeft<=7&&daysLeft>=0};
   });
 }
 export function milestones(profile) {

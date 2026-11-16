@@ -2,6 +2,10 @@
 
 Ta wersja zawiera wspólny katalog kart dla mapy i kalendarza. Treści startowe są w `dist/data/catalog.json`; źródła i ich okresy obowiązywania należy weryfikować redakcyjnie. Mapa tygodniowa i kalendarz korzystają z tych samych identyfikatorów spraw. Oznaczenie wykonania jest lokalnym oświadczeniem rodzica, niezależnym od zielonych etapów czasu.
 
+Sprawy są prezentowane w kolejności: **Obowiązkowe — ważne**, **Zalecane — zdrowie i opieka**, **Dodatkowe — świadczenia i uprawnienia**. W obrębie grupy otwarte sprawy są uporządkowane według końca okresu, a wykonane są niżej. Świadczenia mają neutralną ikonę zamiast ostrzegawczego trójkąta.
+
+Przycisk **Nie dotyczy** znajduje się pod oznaczeniem wykonania w sprawach dodatkowych i zalecanych. Nie występuje przy obowiązkach urzędowych i kartach obowiązkowych szczepień. Wyłączenie jest zapisywane lokalnie w profilu, usuwa sprawę z aktywnych okresów i wyróżnień; kartę można przywrócić ze zwijanej listy. Wykonanie i wyłączenie są wzajemnie wykluczające. Oznaczenie nie zmienia licznika przebytych tygodni.
+
 ## Harmonogram
 
 Sprawdzanie źródeł: codziennie o **00:00 Europe/Warsaw**. To północ lokalna, więc przy zmianie czasu odstęp może wynosić 23 lub 25 godzin. Przycisk „Odśwież” na górze uruchamia identyczne sprawdzenie ręcznie. Strona nie musi być otwarta.
