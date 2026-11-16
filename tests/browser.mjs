@@ -22,7 +22,7 @@ try{
   await page.locator('[data-mode="child"]').click();assert.ok(await welcome.evaluate(el=>el.isConnected));
   assert.equal(await page.locator('[data-mode="child"]').getAttribute('aria-pressed'),'true');
   await page.locator('[data-mode="pregnancy"]').click();assert.ok(await welcome.evaluate(el=>el.isConnected));
-  await page.getByRole('button',{name:/Zaczynamy/}).click();await page.locator('#age-value').fill('12');
+  await page.getByRole('button',{name:/Zaczynamy/}).click();assert.equal(await page.locator('#age-value').inputValue(),'');assert.equal(await page.locator('#age-unit').inputValue(),'');await page.locator('#age-value').fill('12');await page.locator('#age-unit').selectOption('weeks');
   await page.getByRole('button',{name:/Pokaż moją drogę/}).click();await page.locator('.map-node.current').waitFor();
   await page.waitForTimeout(200);
   assert.equal(await page.locator('.map-node').count(),42);assert.equal(await page.locator('.map-node.completed').count(),12);

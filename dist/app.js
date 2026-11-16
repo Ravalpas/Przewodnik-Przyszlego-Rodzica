@@ -25,6 +25,7 @@ const maxWeeks = mode => mode==='pregnancy'?42:52;
 const escape = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday = todayString(), toastTimer, storageAvailable = true;
 let activeTab='map';
+let updateJourneyLayout=()=>{};
 const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify});
 planner.setOnChange(()=>{if(profile)renderJourney(false);});
 const sessionStartedAt=new Date().toISOString();
@@ -41,7 +42,7 @@ function persist(p) {
 }
 function warning(){return storageAvailable?'':'<p class="storage-warning">Przeglądarka nie pozwala zapisać danych. Twoja droga działa w tej sesji, ale po zamknięciu może być konieczne ponowne ustawienie wieku.</p>';}
 function unitOptions(mode, unit='weeks') {
-  return [['days',`dni ${stageName(mode)}`],['weeks',`pełnych tygodni ${stageName(mode)}`],['months',`pełnych miesięcy ${stageName(mode)}`]].map(([key,label])=>`<option value="${key}" ${unit===key?'selected':''}>${label}</option>`).join('');
+  return (unit?'':'<option value="" disabled selected>Wybierz jednostkę</option>')+[['days',`dni ${stageName(mode)}`],['weeks',`pełnych tygodni ${stageName(mode)}`],['months',`pełnych miesięcy ${stageName(mode)}`]].map(([key,label])=>`<option value="${key}" ${unit===key?'selected':''}>${label}</option>`).join('');
 }
 function fields(mode, value, unit='weeks') {
   return `<label class="field-label" for="age-value">Ile czasu już minęło?</label><div class="age-fields"><input id="age-value" name="age" type="number" min="0" max="36525" step="1" inputmode="numeric" value="${value}" required aria-describedby="age-help" aria-label="Liczba dni, tygodni lub miesięcy"><select id="age-unit" name="unit" aria-label="Jednostka wieku">${unitOptions(mode,unit)}</select></div><p id="age-help" class="field-help">Wpisz ukończony czas. 0–6 dni to 1. tydzień, a 7–13 dni to 2. tydzień. Miesiące przeliczamy według kalendarza.</p><div class="conversion" aria-live="polite">${icon('calendar')}<div><strong id="converted-age"></strong><small id="converted-stage"></small></div></div>`;
@@ -58,11 +59,11 @@ function showWelcome() {
 }
 function showAgeSetup() {
   const mode=selectedMode;
-  app.innerHTML=`<main class="welcome"><div class="back-row"><button id="back" class="icon-button" aria-label="Wróć do wyboru etapu">${icon('back')}</button><span class="eyebrow">Poznajmy się</span><div class="steps" aria-label="Krok 2 z 2"><span class="done"></span><span class="done"></span></div></div><div class="welcome-art" aria-hidden="true"><img src="assets/logo.png" alt=""><span class="spark">✦</span></div><div class="eyebrow">${mode==='pregnancy'?'Oczekujemy dziecka':'Dziecko jest już z nami'}</div><h1 style="margin-top:10px">${mode==='pregnancy'?'Który to już<br>tydzień?':'Ile czasu jesteście<br>już razem?'}</h1><p>Ustaw wiek, a my znajdziemy Twoje miejsce na drodze.</p><form id="setup-form" class="age-form" novalidate>${fields(mode,mode==='pregnancy'?12:0)}<p id="form-error" class="error" role="alert"></p><button type="submit" class="primary">Pokaż moją drogę ${icon('arrow')}</button></form>${warning()}<div class="welcome-foot">Wiek będzie aktualizował się z każdym dniem.<br>W każdej chwili możesz go poprawić w profilu.</div></main>`;
+  app.innerHTML=`<main class="welcome"><div class="back-row"><button id="back" class="icon-button" aria-label="Wróć do wyboru etapu">${icon('back')}</button><span class="eyebrow">Poznajmy się</span><div class="steps" aria-label="Krok 2 z 2"><span class="done"></span><span class="done"></span></div></div><div class="welcome-art" aria-hidden="true"><img src="assets/logo.png" alt=""><span class="spark">✦</span></div><div class="eyebrow">${mode==='pregnancy'?'Oczekujemy dziecka':'Dziecko jest już z nami'}</div><h1 style="margin-top:10px">${mode==='pregnancy'?'Który to już<br>tydzień?':'Ile czasu jesteście<br>już razem?'}</h1><p>Ustaw wiek, a my znajdziemy Twoje miejsce na drodze.</p><form id="setup-form" class="age-form" novalidate>${fields(mode,'','')}<p id="form-error" class="error" role="alert"></p><button type="submit" class="primary">Pokaż moją drogę ${icon('arrow')}</button></form>${warning()}<div class="welcome-foot">Wiek będzie aktualizował się z każdym dniem.<br>W każdej chwili możesz go poprawić w profilu.</div></main>`;
   app.querySelector('#back').addEventListener('click',showWelcome);
   const form=app.querySelector('form');
   const getAnchor=()=>anchorFromAge(form.elements.age.value,form.elements.unit.value);
-  const update=()=>{ try{const anchor=getAnchor();const age=validateProfile({mode,anchor});renderConversion(age,mode);setError('');}catch(e){setError(e.message);renderConversion(null,mode);} };
+  const update=()=>{const incomplete=form.elements.age.value===''||!form.elements.unit.value;form.querySelector('.conversion').hidden=incomplete;if(incomplete){setError('');return;}try{const anchor=getAnchor();const age=validateProfile({mode,anchor});renderConversion(age,mode);setError('');}catch(e){setError(e.message);renderConversion(null,mode);} };
   form.addEventListener('input',update);form.addEventListener('change',update);update();
   form.addEventListener('submit',event=>{event.preventDefault();try{const p={mode,anchor:getAnchor()};validateProfile(p);const saved=persist(p);renderJourney();if(!saved)notify('Ustawiono wiek. Zapisywanie w przeglądarce jest niedostępne.');}catch(e){setError(e.message);}});
 }
@@ -103,14 +104,15 @@ function renderJourney(center=true) {
     const scroll=app.querySelector('#map-scroll');scroll.style.top=`${app.querySelector('.app-header').offsetHeight}px`;
     const bottom=app.querySelector('.bottom-nav').offsetHeight;scroll.style.bottom=`${bottom}px`;app.querySelector('#recenter').style.bottom=`${bottom+16}px`;
     const calendar=app.querySelector('#calendar-view');if(calendar){calendar.style.top=scroll.style.top;calendar.style.bottom=scroll.style.bottom;}
-    const first=map.points[0].y*scroll.clientWidth/map.width;
-    app.querySelector('.map-lead').style.paddingTop=`${Math.max(24,scroll.clientHeight/2-first-54)}px`;
+    app.querySelector('.map-lead').style.paddingTop='20px';
+    app.querySelector('.map-canvas').style.setProperty('--map-top-trim',`${(mode==='child'?330:0)*app.clientWidth/map.width}px`);
   };
+  updateJourneyLayout=layout;
   layout();
   resizeObserver=new ResizeObserver(()=>{layout();});resizeObserver.observe(app);
   if(activeTab==='calendar')showCalendar();else if(center)requestAnimationFrame(()=>centerCurrent());
 }
-function updateNav(){for(const id of ['nav-map','nav-calendar']){const b=app.querySelector('#'+id),selected=id===(activeTab==='calendar'?'nav-calendar':'nav-map');b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}}
+function updateNav(){const calendar=activeTab==='calendar';app.querySelector('.journey-summary').hidden=calendar;app.classList.toggle('calendar-active',calendar);for(const id of ['nav-map','nav-calendar']){const b=app.querySelector('#'+id),selected=id===(calendar?'nav-calendar':'nav-map');b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}updateJourneyLayout();}
 function showCalendar(){activeTab='calendar';app.querySelector('#map-scroll').hidden=true;app.querySelector('#recenter').hidden=true;let view=app.querySelector('#calendar-view');if(!view){view=document.createElement('main');view.id='calendar-view';view.className='calendar-view';view.setAttribute('aria-label','Kalendarz rodzica');app.querySelector('.bottom-nav').before(view);}view.style.top=app.querySelector('#map-scroll').style.top;view.style.bottom=app.querySelector('#map-scroll').style.bottom;view.innerHTML=planner.calendarHtml();planner.bindCalendar(view);updateNav();}
 function centerCurrent(smooth=false) {
   if(!profile)return;
