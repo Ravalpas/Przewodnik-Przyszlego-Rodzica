@@ -21,6 +21,8 @@ Hosting korzysta z tych samych nazw skonfigurowanych jako sekrety środowiska wy
 
 Dokumentacja dostawcy: [Fabryka AI — integracja API](https://fabryka.ai/platform), [schemat API](https://fabryka.ai/docs). Backend wysyła `POST /v1/chat/completions`, używa uwierzytelnienia Bearer, jednego komunikatu systemowego i odpowiedzi JSON. Nie pokazuje surowych błędów dostawcy ani nagłówków autoryzacji.
 
+Połączenie używa `redirect: manual` i odrzuca odpowiedzi 3xx bez wykonywania kolejnego żądania, aby nie przekazać klucza pod inny adres. To zachowuje zgodność z Node.js i [API Request w Cloudflare Workers](https://developers.cloudflare.com/workers/runtime-apis/request/), które nie obsługuje trybu `redirect: error`.
+
 ## Dostęp w aplikacji
 
 - Okrągły portret lekarza nad przyciskiem „Mój tydzień”.

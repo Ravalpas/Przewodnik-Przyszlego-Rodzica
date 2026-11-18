@@ -41,6 +41,8 @@ test('provider credentials are restricted to the Fabryka host and never appear i
   assert.throws(()=>fabrykaConfig({}),{code:'not_configured'});
   assert.throws(()=>fabrykaConfig({...env,FABRYKA_MODEL:'other-model'}),{code:'invalid_config'});
   const config=fabrykaConfig(env);
+  let redirectCalls=0;
+  await assert.rejects(()=>fabrykaCompletion(config,[],{fetcher:async(url,options)=>{redirectCalls++;assert.equal(options.redirect,'manual');return new Response('',{status:307,headers:{Location:'https://evil.example'}});}}),{code:'provider_redirect'});assert.equal(redirectCalls,1);
   await assert.rejects(()=>fabrykaCompletion(config,[],{fetcher:async()=>Response.json({error:env.FABRYKA_API_KEY},{status:401})}),error=>error.code==='provider_auth'&&!error.message.includes(env.FABRYKA_API_KEY));
   await assert.rejects(()=>fabrykaCompletion(config,[],{fetcher:async()=>new Response('busy',{status:429,headers:{'Retry-After':'90'}})}),error=>error.status===429&&error.retryAfter===90);
 });

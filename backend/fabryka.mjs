@@ -22,7 +22,7 @@ export async function fabrykaCompletion(config,messages,{fetcher=fetch,signal}={
   let response;
   try {
     response=await fetcher(config.endpoint,{
-      method:'POST',redirect:'error',signal:signal?AbortSignal.any([signal,AbortSignal.timeout(45000)]):AbortSignal.timeout(45000),
+      method:'POST',redirect:'manual',signal:signal?AbortSignal.any([signal,AbortSignal.timeout(45000)]):AbortSignal.timeout(45000),
       headers:{Authorization:`Bearer ${config.key}`,'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({model:config.model,messages,stream:false,temperature:0.15,max_tokens:1100,response_format:{type:'json_object'}})
     });
@@ -32,6 +32,9 @@ export async function fabrykaCompletion(config,messages,{fetcher=fetch,signal}={
   }
   if(!response.ok) {
     await response.body?.cancel().catch(()=>{});
+    // Workers rejects redirect:'error' before sending a request. Manual mode
+    // works in Node and Workers; rejecting 3xx here still prevents key forwarding.
+    if(response.status>=300&&response.status<400)throw new BielikError('Połączenie z modelem wymaga sprawdzenia konfiguracji przez administratora.',502,'provider_redirect');
     if(response.status===429){const delay=Number(response.headers.get('Retry-After'));throw new BielikError('Fabryka AI osiągnęła limit zapytań. Spróbuj ponownie później.',429,'provider_rate_limit',Number.isFinite(delay)&&delay>0?Math.min(3600,Math.ceil(delay)):60);}
     if([401,403].includes(response.status))throw new BielikError('Dostęp do modelu wymaga sprawdzenia konfiguracji przez administratora.',502,'provider_auth');
     if(response.status===402)throw new BielikError('Fabryka AI nie może teraz obsłużyć zapytania w tym planie.',503,'provider_plan');
