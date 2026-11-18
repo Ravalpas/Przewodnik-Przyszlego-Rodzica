@@ -58,7 +58,7 @@ export function localNotesAnswer(question,snapshot,options={}) {
   const selected=selectChatNotes(question,snapshot,options);
   if(!selected.available)return {answer:'Nie mogę teraz odczytać Twoich notatek z tej przeglądarki. Otwórz kalendarz i sprawdź komunikat przy notatkach.',notes:[],local:true};
   if(!selected.matched)return {answer:selected.total?'Nie widzę notatek pasujących do tego pytania. Możesz sprawdzić inny dzień lub doprecyzować treść zapisku.':'Nie masz jeszcze notatek w kalendarzu. Wybierz dzień i naciśnij „Dodaj notatkę”.',notes:[],local:true};
-  const answer='Według Twoich notatek w kalendarzu (liczba pasujących wpisów: '+selected.matched+'):\n\n'+selected.notes.map(n=>'• '+calendarDate(n.date,{long:true})+(n.time?', godz. '+n.time:' — cały dzień')+' ('+NOTE_COLORS[n.color].name+' szpilka):\n'+n.text.slice(0,500)+(n.text.length>500?'… [Pełna treść po otwarciu notatki]':'')).join('\n\n')+(selected.partial?'\n\nPokazuję '+quantity(selected.notes.length,'notes')+' z '+selected.matched+' pasujących wpisów. Zawęź pytanie do daty lub tematu.':'');
+  const answer='Według Twoich notatek w kalendarzu (liczba pasujących wpisów: '+selected.matched+'):\n\n'+selected.notes.map(n=>'• '+calendarDate(n.date,{long:true})+(n.time?', godz. '+n.time:'')+' ('+NOTE_COLORS[n.color].name+' szpilka):\n'+n.text.slice(0,500)+(n.text.length>500?'… [Pełna treść po otwarciu notatki]':'')).join('\n\n')+(selected.partial?'\n\nPokazuję '+quantity(selected.notes.length,'notes')+' z '+selected.matched+' pasujących wpisów. Zawęź pytanie do daty lub tematu.':'');
   return {answer,notes:selected.notes.map(n=>({id:n.id,title:noteTitle(n),date:n.date,time:n.time,color:n.color})),local:true};
 }
 export function chatNotesContext(question,snapshot,options={}) {

@@ -21,6 +21,7 @@
 .personal-note-heading{display:flex;align-items:center;gap:7px}
 .personal-note-heading .note-pin{width:30px;height:37px;margin:-3px 0 0 -2px}
 .personal-note-heading>div>span{display:block;font-size:9px;color:#8a97ad;margin-bottom:4px}
+.personal-note-heading>div>span:last-child{margin-bottom:0}
 .personal-note-heading strong{display:block;font-size:11px;color:#536a90}
 .note-preview{font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#536882;margin:9px 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
 .note-actions{display:flex;gap:16px;border-top:1px solid #7f91ad20;margin-top:9px;padding-top:4px;flex-wrap:wrap}
