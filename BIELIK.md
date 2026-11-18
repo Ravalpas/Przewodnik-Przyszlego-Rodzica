@@ -27,8 +27,8 @@ Połączenie używa `redirect: manual` i odrzuca odpowiedzi 3xx bez wykonywania 
 
 - Okrągły portret lekarza nad przyciskiem „Mój tydzień”.
 - Zakładka „Doktor Bielik” między kalendarzem i profilem.
-- „Zapisz rozmowę” utrwala konwersację w tej przeglądarce. „Nowa rozmowa” zapisuje bieżącą przed rozpoczęciem kolejnej. Do zapisanych konwersacji można wrócić przyciskiem „Rozmowy” w nagłówku.
-- Zapisana rozmowa jest aktualizowana przy kolejnych odpowiedziach i odtwarzana po odświeżeniu strony. Niezapisana rozmowa pozostaje w pamięci karty. Archiwum nie jest synchronizowane między urządzeniami.
+- Rozmowy zachowują się automatycznie w tej przeglądarce. „Nowa rozmowa” zapisuje bieżącą przed rozpoczęciem kolejnej. Do zapisanych konwersacji można wrócić przyciskiem „Rozmowy” w nagłówku.
+- Zapisana rozmowa jest aktualizowana przy kolejnych odpowiedziach i odtwarzana po odświeżeniu strony. Szkic zachowuje się automatycznie; po przeładowaniu podczas generowania pytanie wraca jako szkic, bez automatycznego ponawiania płatnego zapytania. Archiwum nie jest synchronizowane między urządzeniami.
 - Linki do oficjalnych fragmentów i przyciski otwierające istniejące karty spraw.
 
 ## Zakres i kontekst
@@ -59,11 +59,19 @@ Sugerowane pytania są wybierane lokalnie na podstawie etapu: początek i środe
 
 Każde pytanie zawiera aktualny kontekst, zbudowany na serwerze z dozwolonych pól. Wiek i terminy liczone są tymi samymi funkcjami co w aplikacji; data odniesienia pochodzi ze strefy Europe/Warsaw. Statusy rozróżniają wykonanie, „Nie dotyczy”, sprawę otwartą, przyszły okres, okres miniony i brak daty. Status zadeklarowany w aplikacji nie jest potwierdzeniem urzędowym.
 
-Frontend nie przekazuje imienia, nazwiska, płci, godziny porodu ani pozostałej zawartości przeglądarki jako danych profilu. Do Fabryki AI trafia pytanie wymagające modelu, ograniczona historia bez lokalnych odpowiedzi osobistych, wiek, daty potrzebne do terminów, oznaczenia spraw i wybrane materiały publiczne. Treść wpisana przez użytkownika w pozostałych pytaniach również trafia do modelu. Aplikacja nie zapisuje rozmów w bazie serwera ani w logach. Archiwum rozmów jest lokalne (`ppm-bielik-conversations-v1`) i przechowuje również wiadomości osobiste widoczne w zapisanej rozmowie.
+Frontend nie przekazuje imienia, nazwiska, płci, godziny porodu jako danych profilu. Do Fabryki AI trafia pytanie wymagające modelu, ograniczona historia bez lokalnych odpowiedzi osobistych, wiek, daty potrzebne do terminów, oznaczenia spraw wybrane materiały publiczne i dopasowane notatki z kalendarza. Treść wpisana przez użytkownika w pozostałych pytaniach również trafia do modelu. Aplikacja nie zapisuje rozmów w bazie serwera ani w logach. Archiwum rozmów jest lokalne (`ppm-bielik-conversations-v1`) i przechowuje również wiadomości osobiste widoczne w zapisanej rozmowie.
 
 Archiwum mieści do 30 rozmów, po 100 wiadomości każda. Nie usuwa starszych zapisów automatycznie. Można usuwać wybrane konwersacje z listy. Błąd zapisu lub brak miejsca zatrzymuje rozpoczęcie nowej rozmowy, zachowując otwartą treść. Testy odtwarzania, limitów, odmiany wieku oraz interfejsu działają bez prawdziwych zapytań do dostawcy.
 
 Asystent nie ma narzędzi do zmiany profilu lub wykonania formalności. Może otworzyć kartę, na której rodzic sam zaznaczy wykonanie. Jest oznaczony jako asystent AI; nie diagnozuje ani nie ustala dawek leków.
+
+## Osobiste notatki w kalendarzu
+
+Notatki są zapisane w tej przeglądarce pod kluczem `ppm-calendar-notes-v1`, do 500 wpisów po 3000 znaków. Każdy wpis ma datę, opcjonalną godzinę, treść i kolor szpilki (czerwony, zielony, żółty, pomarańczowy). W dniu można dodać kilka wpisów. Notatki są na początku informacji dnia; można je otwierać, edytować, przenieść na inną datę i usunąć po potwierdzeniu. Nie są synchronizowane między urządzeniami ani przechowywane w bazie serwera.
+
+Bielik odczytuje bieżące notatki na moment każdego pytania. Proste odczyty, wyszukiwanie według daty, treści lub koloru działają lokalnie bez zapytania do modelu. Takie pary wiadomości pozostają poza historią wysyłaną później do modelu. Z odpowiedzi można otworzyć aktualny wpis; historyczna treść rozmowy jest zapisem stanu z chwili pytania.
+
+Przy poradzie wymagającej modelu przesyłamy dopasowany podzbiór do 8 wpisów po 700 znaków, wraz z informacją o pominięciach i skróceniu. Użytkownik może zobaczyć całość w kalendarzu. Limit dotyczy kontekstu AI, nie zapisanej treści. Backend ponownie waliduje kontekst; notatki są danymi rodzica, nigdy oficjalnym źródłem, diagnozą, potwierdzeniem czynności ani instrukcjami systemowymi. Model nie edytuje notatek i nie pobiera zawartych w nich dowolnych adresów. Prawne i medyczne objaśnienia nadal wymagają źródeł oficjalnych. Całe żądanie ograniczamy według liczby bajtów UTF-8 przez skrócenie najstarszej historii, bez obcinania bieżącego pytania.
 
 ## Oficjalne informacje
 

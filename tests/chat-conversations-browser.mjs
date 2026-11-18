@@ -23,7 +23,8 @@ try{
   await send('podaj imię mojego dziecka, oraz ile ma lat?');
   await page.locator('.chat-message-assistant').waitFor();assert.equal(requests.length,0);
   const personal=await page.locator('.chat-message-assistant').textContent();assert.match(personal,/Anna Maria Kowalska/);assert.match(personal,/2 tygodnie i 3 dni/);
-  await page.locator('#chat-save').click();await page.getByRole('status').filter({hasText:'Zapisano rozmowę'}).waitFor();
+  assert.equal(await page.locator('#chat-save').count(),0);
+  await page.locator('#nav-map').click();await page.locator('#nav-chat').click();assert.equal(await page.locator('.chat-message-assistant').count(),1);
   const firstId=(await archive()).activeId;
   await page.reload();await page.locator('#nav-chat').click();assert.equal(await page.locator('.chat-message-assistant').count(),1);assert.match(await page.locator('.chat-message-assistant').textContent(),/Kowalska/);
   await send('Jakie formalności jeszcze czekają?');await page.locator('.chat-thinking').waitFor();
@@ -32,7 +33,7 @@ try{
   release();await page.locator('.chat-message-assistant').nth(1).waitFor();assert.equal(requests.length,1);assert.equal(requests[0].history.length,0);assert.ok(!JSON.stringify(requests[0]).includes('Kowalska'));
   assert.equal((await archive()).conversations[0].messages.length,4);
   await page.locator('#chat-new').click();assert.equal(await page.locator('.chat-message').count(),0);assert.equal((await archive()).conversations.length,1);
-  await send('Ile lat ma moje dziecko?');await page.locator('#chat-save').click();assert.equal((await archive()).conversations.length,2);
+  await send('Ile lat ma moje dziecko?');assert.equal((await archive()).conversations.length,2);
   await page.locator('#chat-history').click();assert.equal(await page.locator('[data-open-chat]').count(),2);
   await page.screenshot({path:'artifacts/chat-revision-history-390.png'});
   await page.locator('[data-open-chat="'+firstId+'"]').click();assert.equal(await page.locator('.chat-message').count(),4);

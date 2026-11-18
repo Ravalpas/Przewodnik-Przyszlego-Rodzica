@@ -1,0 +1,49 @@
+.note-pin{display:block;width:35px;height:44px;flex-shrink:0;overflow:visible}
+.calendar-legend .note-pin{display:inline-block;width:14px;height:18px;vertical-align:middle;margin-right:3px}
+.calendar-day.has-note>span:first-child{align-self:flex-start;margin-left:5px}
+.calendar-day.has-note>small{align-self:flex-start;margin-left:5px}
+.day-note-pins{position:absolute;right:0;top:-3px;width:25px;height:34px;pointer-events:none}
+.day-note-pins .note-pin{position:absolute;right:0;top:0;width:25px;height:32px}
+.day-note-pins .note-pin:first-child:not(:last-child){right:7px;top:-2px;transform:rotate(-19deg);opacity:.85}
+.calendar-day .day-note-count{position:absolute;bottom:-2px;right:-1px;display:grid;place-items:center;width:14px;height:14px;border:1px solid white;border-radius:50%;background:#49659b;color:white;font-size:8px;font-weight:800;z-index:1}
+.calendar-day.other-month.has-note{opacity:.7}
+.day-agenda-heading{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:14px}
+.calendar-agenda .day-agenda-heading h3{margin:0;font-size:14px;line-height:1.5}
+.note-add{display:flex;align-items:center;gap:5px;flex-shrink:0;min-height:36px;padding:7px 10px;border:1px solid #dce5f4;background:#f5f8ff;border-radius:11px;color:#47639b;font-size:10px;font-weight:700}
+.note-add span{font-size:17px;line-height:1}
+.day-notes{margin:0 0 23px}
+.day-notes>h4{font-size:12px;color:#536b94;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.day-notes>h4 span{font-size:9px;font-weight:400;color:#94a1b6}
+.personal-note{border:1px solid #e5eaf4;border-radius:17px;padding:12px 13px 10px;background:#fffdfc;margin:10px 0;box-shadow:0 3px 9px #283e6905}
+.note-red{--note-color:#e56d7a;--note-light:#fff4f5}.note-green{--note-color:#6abb7a;--note-light:#f3fbf3}.note-yellow{--note-color:#d3ad3c;--note-light:#fffcef}.note-orange{--note-color:#e69c5e;--note-light:#fff7ef}
+.personal-note{border-top:3px solid var(--note-color);background:var(--note-light)}
+.personal-note-heading{display:flex;align-items:center;gap:7px}
+.personal-note-heading .note-pin{width:30px;height:37px;margin:-3px 0 0 -2px}
+.personal-note-heading>div>span{display:block;font-size:9px;color:#8a97ad;margin-bottom:4px}
+.personal-note-heading strong{display:block;font-size:11px;color:#536a90}
+.note-preview{font-size:12px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;color:#536882;margin:9px 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+.note-actions{display:flex;gap:16px;border-top:1px solid #7f91ad20;margin-top:9px;padding-top:4px;flex-wrap:wrap}
+.note-actions button{background:none;border:0;padding:8px 0;color:#627ca6;font-size:10px}
+.note-actions button:last-child{margin-left:auto;color:#938394}
+.note-form{padding-top:2px}.note-date-fields{display:grid;grid-template-columns:1.1fr 1fr;gap:10px;margin:15px 0 21px}.note-date-fields>div{min-width:0}
+.note-date-fields input{min-width:0;width:100%;max-width:100%;font-size:14px;padding-left:10px;padding-right:8px}
+#note-text{display:block;width:100%;min-height:145px;max-height:330px;border:1px solid #dde5f2;border-radius:15px;background:#fafbff;padding:13px 14px;font-family:inherit;font-size:16px;line-height:1.6;color:#425676;resize:vertical;box-sizing:border-box}
+#note-text::placeholder{color:#a3adbe;font-size:13px}
+.note-color-fieldset{border:0;padding:0;margin:22px 0}
+.note-color-options{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:10px}
+.note-color-option{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:2px solid #e7ecf5;border-radius:14px;padding:10px 2px;min-width:0;background:#fff;cursor:pointer}
+.note-color-option input{position:absolute;opacity:0;width:1px;height:1px;padding:0;min-height:0}
+.note-color-option:has(input:checked){border-color:#566fa9;background:#f4f7ff}
+.note-color-option:has(input:focus-visible){outline:3px solid #ecc858;outline-offset:2px}
+.note-color-option .note-pin{width:34px;height:43px}.note-color-option span{font-size:9px;font-weight:700;color:#8491a9;text-align:center}
+.note-cancel{display:block;margin:13px auto 0;font-size:12px}
+.note-detail-heading{display:flex;align-items:center;gap:12px;margin:8px 0 21px}.note-detail-heading>.note-pin{width:46px;height:57px}
+.note-detail-heading>div{min-width:0}.note-detail-heading span{font-size:10px;color:#8c98ad}.note-detail-heading h3{font-size:17px;line-height:1.5;margin:6px 0 0}
+.note-full-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.9;color:#586d89;padding:16px;border:1px solid #e5eaf5;border-top:3px solid var(--note-color);background:var(--note-light);border-radius:15px;margin:15px 0 25px}
+.note-detail .secondary{margin-top:11px}.note-delete-confirm .note-detail-heading p{font-size:12px;overflow-wrap:anywhere;margin:7px 0 0;line-height:1.6}.note-delete-confirm>.secondary{margin-top:12px}.notes-error{color:#8b734f;font-size:12px;line-height:1.7}
+.note-preview,.note-full-text{font-size:16px;line-height:1.7}
+.personal-note-heading>div>span,.personal-note-heading strong,.note-actions button,.day-notes>h4,.note-detail-heading span,.note-form .field-label,.note-form .optional{font-size:14px}
+.day-notes>h4 span{font-size:12px}.note-date-fields input{font-size:16px}.note-color-option span{font-size:14px}.note-add{font-size:14px}.note-form>.field-help{font-size:14px}.note-delete-confirm .note-detail-heading p{font-size:14px}.notes-error{font-size:14px}
+.chat-note-links .chat-task{align-items:center;gap:8px}.chat-note-links>.chat-task>.note-pin{width:28px;height:35px}.chat-note-links .chat-task strong{overflow-wrap:anywhere}
+@media(max-width:450px){.note-color-options{grid-template-columns:repeat(2,minmax(0,1fr))}.note-color-option{flex-direction:row;gap:6px;padding:9px 4px}.note-color-option .note-pin{width:28px;height:36px}.note-color-option span{font-size:14px}}
+@media(max-width:350px){.day-agenda-heading{gap:6px;flex-wrap:wrap}.calendar-agenda .day-agenda-heading h3{font-size:14px}.note-add{padding:7px 8px}.note-date-fields{grid-template-columns:1fr;gap:15px}}

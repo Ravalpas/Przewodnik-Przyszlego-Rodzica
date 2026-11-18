@@ -17,10 +17,10 @@ export const PROFILE_FIELDS=[
 ];
 const identitySubject=/dziec|maluch|syn\b|syn[aeu]|cork|ciaz|\bprofil|u nas|nasz/;
 const pregnancyAndCare=/ciaz|porod|polog|noworod|niemowl|dziec|maluch|rodzic|macierzyn|karmien|laktac|polozn|pediatr|fotelik|wozek|zlobek|raczk|zabkow/;
-const carePurpose=/opiek|bezpiecz|wychow|rozwoj|karm|usyp|spani|\bsen\b|przygot|wyprawk|odpieluch|zabrac|podroz|przewoz|odpocz|wsparc|zmecz|obowiazk|formaln|dokument|prawa w pracy/;
-const administrative=/\busc\b|\bpesel\b|ubezpiecz|wniosk|swiadczen|becik|800\+|\bkrus\b|zasil|formaln|obowiazk|podat|ulga|urlop.{0,18}(?:ojcow|rodziciel|macierz)|aktywny rodzic|praca.{0,20}ciaz|praw.{0,20}(?:ciaz|rodzic)/;
+const carePurpose=/opiek|bezpiecz|wychow|rozwoj|karm|usyp|spani|\bsen\b|przygot|wyprawk|odpieluch|zabrac|podroz|przewoz|odpocz|wsparc|zmecz|obowiaz|formaln|dokument|prawa w pracy/;
+const administrative=/\busc\b|\bpesel\b|ubezpiecz|wniosk|swiadczen|becik|800\+|\bkrus\b|zasil|formaln|obowiaz|podat|ulga|urlop.{0,18}(?:ojcow|rodziciel|macierz)|aktywny rodzic|praca.{0,20}ciaz|praw.{0,20}(?:ciaz|rodzic)/;
 const healthFacts=/szczep|badani|\blek\b|lek[ui]|lekow|dawk|goracz|objaw|chorob|depres|krwawi|boli|bol brzu|wymiot|oddych|nieprzytom|alerg|zywien|karmien|laktac|mleko|rozwoj|bilans zdrowia/;
-const appWorkflow=/aplikac|ustawien|\bprofil|kalendarz|moja droga|mojej drodze|zapis.{0,15}rozmow|now.{0,10}rozmow|oznacz|zaznacz|wykonan|zaliczon|nie dotyczy/;
+const appWorkflow=/aplikac|ustawien|\bprofil|kalendarz|notat|szpil|zapisk|umowion|zaplanowan|moja droga|mojej drodze|zapis.{0,15}rozmow|now.{0,10}rozmow|oznacz|zaznacz|wykonan|zaliczon|nie dotyczy/;
 const unrelatedTopics=/bitcoin|kryptowalut|gield|kurs akcji|wynik meczu|pilkarsk|grunwald|napoleon|stolic.{0,15}(?:francji|niemiec)|film.{0,25}(?:science fiction|polec|weekend)|polityk|wybory parlament|silnik samochod|przepis na pizze/;
 const programming=/napisz.{0,20}(?:kod|program)|programowani|\bpython\b|\bjavascript\b|\bsql\b|atak ddos/;
 const roleAttack=/(?:ujawnij|pokaz|podaj).{0,35}(?:klucz api|api key|prompt systemow|system prompt)|(?:ignoruj|zignoruj|pomin).{0,25}(?:wszystkie|systemowe|poprzednie).{0,15}(?:instrukcj|zasad)|zmien.{0,15}(?:role|system prompt)/;
@@ -44,9 +44,10 @@ function currentSignals(message) {
   const profile=overview||fields.length>0&&(owned||implicitIdentity||directIdentity||currentPregnancyAge);
   const admin=administrative.test(intentText),health=healthFacts.test(intentText),app=appWorkflow.test(intentText)||/(?:zostal|pozostal|mam[y]?|jeszcze).{0,30}(?:zrob|zalatw|spraw|obowiaz)|co (?:juz |jeszcze )?(?:zrobil|wykonal|czeka)/.test(intentText),care=pregnancyAndCare.test(intentText)||/usypian|odpieluch|wyprawk|zabkow/.test(intentText);
   const appInstruction=app&&/\bjak\b|\bgdzie\b/.test(text)&&/zapis|oznacz|zaznacz|zmien|popraw|edyt|otworz|ustaw/.test(text);
-  const readsAppState=app&&!appInstruction&&/oznacz|zaznacz|zrobion|wykonan|zaliczon|otwart|nie dotyczy|zostal.{0,10}do zrob/.test(text)&&!/jak zglos|jak zloz|gdzie|kiedy|termin|warunk|kwot|przepis|wedlug prawa/.test(text);
+  const noteRead=/notat|szpil|zapisk|umowion|zaplanowan/.test(text)&&!/przygot|poradz|doradz|co zabrac|powinn|czy mus|obowiaz|nalezy|bezpiecz|co oznacz|wyjasn|przepis|uprawn|dawk|leczen|czy mog|czy moz|porownaj|zaleca|zinterpret|ocen/.test(text);
+  const readsAppState=noteRead||app&&!appInstruction&&/oznacz|zaznacz|zrobion|wykonan|zaliczon|otwart|nie dotyczy|zostal.{0,10}do zrob/.test(text)&&!/jak zglos|jak zloz|gdzie|kiedy|termin|warunk|kwot|przepis|wedlug prawa/.test(text);
   const mutation=fields.length>0&&/zmien|popraw|ustaw|edyt|zapisz.{0,20}(?:imie|date|wiek|plec)/.test(text);
-  const practicalSupport=!admin&&/lista.{0,15}pytan|przygotowac.{0,20}pytan|pytania.{0,20}(?:pediatr|lekarz|polozn)|potrzebuje wsparcia|podziel.{0,25}(?:opiek|obowiazk)/.test(intentText)&&!/jak leczy|jaka daw|ile leku|czy to.{0,20}(?:chorob|depres|alerg)|warunk|kwot/.test(intentText);
+  const practicalSupport=!admin&&/lista.{0,15}pytan|przygotowac.{0,20}pytan|pytania.{0,20}(?:pediatr|lekarz|polozn)|potrzebuje wsparcia|podziel.{0,25}(?:opiek|obowiaz)/.test(intentText)&&!/jak leczy|jaka daw|ile leku|czy to.{0,20}(?:chorob|depres|alerg)|warunk|kwot/.test(intentText);
   const other=unrelatedTopics.test(text)||programming.test(text),attack=roleAttack.test(text);
   const purpose=admin||health||app||overview||profile||care&&carePurpose.test(text);
   return {text,fields,overview,profile,admin,health,app,care,other,attack,purpose,readsAppState,mutation,appInstruction,practicalSupport};
@@ -93,6 +94,7 @@ export const CHAT_DECISION_RULES=`ZASADY DECYZJI — stosuj w tej kolejności:
 export const CHAT_APP_CAPABILITIES=[
   'Wiek aktualizuje się automatycznie. Imię, płeć i korekty wieku oraz dat są w ustawieniach profilu.',
   'Mapa i kalendarz pokazują te same sprawy. Sprawę można otworzyć i samodzielnie oznaczyć wykonanie; niektóre dodatkowe sprawy można oznaczyć jako Nie dotyczy.',
-  'Zapisz rozmowę utrwala ją w tej przeglądarce. Nowa rozmowa zapisuje poprzednią. Przycisk Rozmowy otwiera lokalne archiwum; zapisy nie synchronizują się między urządzeniami.',
+  'Rozmowy zachowują się automatycznie w tej przeglądarce. Po powrocie kontynuujesz bieżącą. Nowa rozmowa archiwizuje poprzednią. Przycisk Rozmowy otwiera lokalne archiwum; zapisy nie synchronizują się między urządzeniami.',
+  'Kalendarz pozwala dodawać osobiste notatki do dnia z opcjonalną godziną i czerwoną, zieloną, żółtą lub pomarańczową szpilką. Można je otworzyć, edytować, przenieść na inną datę i usunąć. Wyświetlają się przed innymi informacjami dnia. Asystent może odczytać dopasowane wpisy, lecz sam ich nie zmienia.',
   'Asystent nie może sam zmienić profilu, wykonać zgłoszenia urzędowego lub potwierdzić wypłaty. Podstawowe dane osobiste odczytuje lokalny moduł aplikacji.'
 ];

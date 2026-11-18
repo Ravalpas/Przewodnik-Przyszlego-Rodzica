@@ -13,7 +13,8 @@ function storedConversation(value) {
     if(!['user','assistant'].includes(message?.role)||typeof message.content!=='string'||message.content.length>10000)throw new Error('Nieprawidłowy zapis wiadomości.');
     return {role:message.role,content:message.content,local:message.local===true,kind:shortText(message.kind,30),inferenceContent:typeof message.inferenceContent==='string'?message.inferenceContent.slice(0,6500):undefined,
       sources:(Array.isArray(message.sources)?message.sources:[]).slice(0,5).map(s=>({id:shortText(s?.id,60),name:shortText(s?.name,200),url:shortText(s?.url,2000),status:shortText(s?.status,30)})),
-      tasks:(Array.isArray(message.tasks)?message.tasks:[]).slice(0,3).map(t=>({id:shortText(t?.id,60),title:shortText(t?.title,200),status:shortText(t?.status,30),period:shortText(t?.period,250)}))};
+      tasks:(Array.isArray(message.tasks)?message.tasks:[]).slice(0,3).map(t=>({id:shortText(t?.id,60),title:shortText(t?.title,200),status:shortText(t?.status,30),period:shortText(t?.period,250)})),
+      notes:(Array.isArray(message.notes)?message.notes:[]).slice(0,8).filter(n=>/^[a-zA-Z0-9_-]{1,80}$/.test(n?.id)).map(n=>({id:n.id,title:shortText(n.title,100),date:shortText(n.date,10),time:shortText(n.time,5),color:shortText(n.color,10)}))};
   });
   return {id:value.id,title:shortText(value.title,100)||'Rozmowa',createdAt:value.createdAt,updatedAt:value.updatedAt,messages,draft:shortText(value.draft,3000)};
 }

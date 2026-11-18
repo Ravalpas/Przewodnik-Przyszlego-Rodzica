@@ -5,6 +5,7 @@ import { avatar, genderLabel } from './avatars.js';
 import { createPlanner,refreshIcon } from './planner.js';
 import { ageUnitLabel, pluralWord, quantity, ordinal } from './polish.js';
 import {createBielikChat,doctorPortrait,chatIcon} from './chat.js';
+import {createNotesStore,NOTES_KEY} from './notes.js';
 
 const app = document.querySelector('#app');
 const sheet = document.querySelector('#sheet');
@@ -28,8 +29,9 @@ const escape = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday = todayString(), toastTimer, storageAvailable = true;
 let activeTab='map';
 let updateJourneyLayout=()=>{};
-const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify});
-const bielikChat=createBielikChat({getProfile:()=>profile,getTasks:()=>planner.events(),openTask:id=>planner.openEvent(id),onBack:showMap});
+const notesStore=createNotesStore();
+const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify,notesStore});
+const bielikChat=createBielikChat({getProfile:()=>profile,getTasks:()=>planner.events(),getNotes:()=>notesStore.snapshot(),openNote:id=>planner.openNote(id),openTask:id=>planner.openEvent(id),onBack:showMap});
 planner.setOnChange(()=>{if(profile)renderJourney(false);});
 const sessionStartedAt=new Date().toISOString();
 try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }
@@ -197,6 +199,7 @@ function refreshDay(){const now=todayString();if(now!==lastToday&&!sheet.open){l
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshDay();});
 window.addEventListener('focus',refreshDay);setInterval(refreshDay,30000);
 sheet.addEventListener('close',()=>{if(profile)refreshDay();});
+window.addEventListener('storage',event=>{if(event.key===NOTES_KEY&&profile&&activeTab==='calendar')renderJourney(false);});
 window.addEventListener('storage',event=>{if(event.key===STORAGE_KEY&&event.newValue){try{profile=normalizeProfile(JSON.parse(event.newValue));sheet.close();renderJourney();notify('Ustawienia zaktualizowano w innej karcie.');}catch{}}});
 
 try {

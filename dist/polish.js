@@ -6,7 +6,8 @@ const units = {
   months: ['miesiąc', 'miesiące', 'miesięcy', 'miesiąca'],
   years: ['rok', 'lata', 'lat', 'roku'],
   stages: ['etap', 'etapy', 'etapów', 'etapu'],
-  matters: ['sprawa', 'sprawy', 'spraw', 'sprawy']
+  matters: ['sprawa', 'sprawy', 'spraw', 'sprawy'],
+  notes: ['notatka', 'notatki', 'notatek', 'notatki']
 };
 
 // Cardinal quantities and ordinal positions have different grammatical forms.

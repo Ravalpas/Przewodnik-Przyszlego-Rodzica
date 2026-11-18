@@ -14,7 +14,7 @@ try{
   await send('Podaj imię mojego dziecka i wyjaśnij zasady ubezpieczenia zdrowotnego.');
   assert.equal(requests.length,1);assert.ok(requests[0].handledProfileFields.includes('name'));assert.ok(!JSON.stringify(requests[0]).includes('Kowalska'));
   const mixed=await page.locator('.chat-message-assistant').last().textContent();assert.match(mixed,/Anna Maria Kowalska/);assert.match(mixed,/Pozostałą część/);
-  await page.locator('#chat-save').click();await page.reload();await page.locator('#nav-chat').click();
+  await page.reload();await page.locator('#nav-chat').click();
   await send('A gdzie zgłosić dziecko do ubezpieczenia?');assert.equal(requests.length,2);assert.ok(!JSON.stringify(requests[1]).includes('Kowalska'));assert.ok(requests[1].history.some(m=>m.content.includes('Pozostałą część')));
   replyKind='no_evidence';await send('Jakie dokładnie są warunki świadczenia rodzicielskiego?');assert.match(await page.locator('.chat-message-assistant').last().textContent(),/Gdzie sprawdzić informacje/);
   console.log('PASS: multiple profile fields and task status work locally; mixed requests preserve both parts; local identity stays out of model history after saved-chat reload; unavailable evidence is distinguished from cited answers. All model responses were mocked.');
