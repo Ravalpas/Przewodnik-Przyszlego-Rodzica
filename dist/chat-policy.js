@@ -95,6 +95,6 @@ export const CHAT_APP_CAPABILITIES=[
   'Wiek aktualizuje się automatycznie. Imię, płeć i korekty wieku oraz dat są w ustawieniach profilu.',
   'Mapa i kalendarz pokazują te same sprawy. Sprawę można otworzyć i samodzielnie oznaczyć wykonanie; niektóre dodatkowe sprawy można oznaczyć jako Nie dotyczy.',
   'Rozmowy zachowują się automatycznie w tej przeglądarce. Po powrocie kontynuujesz bieżącą. Nowa rozmowa archiwizuje poprzednią. Przycisk Rozmowy otwiera lokalne archiwum; zapisy nie synchronizują się między urządzeniami.',
-  'Kalendarz pozwala dodawać osobiste notatki do dnia z opcjonalną godziną i czerwoną, zieloną, żółtą lub pomarańczową szpilką. Można je otworzyć, edytować, przenieść na inną datę i usunąć. Wyświetlają się przed innymi informacjami dnia. Asystent może odczytać dopasowane wpisy, lecz sam ich nie zmienia.',
+  'Kalendarz pozwala dodawać osobiste notatki do dnia z opcjonalną godziną i czerwoną, zieloną, żółtą, pomarańczową lub niebieską szpilką. Można je otworzyć, edytować, przenieść na inną datę i usunąć. Wyświetlają się przed innymi informacjami dnia. Asystent może odczytać dopasowane wpisy, lecz sam ich nie zmienia.',
   'Asystent nie może sam zmienić profilu, wykonać zgłoszenia urzędowego lub potwierdzić wypłaty. Podstawowe dane osobiste odczytuje lokalny moduł aplikacji.'
 ];

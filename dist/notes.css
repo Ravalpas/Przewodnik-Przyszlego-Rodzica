@@ -16,6 +16,7 @@
 .day-notes>h4 span{font-size:9px;font-weight:400;color:#94a1b6}
 .personal-note{border:1px solid #e5eaf4;border-radius:17px;padding:12px 13px 10px;background:#fffdfc;margin:10px 0;box-shadow:0 3px 9px #283e6905}
 .note-red{--note-color:#e56d7a;--note-light:#fff4f5}.note-green{--note-color:#6abb7a;--note-light:#f3fbf3}.note-yellow{--note-color:#d3ad3c;--note-light:#fffcef}.note-orange{--note-color:#e69c5e;--note-light:#fff7ef}
+.note-blue{--note-color:#629add;--note-light:#f2f8ff}
 .personal-note{border-top:3px solid var(--note-color);background:var(--note-light)}
 .personal-note-heading{display:flex;align-items:center;gap:7px}
 .personal-note-heading .note-pin{width:30px;height:37px;margin:-3px 0 0 -2px}

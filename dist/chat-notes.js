@@ -8,7 +8,7 @@ const notesAdvice=/przygot|poradz|doradz|co zabrac|powinn|czy mus|obowiaz|nalezy
 const noteShift=(date,days)=>new Date((dayNumber(date)+days)*86400000).toISOString().slice(0,10);
 export function notesIntent(question,history=[]) {
   const text=policyFold(question),prior=[...history].reverse().find(m=>m.role==='user');
-  const follow=/^(?:a |i )?(?:jutro|dzis|dzisiaj|pojutrze|wczoraj|w (?:tym|przyszlym) tygodniu|czerwone|zielone|zolte|pomaranczowe)[?!. ]*$/.test(text);
+  const follow=/^(?:a |i )?(?:jutro|dzis|dzisiaj|pojutrze|wczoraj|w (?:tym|przyszlym) tygodniu|czerwone|zielone|zolte|pomaranczowe|niebieskie)[?!. ]*$/.test(text);
   const related=notesTopic.test(text)||follow&&notesTopic.test(policyFold(prior?.content));
   const mutation=/\b(?:dodaj|zapisz|usun|zmien|przenies|edytuj)\b/.test(text);
   return {related,read:related&&!notesAdvice.test(text)&&!mutation,mutation,query:follow?question+' '+prior.content:question};
@@ -43,9 +43,9 @@ export function selectChatNotes(question,snapshot,{today=todayString(),history=[
     }
   }
   if(start)notes=notes.filter(n=>n.date>=start&&(!end||n.date<=end));
-  const color=Object.keys(NOTE_COLORS).find(c=>({red:/czerwon/,green:/zielon/,yellow:/zolt/,orange:/pomarancz/}[c]).test(text));
+  const color=Object.keys(NOTE_COLORS).find(c=>({red:/czerwon/,green:/zielon/,yellow:/zolt/,orange:/pomarancz/,blue:/niebiesk/}[c]).test(text));
   if(color)notes=notes.filter(n=>n.color===color);
-  const keywords=[...new Set(text.match(/[a-z]{4,}/g)||[])].filter(w=>! /^(?:notat|szpil|zapisk|pokaz|podaj|powiedz|przypom|odczyt|wymien|wszyst|moj|moich|nasz|mam|jakie|kiedy|ktore|ile|czy|jest|zapis|mamy|wizy|umowion|zaplanowan|kalendarz|dotycz|dzis|jutro|jutrzej|pojutrze|wczoraj|tygodn|przysz|nastepn|biezac|najbliz|nadchodz|czerwon|zielon|zolt|pomarancz|listop|stycz|kwiet|czerw|sierp|wrzes|pazdz|grud|lipiec|lutego|marca|roku|termin|godzin|mozesz|znajdz|sprawdz|zawart|informac|tekst|tresc|miesiac|przygot|prosze|pytan|podsum|pomoc|pomoz|poniedzial|wtorek|wtork|srod|czwart|piatek|piatk|sobot|niedziel)/.test(w));
+  const keywords=[...new Set(text.match(/[a-z]{4,}/g)||[])].filter(w=>! /^(?:notat|szpil|zapisk|pokaz|podaj|powiedz|przypom|odczyt|wymien|wszyst|moj|moich|nasz|mam|jakie|kiedy|ktore|ile|czy|jest|zapis|mamy|wizy|umowion|zaplanowan|kalendarz|dotycz|dzis|jutro|jutrzej|pojutrze|wczoraj|tygodn|przysz|nastepn|biezac|najbliz|nadchodz|czerwon|zielon|zolt|pomarancz|niebiesk|listop|stycz|kwiet|czerw|sierp|wrzes|pazdz|grud|lipiec|lutego|marca|roku|termin|godzin|mozesz|znajdz|sprawdz|zawart|informac|tekst|tresc|miesiac|przygot|prosze|pytan|podsum|pomoc|pomoz|poniedzial|wtorek|wtork|srod|czwart|piatek|piatk|sobot|niedziel)/.test(w));
   const stem=w=>w.slice(0,Math.max(4,w.length-3));
   if(keywords.length){const ranked=notes.map(n=>({note:n,score:keywords.filter(w=>policyFold(n.text).includes(stem(w))).length})).sort((a,b)=>b.score-a.score||a.note.date.localeCompare(b.note.date));notes=ranked.filter(n=>n.score).map(n=>n.note);}
   // Non-note questions get only matching notes, never a dump of unrelated entries.

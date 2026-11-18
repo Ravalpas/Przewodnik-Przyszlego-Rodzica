@@ -10,19 +10,19 @@ import {createBielik} from '../backend/bielik.mjs';
 const today='2026-11-18',options={today},memory=()=>{const data=new Map();return {getItem:key=>data.get(key)||null,setItem:(key,value)=>data.set(key,value)};};
 const sample=(id,date,text,color='red',time='')=>({id,date,text,color,time});
 const snapshot={available:true,notes:[sample('one',today,'Pediatra — zabrać książeczkę','red','10:30'),sample('two','2026-11-19','USC — odbiór aktu','green','09:00'),sample('three','2026-11-20','Szczepienie — zapytać o termin','yellow'),sample('four','2026-11-30','Wizyta kontrolna','orange')]};
-test('calendar note CRUD preserves full text, dates, optional time and all four colors',()=>{
+test('calendar note CRUD preserves full text, dates, optional time and all five colors',()=>{
   const storage=memory();let id=0;const store=createNotesStore({getStorage:()=>storage,clock:()=>today+'T12:00:00Z',makeId:()=>String(++id)});
   for(const color of Object.keys(NOTE_COLORS)){const note=store.upsert({date:today,color,text:'Tekst\n'+color,time:'14:25'});assert.equal(note.color,color);assert.match(pinSvg(color),/viewBox="0 0 48 60"/);}
-  assert.equal(store.list().length,4);const first=store.list()[0];
+  assert.equal(store.list().length,5);const first=store.list()[0];
   const edited=store.upsert({...first,date:'2026-12-01',time:'',text:'ą'.repeat(3000)});
   assert.equal(edited.id,first.id);assert.equal(edited.createdAt,first.createdAt);assert.equal(store.list().at(-1).text.length,3000);
-  store.remove(first.id);assert.equal(store.list().length,3);assert.throws(()=>store.upsert({...edited,text:'Nie przywracaj usuniętego wpisu'}),/usunięta/);
-  assert.equal(createNotesStore({getStorage:()=>storage}).list().length,3);
+  store.remove(first.id);assert.equal(store.list().length,4);assert.throws(()=>store.upsert({...edited,text:'Nie przywracaj usuniętego wpisu'}),/usunięta/);
+  assert.equal(createNotesStore({getStorage:()=>storage}).list().length,4);
 });
 test('invalid notes, corruption and quota failures cannot erase prior data',()=>{
   const storage=memory(),store=createNotesStore({getStorage:()=>storage,makeId:()=> 'safe'});
   const first=store.upsert({date:today,text:'Wizyta',color:'red'}),raw=storage.getItem(NOTES_KEY);
-  for(const values of [{date:'2026-02-30'},{time:'25:00'},{text:''},{text:'a'.repeat(3001)},{color:'blue'}])assert.throws(()=>store.upsert({...first,...values}));
+  for(const values of [{date:'2026-02-30'},{time:'25:00'},{text:''},{text:'a'.repeat(3001)},{color:'purple'}])assert.throws(()=>store.upsert({...first,...values}));
   assert.equal(storage.getItem(NOTES_KEY),raw);
   storage.setItem=()=>{throw new Error('Quota');};assert.throws(()=>store.remove(first.id),/zapisać/);assert.equal(storage.getItem(NOTES_KEY),raw);
   const broken=createNotesStore({getStorage:()=>({getItem:()=>'{broken',setItem:()=>assert.fail('must not overwrite')})});assert.equal(broken.snapshot().available,false);assert.throws(()=>broken.upsert(first));
@@ -33,6 +33,9 @@ test('local note answers support dates, relative days, topic, colors and note fo
     const result=localNotesAnswer(question,snapshot,options);assert.equal(result.notes.length,1,question);assert.equal(result.notes[0].id,id,question);
   }
   assert.equal(localNotesAnswer('A jutro?',snapshot,{...options,history:[{role:'user',content:'Jakie mam notatki w kalendarzu?'}]}).notes[0].id,'two');
+  const blue={available:true,notes:[...snapshot.notes,sample('blue-note',today,'Wizyta u położnej','blue')]};
+  assert.equal(localNotesAnswer('Pokaż niebieskie szpilki',blue,options).notes[0].id,'blue-note');
+  assert.equal(localNotesAnswer('A niebieskie?',blue,{...options,history:[{role:'user',content:'Pokaż moje notatki'}]}).notes[0].color,'blue');
   const week=selectChatNotes('Pokaż notatki w tym tygodniu',snapshot,options);assert.equal(week.matched,3);
   assert.match(localNotesAnswer('Jakie mam notatki?',{available:false,notes:[]},options).answer,/Nie mogę teraz odczytać/);
   assert.match(localNotesAnswer('Jakie mam notatki?',{available:true,notes:[]},options).answer,/Nie masz jeszcze notatek/);

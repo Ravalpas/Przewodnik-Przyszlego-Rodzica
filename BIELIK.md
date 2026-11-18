@@ -67,7 +67,7 @@ Asystent nie ma narzędzi do zmiany profilu lub wykonania formalności. Może ot
 
 ## Osobiste notatki w kalendarzu
 
-Notatki są zapisane w tej przeglądarce pod kluczem `ppm-calendar-notes-v1`, do 500 wpisów po 3000 znaków. Każdy wpis ma datę, opcjonalną godzinę, treść i kolor szpilki (czerwony, zielony, żółty, pomarańczowy). W dniu można dodać kilka wpisów. Notatki są na początku informacji dnia; można je otwierać, edytować, przenieść na inną datę i usunąć po potwierdzeniu. Nie są synchronizowane między urządzeniami ani przechowywane w bazie serwera.
+Notatki są zapisane w tej przeglądarce pod kluczem `ppm-calendar-notes-v1`, do 500 wpisów po 3000 znaków. Każdy wpis ma datę, opcjonalną godzinę, treść i kolor szpilki (czerwony, zielony, żółty, pomarańczowy, niebieski). W dniu można dodać kilka wpisów. Notatki są na początku informacji dnia; można je otwierać, edytować, przenieść na inną datę i usunąć po potwierdzeniu. Nie są synchronizowane między urządzeniami ani przechowywane w bazie serwera.
 
 Bielik odczytuje bieżące notatki na moment każdego pytania. Proste odczyty, wyszukiwanie według daty, treści lub koloru działają lokalnie bez zapytania do modelu. Takie pary wiadomości pozostają poza historią wysyłaną później do modelu. Z odpowiedzi można otworzyć aktualny wpis; historyczna treść rozmowy jest zapisem stanu z chwili pytania.
 

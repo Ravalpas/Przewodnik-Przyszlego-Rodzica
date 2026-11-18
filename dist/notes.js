@@ -6,7 +6,8 @@ export const NOTE_COLORS={
   red:{label:'Czerwona',name:'czerwona',base:'#ef6b77',dark:'#ca465c',light:'#ffb2b9'},
   green:{label:'Zielona',name:'zielona',base:'#70c77c',dark:'#429c65',light:'#b9e7b8'},
   yellow:{label:'Żółta',name:'żółta',base:'#f2cc55',dark:'#cf9b35',light:'#fff0a5'},
-  orange:{label:'Pomarańczowa',name:'pomarańczowa',base:'#f3a15e',dark:'#d47b3e',light:'#ffd0a2'}
+  orange:{label:'Pomarańczowa',name:'pomarańczowa',base:'#f3a15e',dark:'#d47b3e',light:'#ffd0a2'},
+  blue:{label:'Niebieska',name:'niebieska',base:'#6aa8eb',dark:'#3976bc',light:'#bedfff'}
 };
 const noteId=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 export function validateNote(value) {
