@@ -52,7 +52,7 @@ export async function fabrykaCompletion(config,messages,{fetcher=fetch,signal}={
     // A refusal has no model-written text or citations to display. Some model
     // responses omit these otherwise required fields on this path.
     if(data.kind==='out_of_scope')return {data:{kind:'out_of_scope',answer:'',source_ids:[]},model:config.model,usage:null};
-    if(!['source','profile','clarification','no_evidence'].includes(data.kind)||typeof data.answer!=='string'||!Array.isArray(data.source_ids))throw new Error();
+    if(!['source','profile','practical','clarification','no_evidence'].includes(data.kind)||typeof data.answer!=='string'||!Array.isArray(data.source_ids))throw new Error();
     return {data,model:config.model,usage:payload.usage?{prompt_tokens:payload.usage.prompt_tokens,completion_tokens:payload.usage.completion_tokens}:null};
   } catch {
     throw new BielikError('Model nie zwrócił kompletnej odpowiedzi. Spróbuj ponownie.',502,'invalid_response');

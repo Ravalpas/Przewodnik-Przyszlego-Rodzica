@@ -53,7 +53,7 @@ test('out-of-scope questions and role changes are refused; indirect parenting qu
     assert.equal(clearlyOutsideScope(question),true);const result=await service.answer({message:question});assert.equal(result.answer,BIELIK_REFUSAL);
   }
   assert.equal(calls,0);assert.equal(clearlyOutsideScope('Jestem w ciąży, czy mogę pracować w nocy?'),false);
-  const result=await service.answer({message:'Jakie filmy polecasz?',profile});assert.equal(result.kind,'out_of_scope');assert.equal(result.answer,BIELIK_REFUSAL);assert.equal(calls,1);
+  const result=await service.answer({message:'Jakie filmy polecasz?',profile});assert.equal(result.kind,'out_of_scope');assert.equal(result.answer,BIELIK_REFUSAL);assert.equal(calls,0);
 });
 
 test('one system message, fresh app status, official passages, validated citations and no model URLs',async()=>{

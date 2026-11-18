@@ -33,6 +33,24 @@ Połączenie używa `redirect: manual` i odrzuca odpowiedzi 3xx bez wykonywania 
 
 ## Zakres i kontekst
 
+Ogólne zasady są wspólne dla frontendu i backendu: `dist/chat-policy.js`. Ten moduł określa kategorie i hierarchię decyzji, a jego instrukcje są włączane do komunikatu systemowego Bielika. `dist/chat-personal.js` odczytuje dozwolone pola według schematu; nie porównuje pytań z jednym konkretnym zdaniem.
+
+| Rodzaj pytania | Zasada odpowiedzi |
+| --- | --- |
+| Dane dziecka, ciąży i oznaczenia w aplikacji | Odczyt aktualnego profilu lub listy spraw. Bez wymagania źródła urzędowego i bez zgadywania brakujących wartości. |
+| Brak części danych | Odpowiedź na znaną część i wskazanie, czego brakuje. Brak danych nie oznacza obcego tematu. |
+| Codzienna organizacja, wsparcie, przygotowanie pytań do specjalisty | Pomoc praktyczna, bez przedstawiania niesprawdzonych twierdzeń medycznych lub prawnych. |
+| Warunki świadczeń, formalności, kwoty, terminy i zalecenia medyczne | Fakty wyłącznie z dostępnych oficjalnych materiałów. Brak dowodu oznacza wyjaśnienie ograniczenia i drogę sprawdzenia, nie odmowę z powodu tematu. |
+| Pytanie uzupełniające | Uwzględnienie ostatnich wypowiedzi i aktualnych danych. Nowy, wyraźnie obcy temat nie dziedziczy automatycznie zakresu rodzicielskiego. |
+| Pytanie mieszane | Obsługa części rodzicielskiej, z osobnym ograniczeniem pozostałej części. Dane osobiste można dołączyć lokalnie, bez przekazywania ich do modelu. |
+| Prośba o zmianę danych | Pomoc w znalezieniu ustawień. Asystent nie udaje wykonania zmiany i nie zapisuje jej samodzielnie. |
+| Niejasne pytanie | Doprecyzowanie zamiast automatycznej odmowy. |
+| Rzeczywiście obcy temat lub ujawnienie sekretów | Uprzejma odmowa lub pominięcie niedozwolonej części. Samo słowo „dziecko” nie uprawnia do wykonywania obcego zadania. |
+
+Backend sprawdza również rodzaj zwróconej odpowiedzi. Błędna klasyfikacja modelu jako `out_of_scope` dla rozpoznanego pytania rodzicielskiego nie jest przekazywana jako taka odmowa; odpowiedź wraca do danych profilu, doprecyzowania lub informacji o potrzebie potwierdzenia. Odpowiedź praktyczna nie może zastępować wymaganych źródeł dla twierdzeń medycznych i prawnych. Nie wymaga to dodatkowego zapytania do modelu.
+
+Pytania mieszane zachowują historię części obsłużonej przez AI, a lokalne dane osobiste pozostają poza nią, również po zapisaniu i ponownym otwarciu rozmowy. Źródła do dalszego sprawdzenia mają inną etykietę niż materiały użyte do potwierdzonej odpowiedzi.
+
 Asystent służy do tematów bezpośrednio lub pośrednio związanych z ciążą, połogiem, rodzicielstwem i początkowym etapem życia dziecka, także po pierwszych urodzinach. Pierwszy rok pozostaje obecnym zakresem mapy i katalogu, a nie granicą tematyki czatu. Reguły serwera blokują oczywiste obce tematy i próby zmiany roli; model dodatkowo klasyfikuje zakres pytania. Odpowiedź `out_of_scope` jest zastępowana stałą odmową z przekierowaniem do rodzicielstwa. Brak materiału źródłowego nie oznacza, że pytanie o dziecko jest spoza zakresu.
 
 Proste pytania o imię i wiek dziecka obsługuje lokalnie moduł `dist/chat-personal.js`, z aktualnych danych profilu. Nie wymagają źródła urzędowego ani wywołania modelu. Odpowiedzi te i ich pytania nie są włączane do późniejszej historii wysyłanej do AI, więc imię lub nazwisko z profilu nie trafia tam pośrednio. Wiek jest liczony kalendarzowo, z prawidłową odmianą dni, tygodni, miesięcy i lat. Brak imienia jest wyjaśniany bez odmowy podania dostępnego wieku.

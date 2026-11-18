@@ -1,5 +1,6 @@
 import {renderBielikChat} from './chat-view.js';
 import {personalProfileAnswer,chatSuggestions} from './chat-personal.js';
+import {assessChatRequest} from './chat-policy.js';
 import {CHAT_MESSAGE_LIMIT,newConversation,readChatArchive,saveChatConversation,selectChatConversation,deleteChatConversation} from './chat-storage.js';
 export {doctorPortrait,chatIcon} from './chat-view.js';
 
@@ -10,7 +11,7 @@ export function chatProfileForRequest(profile) {
   return {mode:profile.mode,anchor:profile.anchor,dueDate:profile.dueDate,pregnancyStart:profile.pregnancyStart,dates,completedTasks:profile.completedTasks||[],notApplicableTasks:profile.notApplicableTasks||[]};
 }
 
-export function createBielikChat({getProfile,openTask,onBack,getStorage=()=>globalThis.localStorage}) {
+export function createBielikChat({getProfile,openTask,onBack,getTasks=()=>null,getStorage=()=>globalThis.localStorage}) {
   let root=null,current=newConversation(),pending=false,error='',notice='',historyOpen=false;
   let archive={version:1,activeId:null,conversations:[]};
   try {
@@ -91,20 +92,23 @@ export function createBielikChat({getProfile,openTask,onBack,getStorage=()=>glob
     const question=current.draft.trim();if(!question||pending)return;
     if(current.messages.length>CHAT_MESSAGE_LIMIT-2){error='Ta rozmowa osiągnęła limit 100 wiadomości. Zapisz ją i rozpocznij nową rozmowę.';draw();return;}
     error='';notice='';
-    const local=personalProfileAnswer(question,getProfile());
+    const assessment=assessChatRequest(question,{history:current.messages});
+    const localOptions={assessment,history:current.messages,tasks:getTasks()};
+    const local=personalProfileAnswer(question,getProfile(),undefined,localOptions);
     if(local) {
-      current.messages.push({role:'user',content:question,local:true},{role:'assistant',content:local.answer,sources:[],tasks:[],local:true});
+      current.messages.push({role:'user',content:question,local:true},{role:'assistant',kind:'profile',content:local.answer,sources:local.sources||[],tasks:local.tasks||[],local:true});
       current.draft='';persistIfSaved();draw();return;
     }
-    const history=current.messages.filter(m=>!m.local).slice(-8).map(m=>({role:m.role,content:m.content.slice(0,3000)}));
+    const personalPart=personalProfileAnswer(question,getProfile(),undefined,{...localOptions,includeMixed:true});
+    const history=current.messages.filter(m=>!m.local).slice(-8).map(m=>({role:m.role,content:(m.inferenceContent??m.content).slice(0,3000)}));
     pending=true;current.draft='';current.messages.push({role:'user',content:question});draw();
     let completed=false;
     try {
-      const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(70000),body:JSON.stringify({message:question,history,profile:chatProfileForRequest(getProfile())})});
+      const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(70000),body:JSON.stringify({message:question,history,profile:chatProfileForRequest(getProfile()),handledProfileFields:personalPart?.fields||[]})});
       let data;try{data=await response.json();}catch{throw new Error('Nie udało się odczytać odpowiedzi. Spróbuj ponownie.');}
       if(!response.ok)throw new Error(data.error||'Czat jest chwilowo niedostępny. Spróbuj ponownie.');
       if(typeof data.answer!=='string')throw new Error('Nie udało się odczytać odpowiedzi.');
-      current.messages.push({role:'assistant',content:data.answer,sources:Array.isArray(data.sources)?data.sources:[],tasks:Array.isArray(data.tasks)?data.tasks:[]});completed=true;
+      current.messages.push({role:'assistant',kind:data.kind,content:personalPart?personalPart.answer+'\n\n'+data.answer:data.answer,inferenceContent:personalPart?data.answer:undefined,sources:Array.isArray(data.sources)?data.sources:[],tasks:Array.isArray(data.tasks)?data.tasks:[]});completed=true;
     }catch(e){
       current.messages.pop();current.draft=question;error=['TimeoutError','AbortError'].includes(e.name)?'Odpowiedź trwa zbyt długo. Spróbuj ponownie.':e.message;
     }finally{

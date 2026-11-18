@@ -29,7 +29,7 @@ let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday 
 let activeTab='map';
 let updateJourneyLayout=()=>{};
 const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify});
-const bielikChat=createBielikChat({getProfile:()=>profile,openTask:id=>planner.openEvent(id),onBack:showMap});
+const bielikChat=createBielikChat({getProfile:()=>profile,getTasks:()=>planner.events(),openTask:id=>planner.openEvent(id),onBack:showMap});
 planner.setOnChange(()=>{if(profile)renderJourney(false);});
 const sessionStartedAt=new Date().toISOString();
 try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }

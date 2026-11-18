@@ -28,7 +28,7 @@ try{
     await page.screenshot({path:`artifacts/doctor-chat-empty-${size.width}.png`});
   }
   await page.setViewportSize({width:390,height:844});
-  await page.locator('#chat-input').fill('Co zostało do zrobienia?');await page.locator('#chat-send').click();await page.locator('.chat-message-assistant').waitFor();
+  await page.locator('#chat-input').fill('Gdzie zgłosić dziecko do ubezpieczenia?');await page.locator('#chat-send').click();await page.locator('.chat-message-assistant').waitFor();
   assert.equal(requests.length,1);assert.ok(requests[0].profile.completedTasks.includes('usc'));assert.ok(requests[0].profile.notApplicableTasks.includes('krus-benefit'));assert.ok(!JSON.stringify(requests[0]).includes('Kowalska'));assert.ok(!('gender' in requests[0].profile));
   assert.ok((await page.locator('.chat-answer').last().textContent()).includes('<img'));assert.equal(await page.locator('img[onerror]').count(),0);assert.equal(await page.evaluate(()=>window.pwned),undefined);
   assert.match(await page.locator('.chat-source').getAttribute('href'),/#:~:text=PESEL/);
@@ -36,7 +36,7 @@ try{
   await page.locator('.chat-task').click();await page.locator('#event-done').click();await page.locator('#close-sheet').click();
   assert.equal(await page.locator('#nav-chat').getAttribute('aria-current'),'page');assert.equal(await page.locator('.chat-message-assistant').count(),1);
   await page.locator('#nav-map').click();assert.equal(await page.locator('.journey-summary').isVisible(),true);await page.locator('#nav-calendar').click();assert.equal(await page.locator('.journey-summary').isVisible(),false);await page.locator('#nav-chat').click();assert.equal(await page.locator('.chat-message-assistant').count(),1);
-  await page.locator('#chat-input').fill('Czy moje oznaczenie ubezpieczenia już widać?');await page.locator('#chat-input').press('Enter');await page.locator('.chat-message-assistant').nth(1).waitFor();assert.ok(requests[1].profile.completedTasks.includes('insurance'));assert.equal(requests[1].history.length,2);
+  await page.locator('#chat-input').fill('Czy po zmianie pracy muszę ponownie zgłosić dziecko do ubezpieczenia?');await page.locator('#chat-input').press('Enter');await page.locator('.chat-message-assistant').nth(1).waitFor();assert.ok(requests[1].profile.completedTasks.includes('insurance'));assert.equal(requests[1].history.length,2);
   await page.locator('#chat-new').click();assert.equal(await page.locator('.chat-message').count(),0);
   fail=true;await page.locator('#chat-input').fill('Co z becikowym?');await page.locator('#chat-send').click();await page.getByRole('alert').filter({hasText:'Limit zapytań'}).waitFor();assert.equal(await page.locator('#chat-input').inputValue(),'Co z becikowym?');assert.equal(await page.locator('.chat-message-user').count(),0);
   fail=false;hold=new Promise(resolve=>{release=resolve;});await page.locator('#chat-send').click();await page.locator('.chat-thinking').waitFor();await page.locator('#nav-map').click();release();hold=null;await page.waitForResponse(response=>response.url().endsWith('/api/chat'));await page.locator('#nav-chat').click();await page.locator('.chat-message-assistant').waitFor();

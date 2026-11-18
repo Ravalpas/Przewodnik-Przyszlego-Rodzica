@@ -10,8 +10,8 @@ export function newConversation(now=new Date().toISOString()) {
 function storedConversation(value) {
   if(!value||typeof value.id!=='string'||!/^[a-zA-Z0-9_-]{1,80}$/.test(value.id)||!validDate(value.createdAt)||!validDate(value.updatedAt)||!Array.isArray(value.messages)||value.messages.length>CHAT_MESSAGE_LIMIT)throw new Error('Nieprawidłowy zapis rozmowy.');
   const messages=value.messages.map(message=>{
-    if(!['user','assistant'].includes(message?.role)||typeof message.content!=='string'||message.content.length>6500)throw new Error('Nieprawidłowy zapis wiadomości.');
-    return {role:message.role,content:message.content,local:message.local===true,
+    if(!['user','assistant'].includes(message?.role)||typeof message.content!=='string'||message.content.length>10000)throw new Error('Nieprawidłowy zapis wiadomości.');
+    return {role:message.role,content:message.content,local:message.local===true,kind:shortText(message.kind,30),inferenceContent:typeof message.inferenceContent==='string'?message.inferenceContent.slice(0,6500):undefined,
       sources:(Array.isArray(message.sources)?message.sources:[]).slice(0,5).map(s=>({id:shortText(s?.id,60),name:shortText(s?.name,200),url:shortText(s?.url,2000),status:shortText(s?.status,30)})),
       tasks:(Array.isArray(message.tasks)?message.tasks:[]).slice(0,3).map(t=>({id:shortText(t?.id,60),title:shortText(t?.title,200),status:shortText(t?.status,30),period:shortText(t?.period,250)}))};
   });
