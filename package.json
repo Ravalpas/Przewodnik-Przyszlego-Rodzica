@@ -8,6 +8,6 @@
     "test:bielik": "node scripts/test-bielik.mjs",
     "check:secrets": "node scripts/check-secrets.mjs",
     "test": "node --test --test-isolation=none tests/*.test.mjs",
-    "check": "node --check dist/app.js && node --check dist/age.js && node --check dist/polish.js && node --check dist/profile.js && node --check dist/planner.js && node --check dist/timeline.js && node --check dist/event-policy.js && node --check dist/chat.js && node --check backend/monitor.mjs && node --check backend/api.mjs && node --check backend/bielik.mjs && node --check backend/fabryka.mjs && node --check backend/environment.mjs && node --check server.mjs && node --check worker/index.mjs"
+    "check": "node --check dist/app.js && node --check dist/age.js && node --check dist/polish.js && node --check dist/profile.js && node --check dist/planner.js && node --check dist/timeline.js && node --check dist/event-policy.js && node --check dist/chat.js && node --check dist/chat-view.js && node --check dist/chat-personal.js && node --check dist/chat-storage.js && node --check backend/monitor.mjs && node --check backend/api.mjs && node --check backend/bielik.mjs && node --check backend/fabryka.mjs && node --check backend/environment.mjs && node --check server.mjs && node --check worker/index.mjs"
   }
 }

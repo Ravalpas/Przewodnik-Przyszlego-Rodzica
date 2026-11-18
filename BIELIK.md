@@ -27,16 +27,23 @@ Połączenie używa `redirect: manual` i odrzuca odpowiedzi 3xx bez wykonywania 
 
 - Okrągły portret lekarza nad przyciskiem „Mój tydzień”.
 - Zakładka „Doktor Bielik” między kalendarzem i profilem.
-- Czat zachowuje rozmowę podczas przechodzenia między zakładkami; można ją wyczyścić. Odświeżenie strony usuwa rozmowę z pamięci karty.
+- „Zapisz rozmowę” utrwala konwersację w tej przeglądarce. „Nowa rozmowa” zapisuje bieżącą przed rozpoczęciem kolejnej. Do zapisanych konwersacji można wrócić przyciskiem „Rozmowy” w nagłówku.
+- Zapisana rozmowa jest aktualizowana przy kolejnych odpowiedziach i odtwarzana po odświeżeniu strony. Niezapisana rozmowa pozostaje w pamięci karty. Archiwum nie jest synchronizowane między urządzeniami.
 - Linki do oficjalnych fragmentów i przyciski otwierające istniejące karty spraw.
 
 ## Zakres i kontekst
 
-Asystent służy do tematów bezpośrednio lub pośrednio związanych z ciążą, połogiem, rodzicielstwem i pierwszym rokiem życia. Reguły serwera blokują oczywiste obce tematy i próby zmiany roli; model dodatkowo klasyfikuje zakres pytania. Odpowiedź `out_of_scope` jest zastępowana stałą odmową z przekierowaniem do rodzicielstwa.
+Asystent służy do tematów bezpośrednio lub pośrednio związanych z ciążą, połogiem, rodzicielstwem i początkowym etapem życia dziecka, także po pierwszych urodzinach. Pierwszy rok pozostaje obecnym zakresem mapy i katalogu, a nie granicą tematyki czatu. Reguły serwera blokują oczywiste obce tematy i próby zmiany roli; model dodatkowo klasyfikuje zakres pytania. Odpowiedź `out_of_scope` jest zastępowana stałą odmową z przekierowaniem do rodzicielstwa. Brak materiału źródłowego nie oznacza, że pytanie o dziecko jest spoza zakresu.
+
+Proste pytania o imię i wiek dziecka obsługuje lokalnie moduł `dist/chat-personal.js`, z aktualnych danych profilu. Nie wymagają źródła urzędowego ani wywołania modelu. Odpowiedzi te i ich pytania nie są włączane do późniejszej historii wysyłanej do AI, więc imię lub nazwisko z profilu nie trafia tam pośrednio. Wiek jest liczony kalendarzowo, z prawidłową odmianą dni, tygodni, miesięcy i lat. Brak imienia jest wyjaśniany bez odmowy podania dostępnego wieku.
+
+Sugerowane pytania są wybierane lokalnie na podstawie etapu: początek i środek ciąży, jej późny okres i okres przed porodem, noworodek, kolejne miesiące niemowlęce oraz starsze małe dziecko. Nie ma dodatkowych zapytań do AI w celu generowania podpowiedzi.
 
 Każde pytanie zawiera aktualny kontekst, zbudowany na serwerze z dozwolonych pól. Wiek i terminy liczone są tymi samymi funkcjami co w aplikacji; data odniesienia pochodzi ze strefy Europe/Warsaw. Statusy rozróżniają wykonanie, „Nie dotyczy”, sprawę otwartą, przyszły okres, okres miniony i brak daty. Status zadeklarowany w aplikacji nie jest potwierdzeniem urzędowym.
 
-Frontend nie przekazuje imienia, nazwiska, płci, godziny porodu ani pozostałej zawartości przeglądarki. Do Fabryki AI trafia pytanie, ograniczona historia, wiek, daty potrzebne do terminów, oznaczenia spraw i wybrane materiały publiczne. Wpisana przez użytkownika treść rozmowy również trafia do modelu. Aplikacja nie zapisuje rozmów w bazie ani w logach.
+Frontend nie przekazuje imienia, nazwiska, płci, godziny porodu ani pozostałej zawartości przeglądarki jako danych profilu. Do Fabryki AI trafia pytanie wymagające modelu, ograniczona historia bez lokalnych odpowiedzi osobistych, wiek, daty potrzebne do terminów, oznaczenia spraw i wybrane materiały publiczne. Treść wpisana przez użytkownika w pozostałych pytaniach również trafia do modelu. Aplikacja nie zapisuje rozmów w bazie serwera ani w logach. Archiwum rozmów jest lokalne (`ppm-bielik-conversations-v1`) i przechowuje również wiadomości osobiste widoczne w zapisanej rozmowie.
+
+Archiwum mieści do 30 rozmów, po 100 wiadomości każda. Nie usuwa starszych zapisów automatycznie. Można usuwać wybrane konwersacje z listy. Błąd zapisu lub brak miejsca zatrzymuje rozpoczęcie nowej rozmowy, zachowując otwartą treść. Testy odtwarzania, limitów, odmiany wieku oraz interfejsu działają bez prawdziwych zapytań do dostawcy.
 
 Asystent nie ma narzędzi do zmiany profilu lub wykonania formalności. Może otworzyć kartę, na której rodzic sam zaznaczy wykonanie. Jest oznaczony jako asystent AI; nie diagnozuje ani nie ustala dawek leków.
 
