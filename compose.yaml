@@ -4,6 +4,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - ./backend/.env
     environment:
       TZ: Europe/Warsaw
       PPM_STARTUP_CHECK: "1"

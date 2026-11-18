@@ -1,15 +1,17 @@
 import { createMonitor } from '../backend/monitor.mjs';
 import { handleApi } from '../backend/api.mjs';
 import { d1Store } from '../backend/d1-store.mjs';
+import {createBielik} from '../backend/bielik.mjs';
 // The build embeds the approved catalog, backend modules and existing static assets.
-let deployedMonitor;
+let deployedMonitor,deployedBielik;
 export default {
   async fetch(request,env) {
     const url=new URL(request.url);
     if(url.pathname.startsWith('/api/')) {
       if(!env.DB)return Response.json({error:'Baza źródeł jest niedostępna.'},{status:503});
       deployedMonitor??=createMonitor({catalog:CATALOG,store:d1Store(env.DB)});
-      return handleApi(request,deployedMonitor);
+      deployedBielik??=createBielik({monitor:deployedMonitor,env});
+      return handleApi(request,deployedMonitor,{bielik:deployedBielik,clientKey:request.headers.get('oai-authenticated-user-email')||request.headers.get('CF-Connecting-IP')||'private'});
     }
     if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});
     let path;try{path=decodeURIComponent(url.pathname);}catch{return new Response('Bad request',{status:400});}

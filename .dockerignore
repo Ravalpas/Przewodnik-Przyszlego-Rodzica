@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+**/.env
+**/.env.*
+node_modules
+.data
+artifacts
+.sites-runtime
+.sites-checkout
+dist/server
+dist/.openai
+*.log

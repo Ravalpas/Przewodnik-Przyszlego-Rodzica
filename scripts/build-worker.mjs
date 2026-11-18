@@ -4,7 +4,8 @@ const root=resolve(import.meta.dirname,'..'),types={'.html':'text/html; charset=
 const assets={};
 async function collect(dir,prefix=''){
   for(const item of await readdir(dir,{withFileTypes:true})){
-    if(['server','.openai'].includes(item.name))continue;
+    if(item.name.startsWith('.')||item.name==='server')continue;
+    if(item.isSymbolicLink())throw new Error('Dowiązania nie mogą trafiać do paczki aplikacji.');
     const name=`${prefix}/${item.name}`,file=resolve(dir,item.name);
     if(item.isDirectory())await collect(file,name);else assets[name]={type:types[extname(item.name)]||'application/octet-stream',data:(await readFile(file)).toString('base64')};
   }
@@ -12,9 +13,9 @@ async function collect(dir,prefix=''){
 await collect(resolve(root,'dist'));
 const catalog=await readFile(resolve(root,'dist/data/catalog.json'),'utf8');
 let code=`const CATALOG=${catalog};\nconst ASSETS=${JSON.stringify(assets)};\n`;
-for(const name of ['backend/monitor.mjs','backend/d1-store.mjs','backend/api.mjs','worker/index.mjs']){
+for(const name of ['dist/polish.js','dist/age.js','dist/event-policy.js','dist/timeline.js','backend/monitor.mjs','backend/d1-store.mjs','backend/fabryka.mjs','backend/bielik.mjs','backend/api.mjs','worker/index.mjs']){
   const source=await readFile(resolve(root,name),'utf8');
-  code+='\n'+source.replace(/^import .*;\r?\n/gm,'').replace(/^export (async function|function|const) /gm,'$1 ');
+  code+='\n'+source.replace(/^import .*;\r?\n/gm,'').replace(/^export (async function|function|const|class) /gm,'$1 ');
 }
 await mkdir(resolve(root,'dist/server'),{recursive:true});await writeFile(resolve(root,'dist/server/index.js'),code);
 await mkdir(resolve(root,'dist/.openai'),{recursive:true});await writeFile(resolve(root,'dist/.openai/hosting.json'),await readFile(resolve(root,'.openai/hosting.json')));

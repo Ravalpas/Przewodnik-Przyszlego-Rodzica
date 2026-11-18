@@ -8,3 +8,5 @@ artifacts/
 dist/server/
 dist/.openai/
 .env
+.env.*
+!.env.example

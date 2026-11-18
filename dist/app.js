@@ -4,6 +4,7 @@ import { resetForFreshStart } from './reset.js';
 import { avatar, genderLabel } from './avatars.js';
 import { createPlanner,refreshIcon } from './planner.js';
 import { ageUnitLabel, pluralWord, quantity, ordinal } from './polish.js';
+import {createBielikChat,doctorPortrait,chatIcon} from './chat.js';
 
 const app = document.querySelector('#app');
 const sheet = document.querySelector('#sheet');
@@ -28,6 +29,7 @@ let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday 
 let activeTab='map';
 let updateJourneyLayout=()=>{};
 const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify});
+const bielikChat=createBielikChat({getProfile:()=>profile,openTask:id=>planner.openEvent(id),onBack:showMap});
 planner.setOnChange(()=>{if(profile)renderJourney(false);});
 const sessionStartedAt=new Date().toISOString();
 try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }
@@ -95,8 +97,10 @@ function renderJourney(center=true) {
   const settings=app.querySelector('#edit-top');settings.before(topActions);topActions.append(refreshButton,settings);
   const calendarButton=document.createElement('button');calendarButton.className='nav-item';calendarButton.id='nav-calendar';calendarButton.innerHTML=`<span class="nav-icon">${icon('calendar')}</span>Kalendarz`;
   app.querySelector('#nav-today').after(calendarButton);calendarButton.addEventListener('click',showCalendar);
+  const chatButton=document.createElement('button');chatButton.className='nav-item';chatButton.id='nav-chat';chatButton.innerHTML=`<span class="nav-icon">${chatIcon()}</span>Doktor Bielik`;calendarButton.after(chatButton);chatButton.addEventListener('click',showChat);
+  const doctorButton=document.createElement('button');doctorButton.id='doctor-launcher';doctorButton.className='doctor-launcher';doctorButton.setAttribute('aria-label','Otwórz czat z Doktorem Bielikiem');doctorButton.title='Doktor Bielik · asystent AI';doctorButton.innerHTML=doctorPortrait();app.querySelector('.bottom-nav').before(doctorButton);doctorButton.addEventListener('click',showChat);
   app.querySelector('#nav-profile').addEventListener('click',openProfile);
-  app.querySelector('#nav-map').addEventListener('click',()=>{activeTab='map';app.querySelector('#map-scroll').hidden=false;app.querySelector('#calendar-view')?.remove();app.querySelector('#recenter').hidden=false;updateNav();centerCurrent(true);});
+  app.querySelector('#nav-map').addEventListener('click',showMap);
   app.querySelector('#nav-today').addEventListener('click',()=>openStage(Math.min(age.stage,total),beyond));
   app.querySelector('#recenter').addEventListener('click',()=>centerCurrent(true));
   app.querySelector('#birth-tail')?.addEventListener('click',openBirth);
@@ -108,16 +112,21 @@ function renderJourney(center=true) {
     const scroll=app.querySelector('#map-scroll');scroll.style.top=`${app.querySelector('.app-header').offsetHeight}px`;
     const bottom=app.querySelector('.bottom-nav').offsetHeight;scroll.style.bottom=`${bottom}px`;app.querySelector('#recenter').style.bottom=`${bottom+16}px`;
     const calendar=app.querySelector('#calendar-view');if(calendar){calendar.style.top=scroll.style.top;calendar.style.bottom=scroll.style.bottom;}
+    const chatView=app.querySelector('#chat-view');if(chatView){chatView.style.top=scroll.style.top;chatView.style.bottom=scroll.style.bottom;}
+    const doctor=app.querySelector('#doctor-launcher');doctor.hidden=activeTab!=='map';doctor.style.bottom=`${bottom+30+app.querySelector('#recenter').offsetHeight}px`;
     app.querySelector('.map-lead').style.paddingTop='20px';
     app.querySelector('.map-canvas').style.setProperty('--map-top-trim',`${(mode==='child'?330:0)*app.clientWidth/map.width}px`);
   };
   updateJourneyLayout=layout;
   layout();
   resizeObserver=new ResizeObserver(()=>{layout();});resizeObserver.observe(app);
-  if(activeTab==='calendar')showCalendar();else if(center)requestAnimationFrame(()=>centerCurrent());
+  if(activeTab==='chat')showChat();else if(activeTab==='calendar')showCalendar();else if(center)requestAnimationFrame(()=>centerCurrent());
 }
-function updateNav(){const calendar=activeTab==='calendar';app.querySelector('.journey-summary').hidden=calendar;app.classList.toggle('calendar-active',calendar);for(const id of ['nav-map','nav-calendar']){const b=app.querySelector('#'+id),selected=id===(calendar?'nav-calendar':'nav-map');b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}updateJourneyLayout();}
-function showCalendar(){activeTab='calendar';app.querySelector('#map-scroll').hidden=true;app.querySelector('#recenter').hidden=true;let view=app.querySelector('#calendar-view');if(!view){view=document.createElement('main');view.id='calendar-view';view.className='calendar-view';view.setAttribute('aria-label','Kalendarz rodzica');app.querySelector('.bottom-nav').before(view);}view.style.top=app.querySelector('#map-scroll').style.top;view.style.bottom=app.querySelector('#map-scroll').style.bottom;view.innerHTML=planner.calendarHtml();planner.bindCalendar(view);updateNav();}
+function updateNav(){app.querySelector('.journey-summary').hidden=activeTab!=='map';app.classList.toggle('calendar-active',activeTab==='calendar');app.classList.toggle('chat-active',activeTab==='chat');app.style.height=activeTab==='chat'&&window.visualViewport?`${Math.round(window.visualViewport.height)}px`:'';for(const id of ['nav-map','nav-calendar','nav-chat']){const b=app.querySelector('#'+id),selected=id===`nav-${activeTab}`;b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}updateJourneyLayout();}
+function showMap(){activeTab='map';app.querySelector('#map-scroll').hidden=false;app.querySelector('#calendar-view')?.remove();app.querySelector('#chat-view')?.remove();app.querySelector('#recenter').hidden=false;updateNav();centerCurrent(true);}
+function showCalendar(){activeTab='calendar';app.querySelector('#chat-view')?.remove();app.querySelector('#map-scroll').hidden=true;app.querySelector('#recenter').hidden=true;let view=app.querySelector('#calendar-view');if(!view){view=document.createElement('main');view.id='calendar-view';view.className='calendar-view';view.setAttribute('aria-label','Kalendarz rodzica');app.querySelector('.bottom-nav').before(view);}view.style.top=app.querySelector('#map-scroll').style.top;view.style.bottom=app.querySelector('#map-scroll').style.bottom;view.innerHTML=planner.calendarHtml();planner.bindCalendar(view);updateNav();}
+function showChat(){activeTab='chat';app.querySelector('#calendar-view')?.remove();app.querySelector('#map-scroll').hidden=true;app.querySelector('#recenter').hidden=true;let view=app.querySelector('#chat-view');if(!view){view=document.createElement('main');view.id='chat-view';view.className='chat-view';view.setAttribute('aria-label','Czat z Doktorem Bielikiem');app.querySelector('.bottom-nav').before(view);}bielikChat.mount(view);updateNav();}
+window.visualViewport?.addEventListener('resize',()=>{if(activeTab==='chat'&&profile){app.style.height=`${Math.round(window.visualViewport.height)}px`;updateJourneyLayout();}});
 function centerCurrent(smooth=false) {
   if(!profile)return;
   const scroll=app.querySelector('#map-scroll');if(!scroll)return;

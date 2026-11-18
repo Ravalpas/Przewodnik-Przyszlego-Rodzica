@@ -1,5 +1,13 @@
 # Ilustracje aplikacji
 
+## Doktor Bielik
+
+Plik `dist/assets/doktor-bielik.png` wygenerowano wbudowanym narzędziem imagegen. Przezroczysta ilustracja fikcyjnego lekarza jest używana w okrągłym przycisku i w czacie asystenta AI.
+
+Prompt końcowy:
+
+Use case: stylized-concept. Create ONE friendly doctor bust illustration for a Polish parenting app AI assistant called Doktor Bielik. Subject: approachable adult male doctor with softly rounded features, short warm brown hair with subtle grey temples, gentle smile, white medical coat over a muted mint turquoise shirt, a simple navy stethoscope resting around his neck. Show the FULL head, hair, both shoulders and upper chest in a neat rounded bust silhouette. No hands, no cut-off hair or shoulders. Design language: soft rounded polished pastel cartoon, delicate glossy light and a fine white rim, matching a cheerful mint-swaddled baby and a pink-clothed pregnant mother in the app. Readable at 64px inside a circular pale lilac button. Straight on front view, welcoming calm expression. Entire silhouette centered on a square genuinely transparent canvas with generous transparent margin on every edge. No scenery, no text, no letters, no logo, no cross symbol, no watermark. This is an illustrated fictional AI helper, not a photograph of a real person.
+
 ## Wybór etapu przy pierwszym uruchomieniu
 
 Nowe ilustracje wykonano wbudowanym narzędziem imagegen. Pliki PNG zachowują przezroczystość i margines wokół całej postaci; interfejs wyświetla je z `object-fit: contain`, bez przycinania. Styl: miękkie pastelowe formy i delikatne światło, zgodne z dekoracjami mapy.
