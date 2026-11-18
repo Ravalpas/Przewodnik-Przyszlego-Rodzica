@@ -4,7 +4,7 @@ const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Micr
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'pl-PL',timezoneId:'Europe/Warsaw'});
 const errors=[],requests=[];page.on('pageerror',error=>errors.push(error.message));
 await page.clock.install({time:new Date('2026-11-18T12:00:00+01:00')});
-await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','completed-stages-2026-11-10');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Rafał',dates:{birthCardDate:'2026-11-02',peselDate:'2026-11-15'}}));});
+await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.1');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Rafał',dates:{birthCardDate:'2026-11-02',peselDate:'2026-11-15'}}));});
 await page.route('**/api/chat',route=>{requests.push(route.request().postDataJSON());return route.fulfill({json:{kind:'practical',answer:'Przygotuj zapisane pytania przed wizytą.',sources:[],tasks:[]}});});
 const storedNotes=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ppm-calendar-notes-v1')).notes);
 const archive=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ppm-bielik-conversations-v1')));

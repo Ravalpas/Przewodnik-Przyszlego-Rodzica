@@ -29,12 +29,12 @@ const escape = value => String(value).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'
 let profile = null, selectedMode = 'pregnancy', maps, resizeObserver, lastToday = todayString(), toastTimer, storageAvailable = true;
 let activeTab='map';
 let updateJourneyLayout=()=>{};
+const sessionStartedAt=new Date().toISOString();
+try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }
 const notesStore=createNotesStore();
 const planner=createPlanner({getProfile:()=>profile,persist,sheetContent,notify,notesStore});
 const bielikChat=createBielikChat({getProfile:()=>profile,getTasks:()=>planner.events(),getNotes:()=>notesStore.snapshot(),openNote:id=>planner.openNote(id),openTask:id=>planner.openEvent(id),onBack:showMap});
 planner.setOnChange(()=>{if(profile)renderJourney(false);});
-const sessionStartedAt=new Date().toISOString();
-try { resetForFreshStart(localStorage);const raw = localStorage.getItem(STORAGE_KEY); if(raw){profile=normalizeProfile(JSON.parse(raw));localStorage.setItem(STORAGE_KEY,JSON.stringify(profile));} } catch { storageAvailable=false; }
 
 function notify(message) {
   const el=document.querySelector('#toast'); el.textContent=message;el.classList.add('visible');

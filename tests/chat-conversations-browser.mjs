@@ -5,7 +5,7 @@ const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Micr
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'pl-PL',timezoneId:'Europe/Warsaw'});
 const errors=[],requests=[];page.on('pageerror',error=>errors.push(error.message));
 await page.clock.install({time:new Date('2026-11-18T12:00:00+01:00')});
-await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','completed-stages-2026-11-10');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Anna Maria Kowalska',gender:'girl',dates:{birthCardDate:'2026-11-02',peselDate:'2026-11-15'},completedTasks:['usc']}));});
+await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.1');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Anna Maria Kowalska',gender:'girl',dates:{birthCardDate:'2026-11-02',peselDate:'2026-11-15'},completedTasks:['usc']}));});
 let release;const waiting=new Promise(resolve=>{release=resolve;});
 await page.route('**/api/chat',async route=>{requests.push(route.request().postDataJSON());await waiting;return route.fulfill({json:{kind:'source',answer:'Sprawdź otwarte sprawy na swojej drodze.',sources:[],tasks:[]}});});
 const send=async text=>{await page.locator('#chat-input').fill(text);await page.locator('#chat-send').click();};

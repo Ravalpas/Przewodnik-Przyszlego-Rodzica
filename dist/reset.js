@@ -1,10 +1,12 @@
 import { STORAGE_KEY } from './age.js';
-// One-time reset explicitly requested for this test release. New profiles survive later reloads.
+import { NOTES_KEY } from './notes.js';
+import { CHAT_ARCHIVE_KEY } from './chat-storage.js';
+// Explicit owner request: reset personal data once, then preserve the new setup.
 export const RESET_KEY='ppm-test-reset';
-export const RESET_REVISION='completed-stages-2026-11-10';
+export const RESET_REVISION='fresh-start-2026-11-19.1';
 export function resetForFreshStart(storage) {
   if(storage.getItem(RESET_KEY)===RESET_REVISION)return false;
-  storage.removeItem(STORAGE_KEY);
+  for(const key of [STORAGE_KEY,NOTES_KEY,CHAT_ARCHIVE_KEY])storage.removeItem(key);
   storage.setItem(RESET_KEY,RESET_REVISION);
   return true;
 }

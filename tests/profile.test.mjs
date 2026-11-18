@@ -32,11 +32,13 @@ test('completed stages follow elapsed weeks and include all pregnancy points aft
   assert.equal('openedStages' in p,false);assert.equal(completedStages(p,'2026-11-10'),45);
   assert.equal(usageDays({...p,statsStartedAt:'2026-11-09T12:00:00Z'},'2026-11-10'),2);
 });
-test('the authorized reset clears only the app profile and runs once',()=>{
-  const values=new Map([['ppm-profile-v1','old profile'],['unrelated','keep']]);
+test('the authorized reset clears profile, notes and chats once and preserves unrelated data',()=>{
+  const values=new Map([['ppm-profile-v1','old profile'],['ppm-calendar-notes-v1','old notes'],['ppm-bielik-conversations-v1','old chats'],['unrelated','keep']]);
   const storage={getItem:key=>values.get(key)||null,setItem:(key,value)=>values.set(key,value),removeItem:key=>values.delete(key)};
   assert.equal(resetForFreshStart(storage),true);assert.equal(values.has('ppm-profile-v1'),false);
+  assert.equal(values.has('ppm-calendar-notes-v1'),false);assert.equal(values.has('ppm-bielik-conversations-v1'),false);
   assert.equal(values.get('unrelated'),'keep');assert.equal(values.get(RESET_KEY),RESET_REVISION);
-  storage.setItem('ppm-profile-v1','new profile');assert.equal(resetForFreshStart(storage),false);
+  storage.setItem('ppm-profile-v1','new profile');storage.setItem('ppm-calendar-notes-v1','new notes');storage.setItem('ppm-bielik-conversations-v1','new chats');assert.equal(resetForFreshStart(storage),false);
   assert.equal(storage.getItem('ppm-profile-v1'),'new profile');
+  assert.equal(storage.getItem('ppm-calendar-notes-v1'),'new notes');assert.equal(storage.getItem('ppm-bielik-conversations-v1'),'new chats');
 });
