@@ -44,6 +44,16 @@ p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-heigh
 .period-row span { font-size: 15px; }
 .period-row small { font-size: 14px; color: #526783; }
 .source-list a, .source-list span { font-size: 14px; }
+.source-list small { font-size: 13px; color: #526783; }
+.milestone-card strong { font-size: 16px; }
+.milestone-card span { font-size: 14px; color: #526783; }
+.status-pill { font-size: 14px; }
+.conversion { background: #edf3ff; color: #365a91; }
+.week-medallion { background: #edf3ff; color: #365a91; box-shadow: 0 5px 0 #d9e5f7; }
+.personal-note-heading > div > span, .day-notes > h4 span,
+.note-detail-heading span, .note-color-option span { color: #526783; }
+.dates-form > p, .chat-save-status, .storage-warning { font-size: 14px; }
+.chat-save-status { color: #526783; }
 .excluded-tasks summary, .not-applicable-action { font-size: 14px; color: #50627c; }
 .bottom-nav .nav-item { color: #576a84; font-size: 10px; }
 .bottom-nav .nav-item.active { color: #304a91; }
