@@ -26,7 +26,7 @@ const icons = {
   settings:'<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="white"/><circle cx="15" cy="17" r="3" fill="white"/>'
 };
 const icon = name => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.target}</svg>`;
-const brand = () => '<div class="brand"><img src="assets/logo.png" alt="Logo aplikacji"><div class="brand-copy"><b><span>Przewodnik</span><span>Przyszłej Mamy</span></b><small>Blisko Ciebie. Krok po kroku.</small></div></div>';
+const brand = () => '<div class="brand"><img src="assets/logo.png" alt="Logo aplikacji"><div class="brand-copy"><b><span>Przewodnik</span><span>Przyszłego Rodzica</span></b><small>Blisko Ciebie. Krok po kroku.</small></div></div>';
 const stageName = mode => mode==='pregnancy'?'ciąży':'życia';
 const modeName = mode => mode==='pregnancy'?'Droga ciąży':'Pierwsze kroki razem';
 const maxWeeks = mode => mode==='pregnancy'?42:52;

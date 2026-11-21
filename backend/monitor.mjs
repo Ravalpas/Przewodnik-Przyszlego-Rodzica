@@ -29,7 +29,7 @@ export async function sourceSnapshot(source,fetcher=fetch) {
   let url=source.url;
   for(let redirects=0;redirects<5;redirects++) {
     if(!safeOfficial(url))throw new Error('Przekierowanie poza dozwolone źródła.');
-    const response=await fetcher(url,{redirect:'manual',signal:AbortSignal.timeout(10000),headers:{'User-Agent':'PPM-source-monitor/1.0','Accept':'text/html,application/pdf'}});
+    const response=await fetcher(url,{redirect:'manual',signal:AbortSignal.timeout(10000),headers:{'User-Agent':'PPR-source-monitor/1.0','Accept':'text/html,application/pdf'}});
     if(response.status>=300&&response.status<400&&response.status!==304){url=new URL(response.headers.get('location'),url).href;continue;}
     if(response.status===404||response.status===410)return {status:'missing',http:response.status,url};
     if(!response.ok)throw new Error(`Źródło zwróciło HTTP ${response.status}.`);

@@ -1,4 +1,4 @@
-# Przewodnik Przyszłej Mamy
+# Przewodnik Przyszłego Rodzica
 
 Aktualny opis kalendarza, oficjalnych kart, panelu weryfikacji, harmonogramu 00:00 i wdrożenia kontenerowego: [AKTUALIZACJE.md](AKTUALIZACJE.md).
 
