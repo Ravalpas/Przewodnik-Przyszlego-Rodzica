@@ -121,19 +121,19 @@ p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-heigh
 
 @media (min-width: 900px) {
   .phone-shell { max-width: none; width: 100%; box-shadow: none; }
-  .app-header { display: grid; grid-template-columns: minmax(220px,.9fr) minmax(320px,1.5fr) auto; align-items: center; gap: 24px; padding: 18px 28px; }
+  .app-header { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 24px; padding: 18px 28px; }
   .top-row { display: contents; }
   .app-header .brand { grid-column: 1; grid-row: 1; }
   .brand { gap: 17px; }
   .brand img { width: 64px; height: 76px; }
   .brand b { font-size: 19px; }
   .brand small { font-size: 14px; margin-top: 5px; }
-  .top-actions { grid-column: 3; grid-row: 1; gap: 18px; }
+  .top-actions { grid-column: 2; grid-row: 1; gap: 18px; }
   .icon-button { width: 54px; height: 54px; border-radius: 16px; }
   .icon-button svg { width: 29px; height: 29px; }
   .refresh-sources { font-size: 14px; min-width: 66px; }
   .refresh-sources svg { width: 32px; height: 32px; }
-  .journey-summary { grid-column: 2; grid-row: 1; max-width: none; width: 100%; margin: 0; padding: 14px 20px; border-radius: 20px; }
+  .journey-summary { position: absolute; top: calc(100% + 24px); left: 28px; max-width: none; width: calc((100% - 480px)/2 - 48px); margin: 0; padding: 14px 20px; border-radius: 20px; }
   .summary-top { margin-bottom: 5px; }
   .summary-top span, .summary-top small, .summary-bottom p { font-size: 14px; }
   .child-summary { margin: 6px 0; gap: 14px; }
@@ -157,8 +157,8 @@ p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-heigh
   .journey-aside .settings-row { margin-top: 12px; padding: 16px; }
   .journey-aside .secondary { font-size: 16px; }
   .journey-aside button { margin-top: 14px; }
-  .bottom-nav { padding: 10px 24px; gap: 10px; }
-  .bottom-nav .nav-item { font-size: 15px; min-height: 74px; gap: 7px; max-width: none; padding: 8px; border-radius: 16px; }
+  .bottom-nav { padding: 3px 24px calc(3px + env(safe-area-inset-bottom)); gap: 10px; }
+  .bottom-nav .nav-item { font-size: 15px; min-height: 0; gap: 3px; max-width: none; padding: 3px 8px; border-radius: 16px; }
   .nav-icon { width: 58px; height: 38px; border-radius: 13px; }
   .nav-item svg { width: 30px; height: 30px; }
   .recenter { font-size: 16px; min-height: 50px; padding: 12px 18px; }
@@ -312,10 +312,11 @@ p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-heigh
   .brand img { width: 52px; height: 64px; }
   .brand b { font-size: 16px; }
   .brand small { font-size: 12px; }
-  .journey-aside-left { display: none; }
-  .journey-aside-right { width: 280px; right: 20px; padding: 20px; }
-  .map-canvas, .map-lead, .map-tail { margin-left: calc((100% - 320px - 480px)/2); margin-right: 0; }
-  .recenter, .doctor-launcher { right: 332px; }
+  .journey-summary { left: 22px; width: 280px; }
+  .journey-aside-left { display: block; width: 280px; left: 22px; padding: 20px; }
+  .journey-aside-right { display: none; }
+  .map-canvas, .map-lead, .map-tail { margin-left: calc((100% + 320px - 480px)/2); margin-right: 0; }
+  .recenter, .doctor-launcher { right: 24px; }
   .chat-welcome { gap: 18px; grid-template-columns: .9fr 1.1fr; padding: 0; }
   .chat-welcome-intro { padding: 0; }
   .chat-welcome h3 { font-size: 27px; }
@@ -340,7 +341,7 @@ p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-heigh
   .chat-toolbar { gap: 0; }
   .chat-context { padding: 10px 12px; }
   .chat-conversation-actions { padding: 8px; }
-  .bottom-nav { padding-left: 4px; padding-right: 4px; }
+  .bottom-nav { padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); }
   .bottom-nav .nav-item { padding-left: 1px; padding-right: 1px; }
 }
 

@@ -155,7 +155,8 @@ function renderJourney(center=true) {
     const bottom=app.querySelector('.bottom-nav').offsetHeight;scroll.style.bottom=`${bottom}px`;app.querySelector('#recenter').style.bottom=`${bottom+16}px`;
     const calendar=app.querySelector('#calendar-view');if(calendar){calendar.style.top=scroll.style.top;calendar.style.bottom=scroll.style.bottom;}
     const chatView=app.querySelector('#chat-view');if(chatView){chatView.style.top=scroll.style.top;chatView.style.bottom=scroll.style.bottom;}
-    app.querySelectorAll('.journey-aside').forEach(el=>{el.style.top=(app.querySelector('.app-header').offsetHeight+24)+'px';el.style.maxHeight='calc(100% - '+(app.querySelector('.app-header').offsetHeight+bottom+48)+'px)';el.hidden=activeTab!=='map';});
+    const summary=app.querySelector('.journey-summary'),desktop=window.matchMedia('(min-width: 900px)').matches;
+    app.querySelectorAll('.journey-aside').forEach(el=>{const top=desktop&&el.classList.contains('journey-aside-left')&&!summary.hidden?Math.ceil(summary.getBoundingClientRect().bottom-app.getBoundingClientRect().top)+20:app.querySelector('.app-header').offsetHeight+24;el.style.top=top+'px';el.style.maxHeight='calc(100% - '+(top+bottom+24)+'px)';el.hidden=activeTab!=='map';});
     const doctorView=app.querySelector('#doctor-view');if(doctorView){doctorView.style.top=scroll.style.top;doctorView.style.bottom=scroll.style.bottom;}
     const calculatorView=app.querySelector('#calculator-view');if(calculatorView){calculatorView.style.top=scroll.style.top;calculatorView.style.bottom=scroll.style.bottom;}
     const doctor=app.querySelector('#doctor-launcher');doctor.hidden=activeTab!=='map';doctor.style.bottom=`${bottom+30+app.querySelector('#recenter').offsetHeight}px`;
@@ -164,7 +165,7 @@ function renderJourney(center=true) {
   };
   updateJourneyLayout=layout;
   layout();
-  resizeObserver=new ResizeObserver(()=>{layout();});resizeObserver.observe(app);
+  resizeObserver=new ResizeObserver(()=>{layout();});for(const observed of [app,app.querySelector('.app-header'),app.querySelector('.journey-summary'),app.querySelector('.bottom-nav')])resizeObserver.observe(observed);
   if(activeTab==='chat')showChat();else if(activeTab==='calendar')showCalendar();else if(activeTab==='doctor')showDoctor();else if(activeTab==='calculator')showCalculator();else if(center)requestAnimationFrame(()=>centerCurrent());
 }
 function updateNav(){app.querySelector('.journey-summary').hidden=activeTab!=='map';app.classList.toggle('calendar-active',activeTab==='calendar');app.classList.toggle('chat-active',activeTab==='chat');app.style.height=activeTab==='chat'&&window.visualViewport?`${Math.round(window.visualViewport.height)}px`:'';for(const id of ['nav-map','nav-calendar','nav-chat','nav-doctor','nav-calculator']){const b=app.querySelector('#'+id),selected=id===`nav-${activeTab}`;b.classList.toggle('active',selected);if(selected)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}updateJourneyLayout();}
