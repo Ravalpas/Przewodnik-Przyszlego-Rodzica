@@ -40,6 +40,7 @@ export function calendarDate(value, {long = false} = {}) {
   }).format(new Date(`${value}T12:00:00Z`));
 }
 export function periodText(event, options) {
+  if(event.timing==='preparation')return 'W trakcie ciąży — bez ustawowego terminu';
   if (!event.start || !event.end) return 'Uzupełnij datę zdarzenia w ustawieniach';
   if (event.start === event.end) return calendarDate(event.start, options);
   return `Od ${calendarDate(event.start, options)} do ${calendarDate(event.end, options)}`;

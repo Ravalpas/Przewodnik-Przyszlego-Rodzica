@@ -20,9 +20,10 @@ export function normalizeProfile(value, {now=new Date().toISOString(),isNew=fals
   const validDate=date=>{try{dayNumber(date);return date;}catch{return null;}};
   const dates=Object.fromEntries(['birthCardDate','peselDate','parentalLeaveDate'].map(key=>[key,validDate(value.dates?.[key])]).filter(([,date])=>date));
   const notApplicableTasks=Array.isArray(value.notApplicableTasks)?[...new Set(value.notApplicableTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)&&!PROTECTED_EVENT_IDS.has(id)))]:[];
-  return {mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,pregnancyStart:value.mode==='pregnancy'?value.anchor:validDate(value.pregnancyStart),dueDate:validDate(value.dueDate),conceptionDate:validDate(value.conceptionDate),birthTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(value.birthTime||'')?value.birthTime:'',dates,notApplicableTasks,completedTasks:Array.isArray(value.completedTasks)?[...new Set(value.completedTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)))]:[]};
+  return {parentRole:['mother','father','unspecified'].includes(value.parentRole)?value.parentRole:'unspecified',planning:value.planning===true,mode:value.mode,anchor:value.anchor,name,gender:GENDERS.includes(value.gender)?value.gender:'unspecified',firstUsedAt:validTimestamp(value.firstUsedAt)?value.firstUsedAt:isNew?now:null,statsStartedAt:validTimestamp(value.statsStartedAt)?value.statsStartedAt:now,pregnancyStart:value.planning===true?null:value.mode==='pregnancy'?value.anchor:validDate(value.pregnancyStart),dueDate:validDate(value.dueDate),conceptionDate:validDate(value.conceptionDate),birthTime:/^([01]\d|2[0-3]):[0-5]\d$/.test(value.birthTime||'')?value.birthTime:'',dates,notApplicableTasks,completedTasks:Array.isArray(value.completedTasks)?[...new Set(value.completedTasks.filter(id=>typeof id==='string'&&/^[a-z0-9-]{1,60}$/.test(id)))]:[]};
 }
 export function completedStages(profile,today=todayString()) {
+  if(profile.planning)return 0;
   const weeks=ageAt(profile.anchor,today).weeks;
   return profile.mode==='pregnancy'?Math.min(42,weeks):42+Math.min(52,weeks);
 }

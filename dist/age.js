@@ -45,3 +45,7 @@ export function ageText(age) {
   const w=age.weeks, d=age.extraDays;
   return `${quantity(w,'weeks')}${d?` i ${quantity(d,'days')}`:''}`;
 }
+export function completedWeeksText(age,mode) {
+  const stage=mode==='pregnancy'?'ciąży':'życia';
+  return age.weeks===0?`Pierwszy tydzień ${stage}`:`${quantity(age.weeks,'weeks')} ${stage}`;
+}

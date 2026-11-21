@@ -1,3 +1,4 @@
+import {scopeCatalog} from './source-scope.js';
 import { todayString,dayNumber,shiftDate } from './age.js';
 import { eventPolicy } from './event-policy.js';
 export function addMonths(value,months){const [y,m,d]=value.split('-').map(Number),target=new Date(Date.UTC(y,m-1+months,1));target.setUTCDate(Math.min(d,new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate()));return target.toISOString().slice(0,10);}
@@ -9,14 +10,25 @@ export function ruleDate(rule,profile){
   return shiftDate(addMonths(anchor,rule.months||0),rule.days||0);
 }
 export function datedEvents(catalog,profile,today=todayString()) {
-  return catalog.events.filter(e=>e.mode===profile.mode).map(original=>{
+  catalog=scopeCatalog(catalog,catalog.activeScope||'all');
+  const definitions=catalog.events.map(original=>{
     const version=(original.versions||[]).filter(v=>v.validFrom<=today).sort((a,b)=>a.validFrom.localeCompare(b.validFrom)).at(-1);
-    const event={...original,...version};
+    return {...original,...version};
+  });
+  if(profile.planning){
+    const previews=definitions.map(event=>({...event,...eventPolicy(event),preview:true,source:catalog.sources.find(s=>s.id===(event.source==='vaccines'?(Number(today.slice(0,4))>=2027?'vaccines27':'vaccines26'):event.source)),start:null,end:null,done:false,notApplicable:false,needsDate:false})).filter(e=>e.source);
+    const annual=definitions.find(e=>e.recurring==='800'),source=catalog.sources.find(s=>s.id===annual?.source);
+    if(annual&&source){const window=annual.calendarWindow||{start:'02-01',end:'06-30'},year=today.slice(0,4);
+      previews.push({id:'planning-800-cycle',informational:true,title:'800+ — coroczny cykl wniosków',description:annual.description+' To informacja na przyszłość dla osób spełniających warunki. Samo planowanie dziecka nie daje prawa do 800+ i nie oznacza obowiązku składania wniosku.',mode:'planning',kind:'Informacja na przyszłość',group:'optional',required:false,canMarkNotApplicable:false,source,start:year+'-'+window.start,end:year+'-'+window.end,done:false,notApplicable:false,needsDate:false});
+    }
+    return previews;
+  }
+  return definitions.filter(e=>e.mode===profile.mode).map(event=>{
     let start=ruleDate(event.start,profile),end=ruleDate(event.end,profile);
     if(event.recurring==='800'){
       const birth=birthDate(profile),firstYear=Number(birth.slice(0,4)),currentYear=Number(today.slice(0,4));
-      const year=today.slice(5)<='06-30'?currentYear:currentYear+1;
-      start=`${Math.max(year,firstYear)}-02-01`;end=`${Math.max(year,firstYear)}-06-30`;
+      const window=event.calendarWindow||{start:'02-01',end:'06-30'},year=today.slice(5)<=window.end?currentYear:currentYear+1;
+      start=`${Math.max(year,firstYear)}-${window.start}`;end=`${Math.max(year,firstYear)}-${window.end}`;
       if(start<birth)start=birth;
     }
     const sourceId=event.source==='vaccines'?(Number((start||today).slice(0,4))>=2027?'vaccines27':'vaccines26'):event.source;
@@ -24,11 +36,12 @@ export function datedEvents(catalog,profile,today=todayString()) {
     const policy=eventPolicy(event);
     const notApplicable=policy.canMarkNotApplicable&&(profile.notApplicableTasks?.includes(event.id)||false);
     const done=!notApplicable&&(profile.completedTasks?.includes(event.id)||false);
-    const daysLeft=end?dayNumber(end)-dayNumber(today):null;
+    const daysLeft=event.timing==='preparation'?null:end?dayNumber(end)-dayNumber(today):null;
     return {...event,...policy,start,end,source,done,notApplicable,daysLeft,needsDate:!start||!end,important:!done&&!notApplicable&&daysLeft!==null&&daysLeft<=7&&daysLeft>=0};
   });
 }
 export function milestones(profile) {
+  if(profile.planning)return [];
   const list=[],pregnancy=pregnancyStart(profile),birth=birthDate(profile);
   if(pregnancy){
     list.push({id:'pregnancy-origin',title:'Początek liczenia ciąży',start:pregnancy,end:shiftDate(pregnancy,6),type:'pregnancy',description:'Tydzień początku liczenia wieku ciąży. To data odniesienia wieku ciążowego, a nie potwierdzona data zapłodnienia.'});
@@ -40,6 +53,7 @@ export function milestones(profile) {
   return list;
 }
 export function weekOnDate(profile,date){
+  if(profile.planning)return null;
   const birth=birthDate(profile),pregnancy=pregnancyStart(profile),day=dayNumber(date);
   if(birth&&day>=dayNumber(birth)&&day-dayNumber(birth)<365+1)return {mode:'child',week:Math.floor((day-dayNumber(birth))/7)+1};
   if(pregnancy&&day>=dayNumber(pregnancy)&&day-dayNumber(pregnancy)<42*7&&(!birth||day<dayNumber(birth)))return {mode:'pregnancy',week:Math.floor((day-dayNumber(pregnancy))/7)+1};

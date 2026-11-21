@@ -1,8 +1,8 @@
-# Przewodnik Przyszłej Mamy — wersja mobilna
+# Przewodnik Przyszłej Mamy
 
 Aktualny opis kalendarza, oficjalnych kart, panelu weryfikacji, harmonogramu 00:00 i wdrożenia kontenerowego: [AKTUALIZACJE.md](AKTUALIZACJE.md).
 
-Aplikacja dla telefonu trzymanego pionowo. Zawiera wybór ciąży lub okresu po porodzie, przeliczanie dni / tygodni / miesięcy, drogę ciąży (42 punkty), drogę dziecka (52 punkty), edycję wieku i daty oraz karty etapów przygotowane do uzupełnienia w kolejnej wersji.
+Aplikacja na telefon trzymany pionowo i komputer. Pierwsza konfiguracja obejmuje rolę rodzica, planowanie / ciążę / narodziny oraz płeć dziecka. Zawiera mapy 42 i 52 tygodni, oficjalne sprawy, kalendarz z notatkami oraz czat z Bielikiem. Na komputerze kalendarz i informacje dnia mają osobne kolumny, a droga zachowuje swój przebieg i numerację.
 
 ## Profil i ustawienia
 
@@ -25,7 +25,7 @@ Naprawione dekoracje są osobnymi obrazkami z przezroczystością: smoczek, miś
 4. Jeśli Windows zapyta o dostęp Node.js do sieci, zezwól na sieć prywatną/domową. Komputer musi pozostać włączony, a okno serwera otwarte.
 5. Trzymaj telefon pionowo. Aby zakończyć serwer, w jego oknie naciśnij Ctrl+C.
 
-Na komputerze podgląd działa pod **http://localhost:3000**. Szerokość jest ograniczona do telefonu; osobny układ komputerowy pozostaje do przygotowania.
+Na komputerze podgląd działa pod **http://localhost:3000**. Od szerokości 900 px aplikacja korzysta z układu komputerowego.
 
 Przy problemie z połączeniem sprawdź adres widoczny w terminalu, tę samą sieć i jej ustawienia izolacji urządzeń. Port 3000 musi być dostępny w sieci lokalnej. Uruchomienie na innym porcie: w PowerShell ustaw `$env:PORT=3001`, następnie wykonaj `node server.mjs` w folderze aplikacji.
 
@@ -37,8 +37,8 @@ Przy problemie z połączeniem sprawdź adres widoczny w terminalu, tę samą si
 - Miesiące to miesiące kalendarzowe odejmowane od dzisiejszej daty; przy krótszym miesiącu wybieramy jego ostatni dzień. Po przeliczeniu zapisujemy datę, a nie przybliżoną długość miesiąca.
 - Edycja wieku aktualizuje datę, a edycja daty aktualizuje wiek. Aplikacja nie określa daty zapłodnienia.
 - Wiek aktualizuje się po zmianie dnia, również po ponownym otwarciu aplikacji.
-- Minione tygodnie mają zielony punkt i ptaszka (oznaczenie upływu czasu). Bieżący ma zielony punkt, niebieską obwódkę i etykietę. Przyszłe są szare i bez ptaszka.
-- Ptaszek nie oznacza wykonania formalności. Funkcje zadań i treści etapów są przeznaczone do kolejnej wersji.
+- Minione tygodnie mają niebieski punkt i ptaszka (oznaczenie upływu czasu). Bieżący ma niebieski punkt, obwódkę i etykietę. Przyszłe są szare i bez ptaszka.
+- Ptaszek oznacza upływ tygodnia. Wykonanie formalności ma osobne oznaczenie na karcie sprawy.
 - Po porodzie użytkownik sam podaje rzeczywistą datę urodzenia. Aplikacja wtedy zastępuje mapę ciąży mapą dziecka.
 - Po końcu mapy nadal pokazujemy rzeczywisty wiek. Nie dopisujemy etapów, których nie ma na grafikach.
 
@@ -64,4 +64,4 @@ Wszystkie potrzebne zasoby są w `dist/assets`. Grafiki zostały skopiowane z fo
 - `server.mjs` — lokalny serwer HTTP bez zależności.
 - `.openai/hosting.json` — konfiguracja hostingu Sites.
 
-W tej wersji aplikacja nie zawiera jeszcze porad, świadczeń ani obowiązków formalnych. Karty etapów jasno wskazują, że treści zostaną dodane później.
+Domyślnie mapa, kalendarz i źródła Bielika korzystają z materiałów ZUS. Przycisk „Odśwież” pozwala wybrać wszystkie zachowane źródła publiczne. W trybie planowania nie ustalamy wieku, narodzin ani porodu; dostępne są podglądy obu map, przygotowania i informacyjny cykl 800+. Zakładka „Lekarz” prowadzi do odpowiednich form kontaktu z lekarzem, w tym platformy ZnanyLekarz.

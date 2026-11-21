@@ -1,6 +1,6 @@
 # Oficjalne sprawy, kalendarz i aktualizacje
 
-Ta wersja zawiera wspólny katalog kart dla mapy i kalendarza. Treści startowe są w `dist/data/catalog.json`; źródła i ich okresy obowiązywania należy weryfikować redakcyjnie. Mapa tygodniowa i kalendarz korzystają z tych samych identyfikatorów spraw. Oznaczenie wykonania jest lokalnym oświadczeniem rodzica, niezależnym od zielonych etapów czasu.
+Ta wersja zawiera wspólny katalog kart dla mapy i kalendarza. Treści startowe są w `dist/data/catalog.json`; źródła i ich okresy obowiązywania należy weryfikować redakcyjnie. Mapa tygodniowa i kalendarz korzystają z tych samych identyfikatorów spraw. Oznaczenie wykonania jest lokalnym oświadczeniem rodzica, niezależnym od niebieskich etapów czasu.
 
 Sprawy są prezentowane w kolejności: **Obowiązkowe — ważne**, **Zalecane — zdrowie i opieka**, **Dodatkowe — świadczenia i uprawnienia**. W obrębie grupy otwarte sprawy są uporządkowane według końca okresu, a wykonane są niżej. Świadczenia mają neutralną ikonę zamiast ostrzegawczego trójkąta.
 
@@ -8,7 +8,7 @@ Przycisk **Nie dotyczy** znajduje się pod oznaczeniem wykonania w sprawach doda
 
 ## Harmonogram
 
-Sprawdzanie źródeł: codziennie o **00:00 Europe/Warsaw**. To północ lokalna, więc przy zmianie czasu odstęp może wynosić 23 lub 25 godzin. Przycisk „Odśwież” na górze uruchamia identyczne sprawdzenie ręcznie. Strona nie musi być otwarta.
+Sprawdzanie źródeł: codziennie o **00:00 Europe/Warsaw**. To północ lokalna, więc przy zmianie czasu odstęp może wynosić 23 lub 25 godzin. Przycisk „Odśwież” na górze pozwala wybrać zakres: tylko ZUS (domyślnie) albo wszystkie zachowane instytucje. Zakres jest zapisywany na serwerze i obowiązuje także dla harmonogramu, mapy, kalendarza i źródeł Bielika. Strona nie musi być otwarta.
 
 - Kontener / Node: `server.mjs` planuje następne uruchomienie, uwzględnia zmianę czasu i nadrabia brakujące uruchomienie po starcie z `PPM_STARTUP_CHECK=1`.
 - Sites: zadanie chmurowe połączone z tą samą prywatną witryną wywołuje `POST /api/scheduled-refresh` z obsługiwanym dostępem serwisowym Sites. Nie przechowujemy poświadczeń w kodzie ani w instrukcji zadania.
@@ -50,3 +50,13 @@ Uruchomienie: `docker compose up --build -d` w folderze aplikacji. Port 3000. Do
 `node tests/planner-browser.mjs`: mapa i kalendarz, okresy, źródła z podświetlaniem, niebieskie oznaczenia, daty i walidacja, zapis wykonania, ręczne odświeżanie oraz mobilne szerokości. Wymaga serwera na porcie 3001 i Playwright/Edge.
 
 `npm run build`: samodzielny Worker z osadzonymi plikami; istniejący Node serwer i Docker korzystają z tych samych modułów monitora.
+
+## Planowanie i widok na komputerze
+
+Pierwszy ekran wymaga wskazania roli rodzica oraz etapu; płeć trzeba wybrać dla ciąży i narodzonego dziecka, z opcją „Brak informacji”. Braki wskazuje niebieski symbol i komunikat przy danej grupie. Tryb planowania pomija wiek, ukrywa „Na dziś” i pozwala przełączać obie mapy w podglądzie. Nie tworzy dat ciąży, poczęcia ani porodu. Przy przejściu do narodzin nie przenosi daty technicznej jako początku ciąży.
+
+Kalendarz w planowaniu pokazuje własne notatki, przygotowania bez terminu oraz informacyjny coroczny cykl 800+. Samo planowanie nie daje prawa do świadczenia. Opis pochodzi ze zweryfikowanej karty `800-renewal`; `calendarWindow` w katalogu określa daty MM-DD. Panel redakcyjny i API przeglądu pozwalają zmieniać ten okres wraz z datą obowiązywania wersji. Ta sama wersja zasila kalendarz planowania i dziecka. Przygotowanie do zasiłku nie ma ustawowego terminu i nie tworzy alarmu o zaległości.
+
+Od 900 px początkowy wybór ma szeroki układ, kalendarz i informacje dnia są w dwóch kolumnach, czat ma większą przestrzeń, a droga zachowuje szerokość, kształt i numerację. Po bokach znajdują się skróty do spraw i kalendarza. Zakładka „Lekarz” jest dostępna dla każdego etapu; kontakt z lekarzem prowadzącym pojawia się tylko w ciąży.
+
+Weryfikacja nowej wersji: `npm test`, `npm run check`, `npm run build`, `node scripts/check-worker.mjs`, `npm run check:secrets`. Testy przeglądarkowe: `node tests/desktop-planning-browser.mjs` (domyślnie port 61619, inny przez `TEST_URL`). Obejmują wymagane wybory, planowanie, źródła, role, notatki, układ 390/1000/1366/1440 px, zakładkę Lekarz i kolory punktów. Nie wysyłają zapytań do modelu.

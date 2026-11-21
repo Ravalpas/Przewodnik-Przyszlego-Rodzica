@@ -30,7 +30,7 @@ export async function handleApi(request,monitor,{adminToken,bielik,clientKey}={}
     }
   }
   try {
-    if(path==='/api/refresh')return json(publicMonitorState(await monitor.refresh('manual')));
+    if(path==='/api/refresh'){const body=await request.json();if(body.scope!==undefined&&!['zus','all'].includes(body.scope))return json({error:'Wybierz zakres źródeł.'},400);return json(publicMonitorState(await monitor.refresh('manual',body.scope)));}
     if(path==='/api/scheduled-refresh')return json(publicMonitorState(await monitor.refresh('scheduled')));
     if(path==='/api/review'){
       const body=await request.text();if(body.length>50000)return json({error:'Za dużo danych.'},413);

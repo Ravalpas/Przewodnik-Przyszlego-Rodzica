@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-13.1",
-  "reviewedAt": "2026-11-13",
+  "version": "2026-11-21.1",
+  "reviewedAt": "2026-11-21",
   "sources": [
     {
       "id": "usc",
@@ -117,6 +117,13 @@
       "url": "https://www.gov.pl/web/krus/zasilek-macierzynski",
       "quote": "3 miesięcy",
       "section": "Zasiłek macierzyński"
+    },
+    {
+      "id": "zus-planning",
+      "name": "ZUS · przygotowanie do rodzicielstwa",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-urlopu-macierzynskiego-albo-urlopu-na-warunkach-urlopu-macierzynskiego",
+      "section": "Prawo do zasiłku macierzyńskiego",
+      "quote": "ubezpieczenia chorobowego"
     }
   ],
   "events": [
@@ -489,7 +496,48 @@
         "anchor": "birth",
         "months": 12
       },
-      "description": "Okres świadczeniowy trwa od 1 czerwca do 31 maja kolejnego roku. Wnioski na następny okres są przyjmowane od 1 lutego. Złożenie do 30 kwietnia służy zachowaniu ciągłości wypłat; termin do 30 czerwca ma znaczenie dla prawa od czerwca. Dla noworodka może być potrzebny wniosek na dwa okresy. Sprawdź aktualne zasady ZUS."
+      "description": "Okres świadczeniowy trwa od 1 czerwca do 31 maja kolejnego roku. Wnioski na następny okres są przyjmowane od 1 lutego. Złożenie do 30 kwietnia służy zachowaniu ciągłości wypłat; termin do 30 czerwca ma znaczenie dla prawa od czerwca. Dla noworodka może być potrzebny wniosek na dwa okresy. Sprawdź aktualne zasady ZUS.",
+      "calendarWindow": {
+        "start": "02-01",
+        "end": "06-30"
+      }
+    },
+    {
+      "id": "planning-insurance",
+      "mode": "planning",
+      "source": "zus-planning",
+      "title": "Sprawdźcie ubezpieczenie przed rodzicielstwem",
+      "kind": "Przygotowanie",
+      "group": "recommended",
+      "description": "Sprawdźcie w eZUS swoją sytuację ubezpieczeniową i zasady zasiłku macierzyńskiego. Samo planowanie dziecka nie oznacza prawa do świadczenia. Ten krok nie ma jednego corocznego terminu.",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "obligation": "optional"
+    },
+    {
+      "id": "pregnancy-zus-insurance",
+      "title": "Zasiłek macierzyński — sprawdź warunki ubezpieczenia",
+      "description": "ZUS wyjaśnia, że zasiłek macierzyński przysługuje ubezpieczonej, która urodziła dziecko w okresie ubezpieczenia chorobowego albo urlopu wychowawczego. W ciąży warto sprawdzić swoją sytuację ubezpieczeniową w ZUS lub u płatnika składek. Ten okres na mapie służy przygotowaniu; nie jest ustawowym terminem złożenia wniosku ani potwierdzeniem prawa do zasiłku.",
+      "mode": "pregnancy",
+      "source": "zus-planning",
+      "kind": "Przygotowanie do świadczenia",
+      "group": "optional",
+      "start": {
+        "anchor": "pregnancy",
+        "days": 0
+      },
+      "end": {
+        "anchor": "pregnancy",
+        "days": 293
+      },
+      "obligation": "optional",
+      "timing": "preparation"
     }
   ]
 }

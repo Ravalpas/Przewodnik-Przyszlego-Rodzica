@@ -9,7 +9,7 @@ import {chatProfileForRequest} from '../dist/chat.js';
 
 const catalog=JSON.parse(await readFile(new URL('../dist/data/catalog.json',import.meta.url),'utf8'));
 const clock=()=>new Date('2026-11-18T12:00:00+01:00');
-const state={catalog,sources:{}};
+const state={catalog,sources:{},sourceScope:'all'};
 const profile={mode:'child',anchor:'2026-11-01',name:'Anna Maria Kowalska',gender:'girl',birthTime:'08:30',dates:{birthCardDate:'2026-11-02',peselDate:'2026-11-15'},completedTasks:['usc'],notApplicableTasks:['krus-benefit','insurance']};
 const env={FABRYKA_API_KEY:'unit-test-not-a-real-key',FABRYKA_MODEL:'bielik-11b-v3.1'};
 const monitor={read:async()=>structuredClone(state)};

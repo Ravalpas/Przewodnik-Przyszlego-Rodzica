@@ -1,3 +1,4 @@
+import {scopeCatalog} from '../dist/source-scope.js';
 export function warsawDay(date=new Date()) {
   return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Warsaw',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
 }
@@ -46,9 +47,9 @@ export async function sourceSnapshot(source,fetcher=fetch) {
   }
   throw new Error('Zbyt wiele przekierowań.');
 }
-export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}) {
-  let running=null;
-  const initial=()=>({catalog:structuredClone(catalog),seedVersion:catalog.version,sources:{},history:[],lastCheckedAt:null,lastScheduledDay:null});
+export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),defaultScope='zus'}) {
+  let running=null,runningScope=null;
+  const initial=()=>({catalog:structuredClone(catalog),seedVersion:catalog.version,sources:{},sourceScope:defaultScope,history:[],lastCheckedAt:null,lastScheduledDay:null});
   const read=async()=>{
     const state=await store.read();if(!state)return initial();
     if(state.seedVersion!==catalog.version){
@@ -57,10 +58,11 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}
     }
     return state;
   };
-  async function perform(reason) {
+  async function perform(reason,scope) {
     const state=await read(),now=clock().toISOString();
     if(reason==='scheduled'&&state.lastScheduledDay===warsawDay(clock()))return {...state,skipped:true,nextCheckAt:nextMidnight(clock())};
-    const queue=[...state.catalog.sources];
+    state.sourceScope=scope||state.sourceScope||defaultScope;
+    const queue=[...scopeCatalog(state.catalog,state.sourceScope).sources];
     async function consume(){while(queue.length){const source=queue.shift(),previous=state.sources[source.id]||{};try{
       const result=await sourceSnapshot(source,fetcher);
       const changed=result.status==='ok'&&previous.acceptedHash&&result.hash!==previous.acceptedHash;
@@ -80,7 +82,12 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}
   }
   return {
     read:async()=>({...await read(),nextCheckAt:nextMidnight(clock())}),
-    refresh:reason=>{if(!running)running=exclusive(()=>perform(reason||'manual')).finally(()=>running=null);return running;},
+    refresh:(reason,scope)=>{
+      if(scope&&!['zus','all'].includes(scope))throw new Error('Nieprawidłowy zakres źródeł.');
+      if(running&&scope&&scope!==runningScope)return Promise.reject(new Error('Trwa odświeżanie innego zakresu. Poczekaj na jego zakończenie.'));
+      if(!running){runningScope=scope||null;running=exclusive(()=>perform(reason||'manual',scope)).finally(()=>{running=null;runningScope=null;});}
+      return running;
+    },
     review:({sourceId,hash,patches=[],replacementUrl,quote,section})=>exclusive(async()=>{
       if(running)throw new Error('Poczekaj na zakończenie odświeżania.');
       const state=await read(),source=state.sources[sourceId];
@@ -98,6 +105,12 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}
         if(!patch.end||!['birth','pregnancy','birthCardDate','peselDate','parentalLeaveDate','dueDate'].includes(patch.end.anchor)||!Number.isInteger(patch.end.days??0)||Math.abs(patch.end.days??0)>1000||!Number.isInteger(patch.end.months??0)||Math.abs(patch.end.months??0)>24)throw new Error('Nieprawidłowa reguła terminu.');
         if(patch.validFrom&&!/^\d{4}-\d{2}-\d{2}$/.test(patch.validFrom))throw new Error('Nieprawidłowa data obowiązywania.');
         const version={description:patch.description,end:patch.end,validFrom:patch.validFrom||warsawDay(clock())};
+        if(patch.calendarWindow){
+          if(event.recurring!=='800')throw new Error('Karta nie zawiera okresu corocznego.');
+          const {start,end}=patch.calendarWindow,valid=v=>typeof v==='string'&&/^\d{2}-\d{2}$/.test(v)&&new Date('2001-'+v+'T12:00:00Z').toISOString().slice(5,10)===v;
+          if(!valid(start)||!valid(end)||start>end)throw new Error('Nieprawidłowy coroczny okres kalendarzowy.');
+          version.calendarWindow={start,end};
+        }
         if(patch.start){if(!['birth','pregnancy','birthCardDate','peselDate','parentalLeaveDate','dueDate'].includes(patch.start.anchor)||!Number.isInteger(patch.start.days??0)||Math.abs(patch.start.days??0)>1000||!Number.isInteger(patch.start.months??0)||Math.abs(patch.start.months??0)>24)throw new Error('Nieprawidłowa reguła początku.');version.start=patch.start;}
         event.versions=[...(event.versions||[]),version];
       }
@@ -108,5 +121,6 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date()}
   };
 }
 export function publicMonitorState(state) {
-  return {catalog:state.catalog,lastCheckedAt:state.lastCheckedAt,nextCheckAt:state.nextCheckAt,schedule:{time:'00:00',timezone:'Europe/Warsaw'},sources:Object.fromEntries(Object.entries(state.sources).map(([id,s])=>[id,{status:s.status,lastCheckedAt:s.lastCheckedAt,lastError:s.lastError,newLinks:s.newLinks||[],reviewedAt:s.reviewedAt}])),history:state.history};
+  const scope=state.sourceScope||'zus',catalog=scopeCatalog(state.catalog,scope),ids=new Set(catalog.sources.map(s=>s.id));
+  return {sourceScope:scope,catalog,lastCheckedAt:state.lastCheckedAt,nextCheckAt:state.nextCheckAt,schedule:{time:'00:00',timezone:'Europe/Warsaw'},sources:Object.fromEntries(Object.entries(state.sources).filter(([id])=>ids.has(id)).map(([id,s])=>[id,{status:s.status,lastCheckedAt:s.lastCheckedAt,lastError:s.lastError,newLinks:s.newLinks||[],reviewedAt:s.reviewedAt}])),history:state.history.filter(h=>ids.has(h.sourceId))};
 }

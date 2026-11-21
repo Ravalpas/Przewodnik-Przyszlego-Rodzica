@@ -21,6 +21,7 @@ export function personalProfileAnswer(question,profile,today=todayString(),optio
   const assessment=options.assessment||assessChatRequest(question,{history:options.history||[]});
   if(['unrelated','restricted','clarify'].includes(assessment.route))return null;
   if(assessment.hasOtherNeeds&&!options.includeMixed)return null;
+  if(profile.planning&&assessment.profileFields.length)return {kind:'profile',answer:'W profilu zaznaczono planowanie dziecka. Nie ustalono jeszcze wieku ciąży ani dziecka. Etap zmienicie w profilu, gdy będzie znany.',sources:[],tasks:[],local:true,fields:assessment.profileFields};
   const fields=assessment.profileOverview
     ?['name','age','gender',profile.mode==='pregnancy'?'dueDate':'birthDate']
     :assessment.profileFields;
@@ -59,6 +60,7 @@ export function personalProfileAnswer(question,profile,today=todayString(),optio
 }
 
 export function chatSuggestions(profile,today=todayString()) {
+  if(profile.planning)return ['Co przygotować w ZUS przed ciążą?','Jak sprawdzić ubezpieczenie chorobowe?','Jak zaplanować formalności po narodzinach?','Jak korzystać z kalendarza i notatek?'];
   const age=ageAt(profile.anchor,today);
   if(profile.mode==='pregnancy'){
     if(age.weeks<14)return ['Jakie sprawy i badania zaplanować na początku ciąży?','Jak przygotować się do pierwszej wizyty u lekarza?','O jakich prawach w pracy warto teraz pamiętać?','Jakie dokumenty zachowywać podczas ciąży?'];
