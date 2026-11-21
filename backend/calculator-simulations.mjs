@@ -3,7 +3,7 @@ export function calculatorSimulation(body,today){
   const allowed=['login','insurance','debt','ezla','ezus','application','usc'];
   if(!allowed.includes(body?.operation))throw new Error('Nieznana symulacja.');
   const base={simulated:true,officiallyValid:false,sent:false,reference:'DEMO-'+crypto.randomUUID().slice(0,8).toUpperCase(),date:today,operation:body.operation};
-  if(body.operation==='login')return {...base,name:'Profil demonstracyjny',message:'Symulacja logowania zakończona. Nie zalogowano do mObywatela i nie pobrano tożsamości.'};
+  if(body.operation==='login')return {...base,method:['mObywatel','login.gov.pl','eZUS'].includes(body.method)?body.method:'mObywatel',identity:{name:'Anna Przykładowa',birthDate:'1995-05-12'},name:'Profil demonstracyjny',message:'Symulacja logowania zakończona. Nie zalogowano do mObywatela i nie pobrano tożsamości.'};
   if(body.operation==='insurance'){
     const variant=['employee','business-debt','uninsured'].includes(body.variant)?body.variant:'employee';
     return {...base,variant,parents:[{occupation:variant==='uninsured'?'uninsured':variant==='business-debt'?'business':'employee',coverage:variant==='uninsured'?'none':variant==='business-debt'?'voluntary':'compulsory',insuranceFrom:shiftDate(today,-400),basisMode:variant==='business-debt'?'known':'salary',salary:6000,basis:5177.4,debt:variant==='business-debt'?500:0,payer:variant==='employee'?'employer':'zus',fte:1},{occupation:'employee',coverage:'compulsory',insuranceFrom:shiftDate(today,-500),basisMode:'salary',salary:9000,debt:0,payer:'zus',fte:1}],message:'To przykładowy zestaw danych, a nie odczyt konta ZUS.'};

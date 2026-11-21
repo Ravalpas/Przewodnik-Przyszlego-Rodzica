@@ -1,0 +1,24 @@
+{
+  "retrievedAt": "2026-11-21",
+  "source": "https://bip.zus.pl/inne/wymagania-dla-oprogramowania-interfejsowego/potwierdzenia-danych-z-zus-schemat-plikow-xsd",
+  "files": [
+    {
+      "file": "insured.xsd",
+      "url": "https://bip.zus.pl/documents/493361/0/potwierdzenie-ubezpieczony.xsd/da627beb-6a5b-e9e4-011e-a1989358fad0",
+      "sha256": "2b21aa23971bb190a4a015a621009a6c3b6c212749d3c7a1b6838608b9a25fc2",
+      "bytes": 11265
+    },
+    {
+      "file": "payer.xsd",
+      "url": "https://bip.zus.pl/documents/493361/0/potwierdzenie-platnik.xsd/de95bd60-1897-4aee-d648-d77e0dfde5c5",
+      "sha256": "20e9ddd19404483d558f8b6a199b60980e37d5f27949b0f3a9b3a48aa84406f2",
+      "bytes": 6727
+    },
+    {
+      "file": "beneficiary.xsd",
+      "url": "https://bip.zus.pl/documents/493361/494086/potwierdzenie_swiad.xsd/963b30ca-1c85-6305-0d7e-73386d88d9a0",
+      "sha256": "4711182a1a8ef12bca98d38329953dffb662b82ace4707ed4ff2cdccf3886c28",
+      "bytes": 18753
+    }
+  ]
+}

@@ -1,3 +1,5 @@
+> Dokument opisuje wdrożenie sprzed zmiany koncepcji. Aktualny zakres i ograniczenia: [REALIZACJA-ZADANIA.md](REALIZACJA-ZADANIA.md).
+
 # Zintegrowany Kalkulator
 
 Stan implementacji i weryfikacji: 21 listopada 2026 r. Kalkulator jest częścią istniejącej aplikacji JavaScript i istniejącego backendu Node/Worker. Nie korzysta z modelu językowego do wyliczeń.

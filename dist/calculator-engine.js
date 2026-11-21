@@ -12,7 +12,7 @@ export function calculatorDocuments(input,parents){
     const owner=input.parents[index],employee=owner.occupation==='employee',recipient=employee?'Pracodawca — urlop; '+(owner.payer==='employer'?'pracodawca wypłaca zasiłek.':owner.payer==='zus'?'ZUS wypłaca po przekazaniu dokumentów przez płatnika.':'ustal z płatnikiem, kto wypłaca zasiłek.'):(owner.occupation==='contract'&&owner.payer==='employer'?'Uprawniony płatnik składek.':'ZUS — świadczenie za okres odpowiadający urlopowi, bez urlopu pracowniczego.');
     const items=[],forms=[];
     if(focus==='family'||focus==='prebirth'){
-      forms.push({code:'ZAM',url:'https://www.zus.pl/wzory-formularzy/zasilki/zasilek-macierzynski'});
+      forms.push({code:focus==='prebirth'?'ZAS-55':'ZAM',url:'https://www.zus.pl/wzory-formularzy/zasilki/zasilek-macierzynski'});
       items.push(employee?'Wniosek o właściwy urlop w postaci papierowej lub elektronicznej.':'Wniosek o zasiłek przed rozpoczęciem odpowiedniego okresu; sprawdź termin dla wybranej części.');
       items.push(owner.payer==='zus'||!employee?'Dane dziecka i rodzica do pobrania polskiego aktu przez ZUS; odpis dostarcz, jeśli ZUS wezwie.':'Do pracodawcy: skrócony akt urodzenia lub właściwy zagraniczny dokument, także dopuszczalna kopia.');
       if(input.familyType!=='birth')items.push('Data przyjęcia oraz dokument sądu/umowa ze starostą; przy adopcji potwierdzenie złożenia wniosku. Dla zasiłku ZUS możliwe również orzeczenie o zabezpieczeniu pieczy.');
@@ -45,8 +45,8 @@ function calculatorTopUps(input,periods,rules){
   }return out;
 }
 export function calculateIntegrated(raw,bundle,today=todayString()){
-  const input=calcNormalizeInput(raw),rules=calculatorRulesFor(bundle,input.eventDate);
-  if(input.dateKind==='actual'&&input.eventDate>today)throw new CalculatorError('Data rzeczywistego zdarzenia nie może być przyszła. Wybierz datę planowaną.','dateKind');
+  const input=calcNormalizeInput(raw),effectiveEvent=['sickness','rehab','prebirth'].includes(input.focus)?input.sickness.start||input.eventDate:input.focus==='care'?input.care.start||input.eventDate:input.familyType==='adoption'&&input.adoptionApplicationDate&&input.adoptionApplicationDate>input.eventDate?input.adoptionApplicationDate:input.eventDate,rules=calculatorRulesFor(bundle,effectiveEvent);
+  if(input.dateKind==='actual'&&effectiveEvent>today)throw new CalculatorError('Data rzeczywistego zdarzenia nie może być przyszła. Wybierz datę planowaną.','dateKind');
   const parents=input.parents.map(parent=>calcParent(parent,input.eventDate,rules));
   let calculation;
   if(input.focus==='family')calculation={...calcFamily(input,rules,parents),parents};
@@ -65,7 +65,7 @@ export function calculateIntegrated(raw,bundle,today=todayString()){
   const usedSources=[...new Set([...all,...calculation.deadlines].map(p=>p.source))];
   const affected=rules.sources.filter(s=>(usedSources.includes(s.id)||['calc-documents','calc-rates'].includes(s.id))&&['changed','missing','unavailable'].includes(s.status));
   if(affected.length)warnings.unshift('Nie potwierdzono bieżącej treści części źródeł: '+affected.map(s=>s.name).join('; ')+'. Obliczenia zachowują ostatnią zatwierdzoną wersję zasad. Przed decyzją sprawdź aktualne warunki w ZUS; sama zmiana strony nie zmienia automatycznie parametrów.');
-  return {version:1,input,rulesVersion:rules.appliedVersion,rulesRevision:bundle.revision,reviewedAt:bundle.reviewedAt,calculatedOn:today,title:CALCULATOR_LABELS[input.focus],...calculation,totals,variants,monthly:calcMonthly(all.filter(p=>p.kind!=='information')),topUps:input.focus==='family'?calculatorTopUps(input,all,rules):[],facts:[...new Set(facts)],warnings:[...new Set(warnings)],documents:calculatorDocuments(input,calculation.parents||parents),sources:rules.sources.filter(s=>usedSources.includes(s.id)||['calc-documents','calc-forms','calc-rates','calc-base','calc-business-base','calc-pip','calc-family','calc-business-ulga','calc-small2026','calc-z3b'].includes(s.id)),support:input.loss!=='none'||input.hospitals.length||input.life?rules.support:[],generalGuidance:[
+  return {version:1,input,rulesVersion:rules.appliedVersion,rulesRevision:bundle.revision,reviewedAt:bundle.reviewedAt,calculatedOn:today,title:CALCULATOR_LABELS[input.focus],...calculation,totals,variants,monthly:calcMonthly(all.filter(p=>p.kind!=='information')),topUps:input.focus==='family'?calculatorTopUps(input,all,rules):[],facts:[...new Set(facts)],warnings:[...new Set(warnings)],documents:calculatorDocuments(input,calculation.parents||parents),sources:rules.sources.filter(s=>usedSources.includes(s.id)||['calc-documents','calc-forms','calc-rates','calc-base','calc-business-base','calc-postcap','calc-pip','calc-family','calc-business-ulga','calc-small2026','calc-z3b'].includes(s.id)),support:input.loss!=='none'||input.hospitals.length||input.life?rules.support:[],generalGuidance:[
     'Urlop pracowniczy i zasiłek to różne uprawnienia. ZUS albo uprawniony płatnik ustala prawo i dokładną wypłatę na podstawie dokumentów.',
     'Płatnik zgłaszający ponad 20 ubezpieczonych zasadniczo wypłaca zasiłki; przy 20 lub mniej wypłaca ZUS. Liczbę ustala się według właściwego dnia ustawowego. Wniosek o urlop kieruj do pracodawcy.',
     'Gdy dokumenty przekazuje płatnik do ZUS, ma na to nie więcej niż 7 dni od otrzymania. Termin wypłaty ZUS liczy się od wyjaśnienia ostatniej niezbędnej okoliczności, nie od naciśnięcia przycisku.',

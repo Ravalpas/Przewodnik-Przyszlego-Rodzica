@@ -14,7 +14,7 @@ const store={
   read:async()=>{try{return JSON.parse(await readFile(resolve(dataDir,'monitor.json'),'utf8'));}catch(e){if(e.code==='ENOENT')return null;throw e;}},
   write:async state=>{await mkdir(dataDir,{recursive:true});await writeFile(resolve(dataDir,'monitor.tmp'),JSON.stringify(state));await rename(resolve(dataDir,'monitor.tmp'),resolve(dataDir,'monitor.json'));}
 };
-const monitor=createMonitor({catalog,store,calculatorRules}),types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+const monitor=createMonitor({catalog,store,calculatorRules}),types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
 const bielik=createBielik({monitor,env:process.env});
 const port=Number(process.env.PORT||3000);
 const server=http.createServer(async(req,res)=>{

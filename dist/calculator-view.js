@@ -3,7 +3,7 @@ import {CALCULATOR_LABELS} from './calculator-engine.js';
 export const calcEscape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const calcMoney=value=>value===null||value===undefined?'Do ustalenia':new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN'}).format(value);
 export const calcIcon=()=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="3"/><path d="M8 6h8M8 10h1m6 0h1M8 14h1m6 0h1M8 18h1m6 0h1"/></svg>';
-export const calcParentLabel=(input,index)=>input.familyType==='birth'?(index?'Ojciec / drugi opiekun':'Matka'):`Rodzic / opiekun ${index+1}`;
+export const calcParentLabel=(input,index)=>input.familyType==='birth'?(index?'Ojciec / uprawniony opiekun':'Matka'):`Rodzic / opiekun ${index+1}`;
 export function calcField(input,path,label,{type='number',help='',min='0',max='',step='any',placeholder='',required=false}={}){
   const value=path.split('.').reduce((o,k)=>o?.[k],input);
   return `<label class="calc-field" data-field-label="${path}"><span>${label}</span><input data-calc-field="${path}" name="${path}" type="${type}" value="${calcEscape(value??'')}" ${type==='number'?`min="${min}" ${max?`max="${max}"`:''} step="${step}"`:''} ${placeholder?`placeholder="${calcEscape(placeholder)}"`:''} ${required?'required':''}>${help?`<small>${help}</small>`:''}</label>`;

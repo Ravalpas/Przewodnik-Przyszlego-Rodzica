@@ -54,6 +54,7 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),
   const read=async()=>{
     const state=await store.read();if(!state)return initial();
     if(!state.calculatorRules&&calculatorRules)state.calculatorRules=structuredClone(calculatorRules);
+    if(state.calculatorRules&&calculatorRules&&state.calculatorRules.version!==calculatorRules.version){const old=state.calculatorRules;state.calculatorRules={...calculatorRules,revision:Math.max(calculatorRules.revision,old.revision+1),versions:old.versions||[]};}
     if(state.seedVersion!==catalog.version){
       state.catalog.sources=[...state.catalog.sources,...catalog.sources.filter(s=>!state.catalog.sources.some(old=>old.id===s.id))];
       state.catalog.events=[...state.catalog.events,...catalog.events.filter(e=>!state.catalog.events.some(old=>old.id===e.id))];state.seedVersion=catalog.version;

@@ -30,7 +30,7 @@ test('debt threshold is exact and invalid histories, malformed parameters or mix
  for(const [debt,canPay]of [[48.06,true],[48.07,false]])assert.equal(run({parents:[parent({occupation:'business',coverage:'voluntary',debt}),parent()]}).parents[0].canPay,canPay);
  assert.throws(()=>run({parents:[parent({insuranceTo:'2019-01-01'}),parent()]}),/Koniec ubezpieczenia/);
  assert.throws(()=>run({parents:[parent({coverage:'voluntary'}),parent()]}),/obowiązkowe/);
- assert.throws(()=>run({familyType:'adoption',count:2,childBirthDate:'2021-01-01',adoptionDifferentAges:true}),/różnym wieku/);
+ assert.throws(()=>run({familyType:'adoption',adoptionApplicationDate:'2026-01-01',count:2,childBirthDate:'2021-01-01',adoptionDifferentAges:true}),/różnym wieku/);
  const bad=structuredClone(rules.parameters);bad.postInsuranceCap=[{from:'2026-02-30',amount:10000}];assert.throws(()=>validateCalculatorParameters(bad),/prawidłowych dat/);
  const overlap=structuredClone(rules.parameters);overlap.postInsuranceCap=[{from:'2026-01-01',to:'2026-03-31',amount:10000},{from:'2026-03-31',amount:11000}];assert.throws(()=>validateCalculatorParameters(overlap),/nakładać/);
 });
@@ -60,7 +60,7 @@ test('averaged payment is timely, excludes supplementary/paternity and preserves
   const uninsuredMother=run({rateChoice:'averaged',applicationDate:'2026-01-10',parents:[parent({coverage:'none'}),parent()],parentalParts:[{parent:1,weeks:32}]});assert.equal(uninsuredMother.averaged,false);assert.ok(uninsuredMother.periods.filter(p=>p.parent===1).every(p=>p.rate===70));
 });
 test('prenatal weeks consume the same pool and ordinary transfer requires insured maternity and 14 postnatal weeks',()=>{
-  const r=run({prenatalDays:42});assert.equal(r.periods[0].start,'2025-11-20');assert.equal(r.periods[0].days,140);assert.equal(r.periods[0].end,'2026-04-08');
+  const r=run({prenatalDays:42});assert.equal(r.periods[0].start,'2025-11-20');assert.equal(r.periods.reduce((sum,p)=>sum+p.days,0),140);assert.equal(r.periods.at(-1).end,'2026-04-08');
   assert.throws(()=>run({transfer:'ordinary',motherPostWeeks:13}),/14 tygodni/);
   assert.throws(()=>run({transfer:'ordinary',parents:[parent({coverage:'none'}),parent()]}),/uprawnienia matki/);
   assert.throws(()=>run({transfer:'mother-hospital',transferDate:'2026-03-01',parents:[parent({coverage:'none'}),parent()]}),/uprawnienia matki/);
@@ -104,7 +104,7 @@ test('post-insurance sickness has the 91-day limit, no employer salary, pregnanc
 });
 test('rehab after ordinary termination is possible, has indexed basis/cap and is not automatically awarded',()=>{
   const r=run({focus:'rehab',parents:[parent({insuranceTo:'2026-05-31',endReason:'ordinary'}),parent()],sickness:{start:'2026-06-01',days:30,pregnant:true,rehabExhausted:true,prognosis:true,rehabGranted:true,rehabAlreadyIndexed:true}});assert.equal(r.parents[0].canPay,true);assert.equal(sum(r),6000);
-  const missingCap=run({focus:'rehab',parents:[parent({insuranceTo:'2026-05-31',endReason:'ordinary',basisMode:'salary',salary:100000}),parent()],sickness:{start:'2026-06-01',days:30,pregnant:true,rehabExhausted:true,prognosis:true,rehabGranted:true}});assert.equal(missingCap.periods[0].gross,null);
+  const missingCap=run({focus:'rehab',parents:[parent({insuranceTo:'2026-05-31',endReason:'ordinary',basisMode:'salary',salary:100000}),parent()],sickness:{start:'2026-06-01',days:30,pregnant:true,rehabExhausted:true,prognosis:true,rehabGranted:true}});assert.equal(missingCap.periods[0].basis,9562.88);assert.equal(missingCap.periods[0].gross,9562.8);
   const b=structuredClone(rules);b.parameters.postInsuranceCap=[{from:'2026-06-01',to:'2026-08-31',amount:10000}];const capped=calculateIntegrated(fixture({focus:'rehab',parents:[parent({insuranceTo:'2026-05-31',endReason:'ordinary',basisMode:'salary',salary:100000}),parent()],sickness:{start:'2026-06-01',days:30,pregnant:true,rehabExhausted:true,prognosis:true,rehabGranted:true}}),b,'2026-11-21');assert.equal(capped.periods[0].basis,10000);
 });
 test('employee history and short business insurance use different formulas',()=>{
@@ -131,10 +131,10 @@ test('saved cases update without duplicate calendar periods, toggle and delete i
 test('versioned parameters apply by effective date and admin requires authorization, review and revision match',async()=>{
   let data=null;const monitor=createMonitor({catalog:{version:'v1',sources:[],events:[]},calculatorRules:rules,store:{read:async()=>structuredClone(data),write:async s=>data=structuredClone(s)},clock:()=>new Date('2026-11-21T12:00:00Z')});
   const parameters=structuredClone(rules.parameters);parameters.rates.maternity=95;
-  await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:1,verified:false}));
-  const updated=await monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:1,verified:true,note:'Test przyszłej zmiany'});
+  await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:rules.revision,verified:false}));
+  const updated=await monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:rules.revision,verified:true,note:'Test przyszłej zmiany'});
   assert.equal(calculatorRulesFor(updated,'2026-12-31').parameters.rates.maternity,100);assert.equal(calculatorRulesFor(updated,'2027-01-01').parameters.rates.maternity,95);
-  await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-02-01',previousRevision:1,verified:true}));
+  await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-02-01',previousRevision:rules.revision,verified:true}));
   const req=new Request('https://app.example/api/calculator/rules',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});assert.equal((await handleApi(req,monitor,{adminToken:'test-admin-secret'})).status,403);
   assert.throws(()=>validateCalculatorParameters({...parameters,rates:{...parameters.rates,parental:200}}));
 });

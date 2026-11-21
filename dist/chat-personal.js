@@ -1,3 +1,4 @@
+import {CASE_STAGES,CASE_ROLES} from './case-profile.js';
 import {ageAt,ageText,todayString,dayNumber} from './age.js';
 import {quantity,ordinal,calendarDate,periodText} from './polish.js';
 import {addMonths} from './timeline.js';
@@ -21,6 +22,7 @@ export function personalProfileAnswer(question,profile,today=todayString(),optio
   const assessment=options.assessment||assessChatRequest(question,{history:options.history||[]});
   if(['unrelated','restricted','clarify'].includes(assessment.route))return null;
   if(assessment.hasOtherNeeds&&!options.includeMixed)return null;
+  if(profile.formal&&assessment.profileFields.length){const facts=['Rola: '+CASE_ROLES[profile.parentRole]+'.','Sytuacja: '+CASE_STAGES[profile.caseStage]+'.'];if(profile.name)facts.push('Dziecko: '+profile.name+'.');if(profile.familySituations?.length)facts.push('Zapisane sytuacje i dzieci: '+profile.familySituations.map(s=>(CASE_STAGES[s.caseStage]||'Sytuacja')+': '+(s.children?.map((c,i)=>(c.name||'dziecko '+(i+1))+(c.birthDate?' — data urodzenia '+calendarDate(c.birthDate,{long:true}):' — nie podano daty urodzenia')).join(', ')||'nie uzupełniono informacji o dziecku')).join('; ')+'.');if(profile.childBirthDate)facts.push('Data urodzenia: '+calendarDate(profile.childBirthDate,{long:true})+'.');if(profile.caseStage==='pregnancy'&&profile.eventDate)facts.push('Przewidywany poród: '+calendarDate(profile.eventDate,{long:true})+'.');if(profile.placementDate)facts.push('Przyjęcie na wychowanie: '+calendarDate(profile.placementDate,{long:true})+'.');if(profile.adoptionCourtDate)facts.push('Prawomocność adopcji: '+calendarDate(profile.adoptionCourtDate,{long:true})+'.');return {kind:'profile',answer:facts.join(' '),sources:[],tasks:[],local:true,fields:assessment.profileFields};}
   if(profile.planning&&assessment.profileFields.length)return {kind:'profile',answer:'W profilu zaznaczono planowanie dziecka. Nie ustalono jeszcze wieku ciąży ani dziecka. Etap zmienicie w profilu, gdy będzie znany.',sources:[],tasks:[],local:true,fields:assessment.profileFields};
   const fields=assessment.profileOverview
     ?['name','age','gender',profile.mode==='pregnancy'?'dueDate':'birthDate']
@@ -60,6 +62,7 @@ export function personalProfileAnswer(question,profile,today=todayString(),optio
 }
 
 export function chatSuggestions(profile,today=todayString()) {
+  if(profile.formal)return profile.caseStage.startsWith('adop')?['Jakie dokumenty są potrzebne przy adopcji?','Jak podzielić urlop między rodziców adopcyjnych?','Jakie znaczenie ma data przyjęcia dziecka?','Gdzie złożyć wniosek o zasiłek?']:['Jak sprawdzić ubezpieczenie chorobowe?','Jak zaplanować podział urlopów?','Które dokumenty złożyć do pracodawcy, a które do ZUS?','Jak wykorzystać zapisany scenariusz?'];
   if(profile.planning)return ['Co przygotować w ZUS przed ciążą?','Jak sprawdzić ubezpieczenie chorobowe?','Jak zaplanować formalności po narodzinach?','Jak korzystać z kalendarza i notatek?'];
   const age=ageAt(profile.anchor,today);
   if(profile.mode==='pregnancy'){

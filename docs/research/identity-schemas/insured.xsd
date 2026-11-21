@@ -1,0 +1,172 @@
+﻿<!-- Created with Liquid Studio 2019 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+    <xs:element name="potwierdzenie">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="xs:string" name="data_pisma"/>
+                <xs:element type="xs:string" name="znak_pisma"/>
+                <xs:element type="xs:string" name="data_potwierdzenia"/>
+                <xs:element name="blok_danych_ubezpieczonego">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="imie"/>
+                            <xs:element type="xs:string" name="nazwisko"/>
+							<xs:element type="xs:string" name="pesel"/>
+                            <xs:element type="xs:string" name="seria_nr_dok" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="zgloszenia_do_ubezpieczen" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="zgloszenia_do_ubezpieczen_emerytalne" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="zgloszenie_do_ubezpieczen">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="platnik"/>
+                                                    <xs:element type="xs:string" name="kod_tytulu_ubezpieczenia"/>
+                                                    <xs:element type="xs:string" name="data_od"/>
+                                                    <xs:element type="xs:string" name="data_do"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+							<xs:element name="zgloszenia_do_ubezpieczen_rentowe" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="zgloszenie_do_ubezpieczen">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="platnik"/>
+                                                    <xs:element type="xs:string" name="kod_tytulu_ubezpieczenia"/>
+                                                    <xs:element type="xs:string" name="data_od"/>
+                                                    <xs:element type="xs:string" name="data_do"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+							<xs:element name="zgloszenia_do_ubezpieczen_chorobowe" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="zgloszenie_do_ubezpieczen">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="platnik"/>
+                                                    <xs:element type="xs:string" name="kod_tytulu_ubezpieczenia"/>
+                                                    <xs:element type="xs:string" name="data_od"/>
+                                                    <xs:element type="xs:string" name="data_do"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+							<xs:element name="zgloszenia_do_ubezpieczen_wypadkowe" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="zgloszenie_do_ubezpieczen">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="platnik"/>
+                                                    <xs:element type="xs:string" name="kod_tytulu_ubezpieczenia"/>
+                                                    <xs:element type="xs:string" name="data_od"/>
+                                                    <xs:element type="xs:string" name="data_do"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+							<xs:element name="zgloszenia_do_ubezpieczen_zdrowotne" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="zgloszenie_do_ubezpieczen">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="platnik"/>
+                                                    <xs:element type="xs:string" name="kod_tytulu_ubezpieczenia"/>
+                                                    <xs:element type="xs:string" name="data_od"/>
+                                                    <xs:element type="xs:string" name="data_do"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+				<xs:element name="podstawy_wymiaru_skladek_emerytalne_rentowe" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="podstawa_wymiaru_skladek_emerytalne_rentowe">
+                                <xs:complexType>
+                                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                        <xs:element type="xs:string" name="platnik"/>
+                                        <xs:element type="xs:string" name="okres"/>
+                                        <xs:element type="xs:string" name="kwota"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+				<xs:element name="podstawy_wymiaru_skladek_zdrowotne" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="podstawa_wymiaru_skladek_zdrowotne">
+                                <xs:complexType>
+                                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                        <xs:element type="xs:string" name="platnik"/>
+                                        <xs:element type="xs:string" name="okres"/>
+                                        <xs:element type="xs:string" name="kwota"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+				<xs:element name="przerwy_w_pracy" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="przerwa_w_pracy">
+                                <xs:complexType>
+                                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                        <xs:element type="xs:string" name="platnik"/>
+                                        <xs:element type="xs:string" name="swiadczenie"/>
+                                        <xs:element type="xs:string" name="data_od"/>
+										<xs:element type="xs:string" name="data_do"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+				<xs:element name="czlonkowie_rodziny" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="czlonek_rodziny">
+                                <xs:complexType>
+                                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                        <xs:element type="xs:string" name="imie_nazwisko"/>
+                                        <xs:element type="xs:string" name="pesel"/>
+                                        <xs:element type="xs:string" name="data_od"/>
+										<xs:element type="xs:string" name="pokrewienstwo"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="ds:Signature"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

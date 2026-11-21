@@ -1,3 +1,5 @@
+> Aktualizacja koncepcji: mapy i tygodniowe etapy usunięto. Obecny start prowadzi do kalkulatora; aktualny opis: [README.md](README.md) i [pokrycie zadania](docs/REALIZACJA-ZADANIA.md). Infrastruktura źródeł i harmonogram pozostają aktualne.
+
 # Oficjalne sprawy, kalendarz i aktualizacje
 
 Ta wersja zawiera wspólny katalog kart dla mapy i kalendarza. Treści startowe są w `dist/data/catalog.json`; źródła i ich okresy obowiązywania należy weryfikować redakcyjnie. Mapa tygodniowa i kalendarz korzystają z tych samych identyfikatorów spraw. Oznaczenie wykonania jest lokalnym oświadczeniem rodzica, niezależnym od niebieskich etapów czasu.

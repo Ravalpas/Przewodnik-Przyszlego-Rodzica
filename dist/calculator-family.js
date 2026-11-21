@@ -19,11 +19,13 @@ export function calcSupplement(input){
   return {days:weeks*7,weeks,hospitalDays:days,windowStart:start,windowEnd,notes:[early?'Kategoria do 15 tygodni: przed ukończeniem 28. tygodnia lub masa do 1000 g włącznie.':preterm?'Kategoria wcześniacza do 8 tygodni.':'Poród o czasie: sprawdzono co najmniej 2 kolejne dni pobytu z początkiem między 5. a 28. dobą.',input.count>1?'Podaj najniższą masę z porodu; uwzględniono pobyt najdłużej hospitalizowanego dziecka, bez sumowania pobytów różnych dzieci.':'Dni połączono bez podwajania nakładających się pobytów; zaokrąglono dopiero łączną liczbę dni.']};
 }
 export function calcFamily(input,rules,parents){
-  const p=rules.parameters,periods=[],deadlines=[],warnings=[],facts=[],event=input.eventDate,birth=input.familyType==='birth'?event:input.childBirthDate;
-  const acquired=input.parents.map(parent=>calcParent(parent,input.eventDate,rules));
-  const add=(data)=>{const original=acquired[data.parent],at=original.canPay?original:calcParent(input.parents[data.parent],data.start,rules);if(at.canPay&&!parents[data.parent].canPay)parents[data.parent]=at;const period=calcPeriod(data,at);if(period)periods.push(period);return period;};
+  const p=rules.parameters,periods=[],deadlines=[],warnings=[],facts=[],event=input.familyType==='adoption'&&input.adoptionApplicationDate?calcMaxDate(input.eventDate,input.adoptionApplicationDate):input.eventDate,birth=input.familyType==='birth'?event:input.childBirthDate;
+  const primary=input.familyType==='birth'?0:input.primaryParent,secondForRates=1-primary;
+  const acquired=input.parents.map(parent=>calcParent(parent,event,rules));
+  const add=(data)=>{const original=acquired[data.parent],end=shiftDate(data.start,data.days-1),cuts=[data.start,shiftDate(end,1),...input.parents[data.parent].extraTitles.concat(input.parents[data.parent]).map(t=>t.insuranceFrom).filter(d=>d&&d>data.start&&d<=end&&d<event),...original.titles.map(t=>t.paymentFrom).filter(d=>d&&d>data.start&&d<=end),...(data.start<event&&input.familyType==='birth'&&data.id.startsWith('maternity')?[event]:[])].sort();let first;for(let j=0;j<cuts.length-1;j++){if(cuts[j]===cuts[j+1])continue;const beforeBirth=cuts[j]<event&&input.familyType==='birth',at=beforeBirth?calcParent(input.parents[data.parent],cuts[j],rules):original.canPay?original:calcParent(input.parents[data.parent],cuts[j],rules);if(at.canPay&&!parents[data.parent].canPay)parents[data.parent]=at;const period=calcPeriod({...data,id:j?data.id+'-segment-'+j:data.id,start:cuts[j],days:dayNumber(cuts[j+1])-dayNumber(cuts[j])},at);if(period){if(at.status==='no'){period.daily=0;period.gross=0;period.monthly30=0;period.description='Brak prawa w tej części okresu według podanego tytułu i dat ubezpieczenia.';}if(at.titles.some(t=>t.paymentFrom)&&!at.titles.some(t=>['potential','conditional'].includes(t.status)&&(!t.paymentFrom||t.paymentFrom<=cuts[j]))){period.daily=0;period.gross=0;period.monthly30=0;period.eligibility='blocked';period.description='Okres przed późną spłatą zadłużenia — wypłata za tę część nie została odzyskana.';}periods.push(period);first??=period;}}return first;};
   const deadline=(id,title,date,source='calc-documents',detail='')=>{if(date)deadlines.push({id,title,start:date,end:date,source,kind:'deadline',description:detail});};
   if(input.familyType==='professional'){for(const parent of parents){parent.canPay=false;parent.status='no';parent.basis=null;parent.notes.push('Sama zawodowa piecza zastępcza nie daje prawa do zasiłku za okres na warunkach macierzyńskiego.');}return {periods,deadlines,warnings:['Zawodowa rodzina zastępcza nie ma tego uprawnienia na zasadach urlopu na warunkach macierzyńskiego. Sprawdź inne tytuły i wsparcie w ZUS.'],facts,supplement:{days:0},limits:{maternity:0,parental:0}};}
+  if(input.familyType==='adoption'&&input.dateKind==='actual'&&!input.adoptionApplicationDate)throw new CalculatorError('Podaj datę wystąpienia do sądu o przysposobienie. Samo przyjęcie lub rozpoczęcie planów nie wystarcza.','adoptionApplicationDate');
   if(input.familyType!=='birth'&&!birth)throw new CalculatorError('Podaj datę urodzenia przyjmowanego dziecka.','childBirthDate');
   if(birth>event)throw new CalculatorError('Dziecko nie może urodzić się po przyjęciu na wychowanie.','childBirthDate');
   if(input.prenatalDays>p.limits.prenatal)throw new CalculatorError(`Przed porodem można wykorzystać najwyżej ${p.limits.prenatal} dni macierzyńskiego.`,'prenatalDays');
@@ -66,18 +68,18 @@ export function calcFamily(input,rules,parents){
   const maternityName=input.familyType==='birth'?'Macierzyński':'Na warunkach macierzyńskiego';
   let donorEnd=matEnd,takeStart=null,takeEnd=null;
   if(input.transfer!=='none'){
-    if(!parents[0].canPay&&['ordinary','mother-hospital'].includes(input.transfer))throw new CalculatorError('Ta ścieżka wymaga uprawnienia matki. Przy braku jej ubezpieczenia sprawdź odrębne ustawowe zdarzenia, np. zgon, orzeczoną niesamodzielność albo podjęcie pracy.','transfer');
+    if(!parents[primary].canPay&&['ordinary','mother-hospital'].includes(input.transfer))throw new CalculatorError('Ta ścieżka wymaga uprawnienia matki. Przy braku jej ubezpieczenia sprawdź odrębne ustawowe zdarzenia, np. zgon, orzeczoną niesamodzielność albo podjęcie pracy.','transfer');
     if(input.transfer==='ordinary'){takeStart=shiftDate(event,input.motherPostWeeks*7);if(input.familyType==='birth'&&input.motherPostWeeks<14)throw new CalculatorError('Zwykłe przekazanie wymaga co najmniej 14 tygodni matki po porodzie.','motherPostWeeks');}
     else{
       if(!input.transferDate)throw new CalculatorError('Podaj datę przejęcia opieki lub zdarzenia.','transferDate');
-      takeStart=['mother-employed','mother-hospital','mother-incapacity'].includes(input.transfer)?input.transferDate:shiftDate(input.transferDate,1);
-      const motherInsured=parents[0].canPay;
+      const insuredAtBirth=acquired[0].canPay;takeStart=input.transfer==='mother-death'&&insuredAtBirth?input.transferDate:input.transfer==='mother-incapacity'&&!insuredAtBirth?calcMaxDate(event,shiftDate(input.transferDate,1)):['mother-employed','mother-hospital','mother-incapacity'].includes(input.transfer)?input.transferDate:shiftDate(input.transferDate,1);
+      const motherInsured=parents[primary].canPay;
       if(motherInsured&&['mother-hospital','mother-incapacity','abandonment'].includes(input.transfer))takeStart=calcMaxDate(takeStart,shiftDate(event,56));
       if(input.transfer==='mother-employed'&&acquired[0].canPay)throw new CalculatorError('Ta przesłanka dotyczy matki, która nie była uprawniona w dniu porodu. Dla uprawnionej matki wybierz właściwy rodzaj przejęcia.','transfer');
       if(input.transfer==='mother-employed'&&input.parents[0].fte<.5)throw new CalculatorError('Ta przesłanka wymaga pracy matki co najmniej na 1/2 pełnego etatu.','parents.0.fte');
     }
     if(takeStart<event||takeStart>matEnd)throw new CalculatorError('Przejęcie musi przypadać w niewykorzystanym okresie macierzyńskiego.','transferDate');
-    if(input.parents[1].occupation!=='employee'&&!input.otherParentStopsWork)throw new CalculatorError('Przy przejęciu przez niepracownika potwierdź przerwanie działalności zarobkowej dla osobistej opieki.','otherParentStopsWork');
+    if(input.parents[1-primary].occupation!=='employee'&&!input.otherParentStopsWork)throw new CalculatorError('Przy przejęciu przez niepracownika potwierdź przerwanie działalności zarobkowej dla osobistej opieki.','otherParentStopsWork');
     donorEnd=shiftDate(takeStart,-1);takeEnd=['mother-hospital','mother-employed'].includes(input.transfer)&&input.transferEnd?calcMinDate(matEnd,input.transferEnd):matEnd;
     if(takeEnd<takeStart)throw new CalculatorError('Sprawdź koniec przejętej opieki.','transferEnd');
     if(input.transfer==='ordinary'||input.transfer==='mother-incapacity'){deadline('mother-resigns','Wniosek matki o rezygnację z pozostałej części',shiftDate(takeStart,-7));deadline('father-transfer','Wniosek pracownika przejmującego macierzyński',shiftDate(takeStart,-14));}
@@ -88,12 +90,12 @@ export function calcFamily(input,rules,parents){
   if(pause){
     if(input.motherPauseStart<shiftDate(event,56)||input.motherPauseEnd<input.motherPauseStart)throw new CalculatorError('Przerwa na szpital dziecka jest możliwa po 8 tygodniach po porodzie. Sprawdź daty.','motherPauseStart');
     if(input.motherPauseStart>matEnd)throw new CalculatorError('Nie ma już pozostałej puli macierzyńskiego do przerwania.','motherPauseStart');
-    add({id:'maternity-before-pause',title:maternityName,parent:0,start:matStart,days:dayNumber(input.motherPauseStart)-dayNumber(matStart),rate:maternityRate,source:'calc-maternity'});
+    add({id:'maternity-before-pause',title:maternityName,parent:primary,start:matStart,days:dayNumber(input.motherPauseStart)-dayNumber(matStart),rate:maternityRate,source:'calc-maternity'});
     const remaining=calcDays(input.motherPauseStart,matEnd),resume=shiftDate(input.motherPauseEnd,1);matEnd=shiftDate(resume,remaining-1);
-    add({id:'maternity-after-pause',title:maternityName+' po przerwie',parent:0,start:resume,days:remaining,rate:maternityRate,source:'calc-maternity'});
+    add({id:'maternity-after-pause',title:maternityName+' po przerwie',parent:primary,start:resume,days:remaining,rate:maternityRate,source:'calc-maternity'});
   }else{
-    add({id:'maternity-1',title:maternityName,parent:0,start:matStart,days:calcDays(matStart,donorEnd),rate:maternityRate,source:'calc-maternity'});
-    if(takeStart){add({id:'maternity-2',title:'Przejęty '+maternityName.toLowerCase(),parent:1,start:takeStart,days:calcDays(takeStart,takeEnd),rate:maternityRate,source:'calc-maternity'});if(takeEnd<matEnd&&input.transfer==='mother-hospital')add({id:'maternity-return',title:maternityName+' po powrocie matki',parent:0,start:shiftDate(takeEnd,1),days:dayNumber(matEnd)-dayNumber(takeEnd),rate:maternityRate,source:'calc-maternity'});}
+    add({id:'maternity-1',title:maternityName,parent:primary,start:matStart,days:calcDays(matStart,donorEnd),rate:maternityRate,source:'calc-maternity'});
+    if(takeStart){add({id:'maternity-2',title:'Przejęty '+maternityName.toLowerCase(),parent:1-primary,start:takeStart,days:calcDays(takeStart,takeEnd),rate:maternityRate,source:'calc-maternity'});if(takeEnd<matEnd&&input.transfer==='mother-hospital')add({id:'maternity-return',title:maternityName+' po powrocie matki',parent:primary,start:shiftDate(takeEnd,1),days:dayNumber(matEnd)-dayNumber(takeEnd),rate:maternityRate,source:'calc-maternity'});}
   }
   const supplement=calcSupplement(input);
   if(supplement.days&&input.loss==='none'){
@@ -101,7 +103,7 @@ export function calcFamily(input,rules,parents){
     add({id:'supplement',title:'Uzupełniający macierzyński',parent,start,days:supplement.days,rate:p.rates.maternity,source:'calc-supplement'});
     const employee=input.parents[parent].occupation==='employee',date=employee?shiftDate(matEnd,-p.deadlines.supplement):shiftDate(matEnd,-1);
     deadline('supplement-request','Wniosek o uzupełniający macierzyński',date,'calc-supplement',employee?'Co najmniej 21 dni przed zakończeniem macierzyńskiego.':'Wniosek przed zakończeniem podstawowego okresu zasiłku.');
-    if(input.supplementApplication&&input.supplementApplication>date){warnings.push('Spóźniony wniosek uzupełniający wymaga ustalenia z pracodawcą/ZUS. Kwoty i prawa nie potwierdzamy.');const period=periods.find(period=>period.id==='supplement');if(period){period.eligibility='assessment';period.conditional=true;period.daily=null;period.gross=null;period.monthly30=null;}}
+    if(input.supplementApplication&&input.supplementApplication>date){warnings.push('Spóźniony wniosek uzupełniający wymaga ustalenia z pracodawcą/ZUS. Kwoty i prawa nie potwierdzamy.');for(const period of periods.filter(period=>period.id==='supplement'||period.id.startsWith('supplement-segment-'))){period.eligibility='assessment';period.conditional=true;period.daily=null;period.gross=null;period.monthly30=null;}}
     matEnd=end;facts.push(...supplement.notes);
   }
   const parentLimit=input.familyType==='birth'?`${Number(event.slice(0,4))+6}-12-31`:shiftDate(endAge,-1);
@@ -119,13 +121,13 @@ export function calcFamily(input,rules,parents){
     const part=use[index],parent=part.parent,owner=input.parents[parent],start=part.start||cursor[parent],days=Math.round(part.weeks*7);
     if(!Number.isInteger(part.weeks*7))throw new CalculatorError('Podaj pełne dni rodzicielskiego: liczba tygodni musi odpowiadać całym dniom.','parentalParts');
     if(start<event)throw new CalculatorError('Rodzicielski nie może poprzedzać narodzin lub przyjęcia.','parentalParts');
-    if(parent===0&&start<=matEnd&&parents[0].canPay&&periods.some(period=>period.parent===0&&period.end>=start))throw new CalculatorError('Rodzicielski tego rodzica nie może nakładać się na jego macierzyński.','parentalParts');
+    if(start<=matEnd&&periods.some(period=>period.parent===parent&&period.end>=start&&period.start<=shiftDate(start,days-1)))throw new CalculatorError('Rodzicielski tego rodzica nie może nakładać się na jego macierzyński.','parentalParts');
     if((part.work||part.extensionWork)&&owner.occupation!=='employee')throw new CalculatorError('Ustawowe wydłużenie za pracę dotyczy pracownika u pracodawcy udzielającego urlopu.','parentalParts');
     if(part.work>=owner.fte||part.extensionWork>=owner.fte)throw new CalculatorError('Wymiar pracy musi być mniejszy od etatu objętego urlopem.','parentalParts');
     const extra=Math.floor(days*part.work/(1-part.extensionWork));
-    const reserved=parent===1?Math.max(0,Math.min(days,p.limits.reserved*7-reservedUsed[parent])):0;
+    const reserved=parent===secondForRates?Math.max(0,Math.min(days,p.limits.reserved*7-reservedUsed[parent])):0;
     let segments=reserved?[{days:reserved,rate:p.rates.reserved},{days:days-reserved,rate:parentRate}]:[{days,rate:parentRate}],segmentStart=start;
-    for(let s=0;s<segments.length;s++){const seg=segments[s];if(seg.days){add({id:`parental-${index}-${s}`,title:'Rodzicielski'+(parent===1&&seg.rate===p.rates.reserved?' — w tym część wyłączna':''),parent,start:segmentStart,days:seg.days,rate:seg.rate,work:part.work,fte:owner.fte,source:'calc-parental'});segmentStart=shiftDate(segmentStart,seg.days);}}
+    for(let s=0;s<segments.length;s++){const seg=segments[s];if(seg.days){add({id:`parental-${index}-${s}`,title:'Rodzicielski'+(parent===secondForRates&&seg.rate===p.rates.reserved?' — w tym część wyłączna':''),parent,start:segmentStart,days:seg.days,rate:seg.rate,work:part.work,fte:owner.fte,source:'calc-parental'});segmentStart=shiftDate(segmentStart,seg.days);}}
     if(extra){let remainingExtra=extra;for(let s=0;s<segments.length;s++){const seg=segments[s],extraForSegment=s===segments.length-1?remainingExtra:Math.floor(seg.days*part.work/(1-part.extensionWork));if(extraForSegment){const period=add({id:'extension-'+index+'-'+s,title:'Rodzicielski — wydłużenie za pracę',parent,start:segmentStart,days:extraForSegment,rate:seg.rate,work:part.extensionWork,fte:owner.fte,source:'calc-parental',description:'Zachowano stawkę części, z której pochodzi wydłużenie. Niepełny dzień pominięto.'});segmentStart=shiftDate(segmentStart,extraForSegment);remainingExtra-=extraForSegment;if(segments.length>1&&!Number.isInteger(seg.days*part.work/(1-part.extensionWork))){period.daily=null;period.gross=null;period.monthly30=null;period.eligibility='assessment';warnings.push('Zmiana stawki wewnątrz części łączonej z pracą daje niepełny dzień podziału wydłużenia. Kwota tej części wymaga potwierdzenia przez płatnika.');}}}}
     const end=shiftDate(start,days+extra-1);if(end>parentLimit)throw new CalculatorError('Plan przekracza granicę wieku. Przy szczególnej 9-tygodniowej gwarancji blisko urodzin potwierdź możliwy rodzicielski indywidualnie w ZUS, zamiast automatycznie przyznawać pełną pulę.','parentalParts');
     cursor[parent]=shiftDate(end,1);reservedUsed[parent]+=days;

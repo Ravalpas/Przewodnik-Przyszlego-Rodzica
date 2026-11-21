@@ -10,7 +10,7 @@ export {doctorPortrait,chatIcon} from './chat-view.js';
 // travel separately. Local answers are omitted from subsequent AI history.
 export function chatProfileForRequest(profile) {
   const dates=Object.fromEntries(['birthCardDate','peselDate','parentalLeaveDate'].filter(key=>profile.dates?.[key]).map(key=>[key,profile.dates[key]]));
-  return {parentRole:profile.parentRole,planning:profile.planning===true,mode:profile.mode,anchor:profile.anchor,dueDate:profile.dueDate,pregnancyStart:profile.pregnancyStart,dates,completedTasks:profile.completedTasks||[],notApplicableTasks:profile.notApplicableTasks||[]};
+  return {...(profile.formal?{formal:true,childCount:profile.childCount,life:profile.life,caseStage:profile.caseStage,childBirthDate:profile.childBirthDate,eventDate:profile.eventDate,placementDate:profile.placementDate,adoptionCourtDate:profile.adoptionCourtDate}:{}),parentRole:profile.parentRole,planning:profile.planning===true,mode:profile.mode,anchor:profile.anchor,dueDate:profile.dueDate,pregnancyStart:profile.pregnancyStart,dates,completedTasks:profile.completedTasks||[],notApplicableTasks:profile.notApplicableTasks||[]};
 }
 
 export function createBielikChat({getProfile,openTask,openNote=()=>{},openCalculator=()=>{},getCalculator=()=>({available:true,cases:[]}),onBack,getTasks=()=>null,getNotes=()=>({available:false,notes:[]}),getStorage=()=>globalThis.localStorage}) {

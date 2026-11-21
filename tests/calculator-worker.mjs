@@ -10,7 +10,7 @@ try{
  const input={eventDate:'2026-11-01',dateKind:'actual',parents:[{occupation:'employee',coverage:'compulsory',insuranceFrom:'2020-01-01',basis:6000}],parentalParts:[]};
  const response=await worker.fetch(request('/api/calculator/calculate',{input}),env);assert.equal(response.status,200);const result=await response.json();assert.equal(result.periods[0].gross,28000);
  assert.equal((await worker.fetch(request('/api/calculator/rules',{parameters:rules.parameters}),env)).status,403);
- const updated=await worker.fetch(request('/api/calculator/rules',{parameters:{...rules.parameters,rates:{...rules.parameters.rates,maternity:95}},validFrom:'2027-01-01',previousRevision:1,verified:true,note:'Test in isolated SQLite'},'test-only-admin'),env);assert.equal(updated.status,200);
+ const updated=await worker.fetch(request('/api/calculator/rules',{parameters:{...rules.parameters,rates:{...rules.parameters.rates,maternity:95}},validFrom:'2027-01-01',previousRevision:rules.revision,verified:true,note:'Test in isolated SQLite'},'test-only-admin'),env);assert.equal(updated.status,200);
  const old=await (await worker.fetch(request('/api/calculator/calculate',{input}),env)).json();assert.equal(old.periods[0].rate,100);
  const future=await (await worker.fetch(request('/api/calculator/calculate',{input:{...input,eventDate:'2027-01-01',dateKind:'expected'}}),env)).json();assert.equal(future.periods[0].rate,95);
  for(const operation of ['login','insurance','debt','ezla','ezus','application','usc']){const response=await worker.fetch(request('/api/calculator/simulate',{operation,debt:50}),env);assert.equal(response.status,200);assert.equal((await response.json()).sent,false);}

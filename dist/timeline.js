@@ -15,6 +15,18 @@ export function datedEvents(catalog,profile,today=todayString()) {
     const version=(original.versions||[]).filter(v=>v.validFrom<=today).sort((a,b)=>a.validFrom.localeCompare(b.validFrom)).at(-1);
     return {...original,...version};
   });
+  if(profile.formal){
+    const isBirth=profile.caseStage==='born'&&profile.childBirthDate,isPregnancy=profile.caseStage==='pregnancy';
+    return definitions.filter(e=>isBirth?e.mode==='child':isPregnancy?e.mode==='pregnancy':false).map(event=>{
+      const known={birth:profile.childBirthDate||null,dueDate:isPregnancy?profile.eventDate||null:null,...profile.dates};
+      const date=rule=>{const anchor=known[rule?.anchor];return anchor?shiftDate(addMonths(anchor,rule.months||0),rule.days||0):null;};
+      let start=date(event.start),end=date(event.end);
+      if(event.recurring==='800'&&isBirth){const window=event.calendarWindow||{start:'02-01',end:'06-30'},year=Number(today.slice(0,4))+(today.slice(5)>window.end?1:0);start=year+'-'+window.start;end=year+'-'+window.end;if(start<profile.childBirthDate)start=profile.childBirthDate;}
+      const source=catalog.sources.find(s=>s.id===event.source);if(!source)return null;
+      const policy=eventPolicy(event),notApplicable=policy.canMarkNotApplicable&&profile.notApplicableTasks?.includes(event.id)||false,done=!notApplicable&&profile.completedTasks?.includes(event.id)||false,daysLeft=end?dayNumber(end)-dayNumber(today):null;
+      return {...event,...policy,source,start,end,done,notApplicable,daysLeft,preview:!start&&!end,needsDate:(!start||!end)&&event.timing!=='preparation',important:!done&&!notApplicable&&daysLeft!==null&&daysLeft>=0&&daysLeft<=7};
+    }).filter(Boolean);
+  }
   if(profile.planning){
     const previews=definitions.map(event=>({...event,...eventPolicy(event),preview:true,source:catalog.sources.find(s=>s.id===(event.source==='vaccines'?(Number(today.slice(0,4))>=2027?'vaccines27':'vaccines26'):event.source)),start:null,end:null,done:false,notApplicable:false,needsDate:false})).filter(e=>e.source);
     const annual=definitions.find(e=>e.recurring==='800'),source=catalog.sources.find(s=>s.id===annual?.source);

@@ -1,0 +1,108 @@
+﻿<!-- Created with Liquid Studio 2019 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+    <xs:element name="potwierdzenie">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="xs:string" name="data_pisma"/>
+                <xs:element type="xs:string" name="znak_pisma"/>
+                <xs:element type="xs:string" name="data_potwierdzenia"/>
+                <xs:element name="blok_danych_platnika">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="nazwa_skrocona"/>
+                            <xs:element type="xs:string" name="nip"/>
+                            <xs:element type="xs:string" name="regon"/>
+                            <xs:element type="xs:string" name="pesel"/>
+                            <xs:element type="xs:string" name="imie"/>
+                            <xs:element type="xs:string" name="nazwisko"/>
+							<xs:element type="xs:string" name="seria_nr_dok" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="potwierdzenie_bycia_platnikiem">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="data_wyrejestrowania" minOccurs="0" maxOccurs="1"/>
+                            <xs:element type="xs:string" name="platnik_skladek" minOccurs="0" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="salda" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="saldo" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element type="xs:string" name="saldo_calosc"/>
+                                        <xs:element name="saldo_podzial">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="okres_sprawozd"/>
+                                                    <xs:element type="xs:string" name="okres_rozl"/>
+                                                    <xs:element type="xs:string" name="kwota_dra"/>
+                                                    <xs:element type="xs:string" name="wplata_sprawozd"/>
+                                                    <xs:element type="xs:string" name="saldo_sprawozd"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+										<xs:element type="xs:string" name="ostatnia_dra"  minOccurs="0" maxOccurs="1"/>
+										<xs:element type="xs:string" name="data_wyrej_na_dzien"  minOccurs="0" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="adresy" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="adres_siedziby"/>
+                            <xs:element type="xs:string" name="adres_do_korespondencji"/>
+							<xs:element type="xs:string" name="adres_prowadzenia_działalności"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="liczba_ubezp" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="okresy">
+                                <xs:complexType>
+                                    <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                        <xs:element type="xs:string" name="okres"/>
+                                        <xs:element type="xs:string" name="liczba_ubezp_raporty"/>
+                                        <xs:element type="xs:string" name="liczba_ubezp_dra"/>
+                                    </xs:choice>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="liczba_ubezp_komentarz"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="skladki_szs" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="skladki_szs_zdrowotne">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="okresy_zdrw_szs">
+                                            <xs:complexType>
+                                                <xs:choice maxOccurs="unbounded" minOccurs="0">
+                                                    <xs:element type="xs:string" name="data_wplaty"/>
+                                                    <xs:element type="xs:string" name="kwota"/>
+													<xs:element type="xs:string" name="kod_tytulu"/>
+                                                </xs:choice>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element type="xs:string" name="suma_zdrw_szs"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="ds:Signature"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

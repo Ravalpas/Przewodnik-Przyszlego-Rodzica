@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-21.1",
-  "revision": 1,
+  "version": "2026-11-21.2",
+  "revision": 2,
   "validFrom": "2025-03-19",
   "reviewedAt": "2026-11-21",
   "parameters": {
@@ -73,7 +73,33 @@
       "2026-3": 109,
       "2026-4": 100.4
     },
-    "postInsuranceCap": [],
+    "postInsuranceCap": [
+      {
+        "from": "2025-12-01",
+        "to": "2026-02-28",
+        "amount": 8771.7
+      },
+      {
+        "from": "2026-03-01",
+        "to": "2026-05-31",
+        "amount": 9197.79
+      },
+      {
+        "from": "2026-06-01",
+        "to": "2026-08-31",
+        "amount": 9562.88
+      },
+      {
+        "from": "2026-09-01",
+        "to": "2026-11-30",
+        "amount": 9233.13
+      },
+      {
+        "from": "2026-12-01",
+        "to": "2027-02-28",
+        "amount": 9317.01
+      }
+    ],
     "forecastWage": {
       "2026": 9420
     }
@@ -240,6 +266,13 @@
       "url": "https://www.zus.pl/-/tymczasowe-przywr%C3%B3cenie-formularza-z-3b-na-profilu-p%C5%82atnika-w-zwi%C4%85zku-z-ograniczeniami-na-ezus-dla-pe%C5%82nomocnik%C3%B3w",
       "section": "Komunikat z 20 listopada 2026 r.",
       "quote": "20 listopada 2026"
+    },
+    {
+      "id": "calc-postcap",
+      "name": "ZUS — przeciętne wynagrodzenie i limit po ustaniu",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/wskazniki/minimalne-i-przecietne-wynagrodzenie",
+      "section": "Przeciętne wynagrodzenie kwartalne",
+      "quote": "2026"
     }
   ],
   "support": [

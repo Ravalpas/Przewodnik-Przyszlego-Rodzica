@@ -1,0 +1,256 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+    <xs:element name="potwierdzenie">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="xs:string" name="data_pisma"/>
+                <xs:element type="xs:string" name="znak_pisma"/>
+                <xs:element type="xs:string" name="data_potwierdzenia"/>
+                <xs:element name="blok_danych_swiadczeniobiorcy">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="imie"/>
+                            <xs:element type="xs:string" name="nazwisko"/>
+                            <xs:element type="xs:string" name="pesel"/>
+                            <xs:element type="xs:string" name="seria_nr_dok"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="emerytury_i_renty" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="okres_od"/>
+                            <xs:element type="xs:string" name="okres_do"/>
+                            <xs:element name="lista_swiadczen" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="swiadczenie" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="numer_swiadczenia" />
+                                                    <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element type="xs:string" name="miesiac_rok" />
+                                                                <xs:element type="xs:string" name="rodzaj_swiadczenia" />
+                                                                <xs:element type="xs:string" name="kwota_przyznanego_swiadczenia" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="renta_rodzinna_podzialowa" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="miesiac_rok" />
+                                                    <xs:element type="xs:string" name="kwota_dla_grona" />
+                                                    <xs:element type="xs:string" name="kwota_dla_jednej_osoby" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="dodatki" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="miesiac_rok" />
+                                                    <xs:element type="xs:string" name="rodzaj_dodatku" />
+                                                    <xs:element type="xs:string" name="kwota_dodatku" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="odliczenia" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="miesiac_rok" />
+                                                    <xs:element type="xs:string" name="kwota_brutto" />
+                                                    <xs:element type="xs:string" name="zaliczka_na_podatek" />
+                                                    <xs:element type="xs:string" name="skladka_na_ubezpieczenie" />
+                                                    <xs:element type="xs:string" name="kwota_netto" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="potracenia" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="miesiac_rok" />
+                                                    <xs:element type="xs:string" name="kwota" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="ma_przyznane_prawo_do" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="swiadczenie" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element type="xs:string" name="numer_swiadczenia" />
+                                                    <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element type="xs:string" name="rodzaj_swiadczenia" />
+                                                                <xs:element type="xs:string" name="data_ustalenia_prawa_do_swiadczenia" />
+                                                                <xs:element type="xs:string" name="data_podjecia_wyplaty_swiadczenia" />
+                                                                <xs:element type="xs:string" name="okres_zawieszenia" />
+                                                                <xs:element type="xs:string" name="data_ustania_prawa_do_swiadczenia" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="dodatki" maxOccurs="1" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="dodatek" type="xs:string" maxOccurs="unbounded" minOccurs="0" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="brak_swiadczen" maxOccurs="1" minOccurs="0" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="zasilki" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="okres_od"/>
+                            <xs:element type="xs:string" name="okres_do"/>
+                            <xs:element name="lista_swiadczen" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                         <xs:element name="swiadczenie" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                     <xs:element type="xs:string" name="rodzaj_swiadczenia"/>
+                                                     <xs:element type="xs:string" name="okres_od"/>
+                                                     <xs:element type="xs:string" name="okres_do"/>
+                                                     <xs:element type="xs:string" name="kwota_brutto"/>
+                                                     <xs:element type="xs:string" name="kwota_netto"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element type="xs:string" name="kwota_brutto" maxOccurs="1" minOccurs="0"/>
+                            <xs:element type="xs:string" name="kwota_netto" maxOccurs="1" minOccurs="0"/>
+                            <xs:element name="po_ustaniu_ubezpieczenia" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                         <xs:element name="swiadczenie" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                     <xs:element type="xs:string" name="rodzaj_swiadczenia"/>
+                                                     <xs:element type="xs:string" name="okres_od"/>
+                                                     <xs:element type="xs:string" name="okres_do"/>
+                                                     <xs:element type="xs:string" name="status"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="potracenia" maxOccurs="1" minOccurs="0" >
+                                <xs:complexType mixed="true">
+                                    <xs:sequence>
+                                         <xs:element name="pozycja" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                     <xs:element type="xs:string" name="miesiac_rok"/>
+                                                     <xs:element type="xs:string" name="kwota"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="ma_przyznane_prawo_do" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                         <xs:element name="swiadczenie" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                     <xs:element type="xs:string" name="rodzaj_swiadczenia"/>
+                                                     <xs:element type="xs:string" name="okres_od"/>
+                                                     <xs:element type="xs:string" name="okres_do"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                         <xs:element name="brak_swiadczen" maxOccurs="1" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="nie_pobieram_swiadczenia" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element type="xs:string" name="data_od" minOccurs="0" maxOccurs="1" />
+                            <xs:element type="xs:string" name="data_do" minOccurs="0" maxOccurs="1" />
+                            <xs:element name="swiadczenia" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="emerytury" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="renty" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="swiadczenia_przedemerytalnego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="rodzicielskiego_swiadczenia_uzupelniającego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="nauczycielskiego_swiadczenia_kompensacyjnego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="zasilku_chorobowego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="zasiłku_macierzynskiego" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="dane_dzieci" minOccurs="0" maxOccurs="1">
+                                                         <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element type="xs:string" name="dziecko" minOccurs="0" maxOccurs="unbounded" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                 </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="zasilku_opiekunczego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="zasilku_wyrownawczego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="swiadczenia_rehabilitacyjnego" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="samoistne" minOccurs="0" maxOccurs="1"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="ds:Signature"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-21.2",
+  "version": "2026-11-21.3",
   "reviewedAt": "2026-11-21",
   "sources": [
     {
@@ -243,6 +243,13 @@
       "url": "https://www.zus.pl/-/tymczasowe-przywr%C3%B3cenie-formularza-z-3b-na-profilu-p%C5%82atnika-w-zwi%C4%85zku-z-ograniczeniami-na-ezus-dla-pe%C5%82nomocnik%C3%B3w",
       "section": "Komunikat z 20 listopada 2026 r.",
       "quote": "20 listopada 2026"
+    },
+    {
+      "id": "calc-postcap",
+      "name": "ZUS — przeciętne wynagrodzenie i limit po ustaniu",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/wskazniki/minimalne-i-przecietne-wynagrodzenie",
+      "section": "Przeciętne wynagrodzenie kwartalne",
+      "quote": "2026"
     }
   ],
   "events": [
