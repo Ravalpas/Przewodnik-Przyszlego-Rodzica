@@ -43,10 +43,10 @@ export function calcFamily(input,rules,parents){
       maternity=Math.max(0,maternity-input.previousMaternityDays);
     deadline('adoption-request','Złóż wniosek o urlop na warunkach macierzyńskiego',shiftDate(event,7),'calc-documents','Wniosek pracownika w ciągu 7 dni; początek urlopu najpóźniej w ciągu 21 dni od spełnienia właściwych warunków.');
   }
-  const averageDeadline=shiftDate(event,p.deadlines.averaged),application=input.applicationDate;
-  let averaged=input.rateChoice==='averaged'&&application&&application>=event&&application<=averageDeadline;
+  const exceptionalRate=!acquired[0].canPay&&['mother-death','mother-incapacity','abandonment'].includes(input.transfer)&&input.transferDate,averageAnchor=exceptionalRate?calcMaxDate(event,input.transferDate):event,averageDeadline=shiftDate(averageAnchor,p.deadlines.averaged),application=input.applicationDate;
+  let averaged=input.rateChoice==='averaged'&&application&&application>=averageAnchor&&application<=averageDeadline;
   if(input.rateChoice==='averaged'&&!averaged){if(input.dateKind==='expected'&&(!application||application<event)){averaged=true;warnings.push('Wariant uśredniony jest planem: właściwy wniosek trzeba złożyć po zdarzeniu, w ciągu 21 dni.');}else warnings.push('Nie potwierdzono wniosku w 21 dni. Obliczono wariant 100% / 70%, zamiast automatycznie przyznać 81,5%.');}
-  if(averaged&&input.familyType==='birth'&&!acquired[0].canPay){averaged=false;warnings.push('Nie potwierdzono prawa matki do zasiłku w dniu porodu. Sam wniosek nie uruchamia wariantu 81,5% dla ojca; jego samodzielny rodzicielski liczymy według stawki 70%.');}
+  if(averaged&&input.familyType==='birth'&&!acquired[0].canPay&&!exceptionalRate){averaged=false;warnings.push('Nie potwierdzono prawa matki do zasiłku w dniu porodu. Sam wniosek nie uruchamia wariantu 81,5% dla ojca; jego samodzielny rodzicielski liczymy według stawki 70%.');}
   deadline('average-request','Termin wniosku o wariant uśredniony',averageDeadline,'calc-rates','Znaczenie dla stawki 81,5%; to nie koniec prawa do zasiłku.');
   const maternityRate=averaged?p.rates.averaged:p.rates.maternity,parentRate=averaged?p.rates.averaged:p.rates.parental;
   let matStart=input.familyType==='birth'?shiftDate(event,-input.prenatalDays):event,matEnd=shiftDate(matStart,maternity-1);

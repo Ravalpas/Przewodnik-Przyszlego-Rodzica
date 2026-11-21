@@ -10,7 +10,7 @@ import {createMonitor,publicCalculatorRules} from '../backend/monitor.mjs';
 import {handleApi} from '../backend/api.mjs';
 const rules=JSON.parse(await readFile(new URL('../dist/data/calculator-rules.json',import.meta.url),'utf8'));
 const parent=(extra={})=>({occupation:'employee',coverage:'compulsory',insuranceFrom:'2020-01-01',basisMode:'known',basis:6000,fte:1,payer:'zus',...extra});
-const fixture=(extra={})=>({familyType:'birth',focus:'family',eventDate:'2026-01-01',dateKind:'actual',count:1,parents:[parent(),parent()],parentalParts:[],...extra});
+const fixture=(extra={})=>({formalCase:{currentLeave:'maternity',stillbirthCertificate:'yes',careCertificate:'yes',careOtherBenefit:'no',otherCarer:'unavailable'},familyType:'birth',focus:'family',eventDate:'2026-01-01',dateKind:'actual',count:1,parents:[parent(),parent()],parentalParts:[],...extra});
 const run=input=>calculateIntegrated(fixture(input),rules,'2026-11-21');
 const sum=result=>result.periods.filter(p=>p.gross!==null).reduce((s,p)=>s+p.gross,0);
 
@@ -23,14 +23,14 @@ test('parental leave at childbirth, exact extra-care newborn boundary and select
  const birth=run({parents:[parent({coverage:'none',parentalLeave:true}),parent()]});assert.equal(birth.parents[0].status,'conditional');assert.notEqual(birth.periods[0].gross,null);
  const care=run({focus:'care',childBirthDate:'2026-01-01',care:{start:'2026-02-20',type:'extra-newborn',parent:1,days:20,qualifyingReason:true,noOtherCarer:true}});assert.equal(care.periods[0].days,6);assert.equal(care.documents[0].parent,1);
  assert.throws(()=>run({focus:'care',care:{type:'extra-newborn',qualifyingReason:true}}),/dokładnej daty/);
- const otherReason=run({focus:'care',care:{type:'healthy-child',ageMonths:36,qualifyingReason:true,noOtherCarer:true,reason:'carer-hospital',closureNotice:90}});assert.notEqual(otherReason.periods[0].gross,null);
+ const otherReason=run({focus:'care',childBirthDate:'2023-01-01',care:{type:'healthy-child',ageMonths:36,qualifyingReason:true,noOtherCarer:true,reason:'carer-hospital',closureNotice:90}});assert.notEqual(otherReason.periods[0].gross,null);
  const adult=run({focus:'care',care:{type:'adult',noOtherCarer:true}});assert.equal(adult.parents[0].canPay,false);
 });
 test('debt threshold is exact and invalid histories, malformed parameters or mixed-age assumptions cannot grant money',()=>{
  for(const [debt,canPay]of [[48.06,true],[48.07,false]])assert.equal(run({parents:[parent({occupation:'business',coverage:'voluntary',debt}),parent()]}).parents[0].canPay,canPay);
  assert.throws(()=>run({parents:[parent({insuranceTo:'2019-01-01'}),parent()]}),/Koniec ubezpieczenia/);
  assert.throws(()=>run({parents:[parent({coverage:'voluntary'}),parent()]}),/obowiązkowe/);
- assert.throws(()=>run({familyType:'adoption',adoptionApplicationDate:'2026-01-01',count:2,childBirthDate:'2021-01-01',adoptionDifferentAges:true}),/różnym wieku/);
+ const complex=run({familyType:'adoption',adoptionApplicationDate:'2026-01-01',count:2,childBirthDate:'2021-01-01',adoptionDifferentAges:true});assert.equal(complex.formalDecision.state,'information-needed');assert.equal(complex.totals[0].gross,null);assert.ok(complex.formalDecision.nextSteps.length);
  const bad=structuredClone(rules.parameters);bad.postInsuranceCap=[{from:'2026-02-30',amount:10000}];assert.throws(()=>validateCalculatorParameters(bad),/prawidłowych dat/);
  const overlap=structuredClone(rules.parameters);overlap.postInsuranceCap=[{from:'2026-01-01',to:'2026-03-31',amount:10000},{from:'2026-03-31',amount:11000}];assert.throws(()=>validateCalculatorParameters(overlap),/nakładać/);
 });
@@ -78,7 +78,7 @@ test('supplement merges stays, handles 1000g inclusively, term stays from birth 
   assert.equal(make({gestation:38,hospitals:[{child:1,start:'2026-01-29',end:'2026-02-02'}]}).weeks,0);
   assert.equal(make({gestation:35,hospitals:[{child:1,start:'2026-01-01',end:'2026-01-03'},{child:1,start:'2026-01-03',end:'2026-01-08'}]}).hospitalDays,8);
   assert.equal(make({count:2,gestation:30,birthWeight:900,hospitals:[{child:1,start:'2026-01-01',end:'2026-01-08'},{child:2,start:'2026-01-01',end:'2026-01-08'}]}).weeks,2);
-  const late=run({gestation:35,hospitals:[{start:'2026-01-01',end:'2026-01-07'}],supplementApplication:'2026-05-20'}).periods.find(p=>p.id==='supplement');assert.equal(late.gross,null);assert.equal(late.eligibility,'assessment');
+  const late=run({formalCase:{gestationWeek:35,gestationDay:0},gestation:35,hospitals:[{start:'2026-01-01',end:'2026-01-07'}],supplementApplication:'2026-05-20'}).periods.find(p=>p.id==='supplement');assert.equal(late.gross,null);assert.equal(late.eligibility,'assessment');
 });
 test('work extension uses full-time fraction; benefit reduction uses original employment fraction; mixed rates retain origin',()=>{
   const half=run({parentalParts:[{parent:0,weeks:32,work:.5,extensionWork:.5}]});assert.equal(half.periods.filter(p=>p.id.startsWith('parental')||p.id.startsWith('extension')).reduce((s,p)=>s+p.days,0),448);
@@ -132,7 +132,7 @@ test('versioned parameters apply by effective date and admin requires authorizat
   let data=null;const monitor=createMonitor({catalog:{version:'v1',sources:[],events:[]},calculatorRules:rules,store:{read:async()=>structuredClone(data),write:async s=>data=structuredClone(s)},clock:()=>new Date('2026-11-21T12:00:00Z')});
   const parameters=structuredClone(rules.parameters);parameters.rates.maternity=95;
   await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:rules.revision,verified:false}));
-  const updated=await monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:rules.revision,verified:true,note:'Test przyszłej zmiany'});
+  const updated=await monitor.updateCalculator({parameters,validFrom:'2027-01-01',previousRevision:rules.revision,verified:true,reviewer:'Test reviewer',legalBasis:'Synthetic regression fixture',sourceUrl:'https://www.zus.pl/',transitionNote:'Future version only; isolated test.',note:'Test przyszłej zmiany'});
   assert.equal(calculatorRulesFor(updated,'2026-12-31').parameters.rates.maternity,100);assert.equal(calculatorRulesFor(updated,'2027-01-01').parameters.rates.maternity,95);
   await assert.rejects(()=>monitor.updateCalculator({parameters,validFrom:'2027-02-01',previousRevision:rules.revision,verified:true}));
   const req=new Request('https://app.example/api/calculator/rules',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});assert.equal((await handleApi(req,monitor,{adminToken:'test-admin-secret'})).status,403);

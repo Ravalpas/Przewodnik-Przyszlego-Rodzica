@@ -16,7 +16,7 @@ test('formal profiles migrate real dates without inventing a due date or adoptio
  const waiting=normalizeCaseProfile({formal:true,parentRole:'mother',caseStage:'pregnancy'});assert.equal(calculatorInitial(waiting).eventDate,'');
  const adoption=normalizeCaseProfile({formal:true,parentRole:'father',caseStage:'adopted',childBirthDate:'2020-05-02',placementDate:'2026-09-01',adoptionApplicationDate:'2026-09-15',adoptionCourtDate:'2026-11-01',childCount:2});const input=calculatorInitial(adoption);assert.equal(input.familyType,'adoption');assert.equal(input.eventDate,'2026-09-01');assert.equal(input.adoptionApplicationDate,'2026-09-15');assert.equal(input.count,2);
  assert.throws(()=>normalizeCaseProfile({...adoption,adoptionCourtDate:'2026-08-01'}),/przyjęcia/);
- const context=buildBielikContext(waiting,{catalog:{sources:[],events:[]}},'2026-11-21');assert.equal(context.stage,'Oczekiwanie narodzin');assert.ok(!context.age.includes('tydzień'));
+ const context=buildBielikContext(waiting,{catalog:{sources:[],events:[]}},waiting.anchor);assert.equal(context.stage,'Oczekiwanie narodzin');assert.ok(!context.age.includes('tydzień'));
 });
 test('import never maps pension contribution bases or empty PDF labels to money and preserves unrelated parent fields',()=>{
  const parsed=suggestionsFromText('Podstawa skladek emerytalnych: 9000\nStale wynagrodzenie brutto: 6000\nPodstawa zasilku:   \nData porodu: 01.11.2026');assert.equal(parsed.suggestions.length,2);assert.equal(parsed.suggestions[0].field,'salary');

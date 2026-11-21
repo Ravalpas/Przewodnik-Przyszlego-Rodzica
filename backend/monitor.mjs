@@ -85,14 +85,16 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),
   }
   return {
     read:async()=>({...await read(),nextCheckAt:nextMidnight(clock())}),
-    updateCalculator:({parameters,validFrom,previousRevision,verified,note})=>exclusive(async()=>{
+    updateCalculator:({parameters,validFrom,previousRevision,verified,note,reviewer,legalBasis,sourceUrl,transitionNote})=>exclusive(async()=>{
       if(running)throw new Error('Poczekaj na zakończenie sprawdzania źródeł.');
       const state=await read(),current=state.calculatorRules;if(!current)throw new Error('Brak zasad kalkulatora.');
       if(verified!==true)throw new Error('Potwierdź weryfikację zasad w oficjalnych źródłach.');
       if(previousRevision!==current.revision)throw new Error('Zasady zmieniły się w innym oknie. Wczytaj aktualną wersję.');
       if(!/^\d{4}-\d{2}-\d{2}$/.test(validFrom||'')||Number.isNaN(Date.parse(validFrom))||new Date(validFrom+'T12:00Z').toISOString().slice(0,10)!==validFrom)throw new Error('Podaj prawidłową datę obowiązywania.');
+      if(!String(reviewer||'').trim()||!String(legalBasis||'').trim()||!String(transitionNote||'').trim())throw new Error('Podaj osobę odpowiedzialną, podstawę prawną i ocenę przepisów przejściowych.');
+      let legalUrl;try{legalUrl=new URL(sourceUrl);}catch{throw new Error('Podaj oficjalne źródło zmiany.');}if(legalUrl.protocol!=='https:'||legalUrl.username||legalUrl.password||!['zus.pl','gov.pl','sejm.gov.pl'].some(host=>legalUrl.hostname===host||legalUrl.hostname.endsWith('.'+host)))throw new Error('Źródło musi być oficjalnym adresem HTTPS ZUS lub administracji.');
       const checked=validateCalculatorParameters(parameters),revision=current.revision+1,id=`${warsawDay(clock())}.${revision}`;
-      const versions=[...(current.versions||[]).filter(v=>v.validFrom!==validFrom),{id,validFrom,parameters:checked,note:String(note||'').trim().slice(0,1000),reviewedAt:warsawDay(clock())}].sort((a,b)=>a.validFrom.localeCompare(b.validFrom));
+      const versions=[...(current.versions||[]).filter(v=>v.validFrom!==validFrom),{id,validFrom,parameters:checked,review:{reviewer:String(reviewer).trim().slice(0,200),legalBasis:String(legalBasis).trim().slice(0,2000),sourceUrl:legalUrl.href,transitionNote:String(transitionNote).trim().slice(0,2000),type:'editorial-review',institutionApproval:false},note:String(note||'').trim().slice(0,1000),reviewedAt:warsawDay(clock())}].sort((a,b)=>a.validFrom.localeCompare(b.validFrom));
       if(versions.length>40)throw new Error('Osiągnięto limit wersji; przed kolejną zmianą potrzebna jest archiwizacja przez administratora.');
       state.calculatorHistory=[{at:clock().toISOString(),previous:current,revision:id},...(state.calculatorHistory||[])].slice(0,8);
       state.calculatorRules={...current,revision,reviewedAt:warsawDay(clock()),versions};await store.write(state);return state.calculatorRules;

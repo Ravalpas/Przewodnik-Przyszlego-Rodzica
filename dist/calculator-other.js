@@ -59,7 +59,7 @@ export function calcCare(input,rules){
   let qualifies=true,limit=p.limits.care;
   if(c.type==='sick-child'){if(c.ageMonths>=168)limit=p.limits.careAdult;}
   if(c.type==='healthy-child'){if(c.ageMonths>=96||!c.qualifyingReason)qualifies=false;if(c.reason==='closure'&&c.closureNotice>=7){qualifies=false;warnings.push('Przy zamknięciu placówki nieprzewidziane zawiadomienie oznacza mniej niż 7 dni wcześniej.');}}
-  if(c.type==='disabled-child'){if(!c.disabled||c.ageMonths>=216)qualifies=false;limit=p.limits.careDisabled;}
+  if(c.type==='disabled-child'){const reason=input.formalCase.careReason;if(!c.disabled||c.ageMonths>=216||reason==='regular-carer'&&(c.ageMonths<96||!c.qualifyingReason))qualifies=false;limit=reason==='sick'&&c.ageMonths<168?p.limits.care:p.limits.careDisabled;}
   if(c.type==='adult')limit=p.limits.careAdult;
   if(c.type==='extra-newborn'){limit=56;if(!input.childBirthDate)throw new CalculatorError('Dodatkowy opiekuńczy wymaga dokładnej daty urodzenia dziecka.','childBirthDate');const elapsed=dayNumber(start)-dayNumber(input.childBirthDate);if(!c.qualifyingReason||elapsed<0||elapsed>=56)qualifies=false;limit=Math.max(0,56-Math.max(0,elapsed));facts.push('Dodatkowy opiekuńczy w ustawowej sytuacji matki podczas pierwszych 8 tygodni jest odrębny od zwykłego rocznego limitu. Okres ograniczono do końca 56. dnia od narodzin.');}
   if(c.type==='adult'&&!c.sameHousehold)qualifies=false;

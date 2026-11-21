@@ -17,3 +17,5 @@
  .phone-shell>.case-header{left:var(--desktop-nav-width);right:0;width:auto}
  .phone-shell>.workspace-main{bottom:0}
 }
+
+.formal-decision{padding:26px;background:#fff;border:1px solid #d1e0f4;border-radius:20px;margin-bottom:24px}.formal-decision li{font-size:16px;line-height:1.7;margin:9px 0}.formal-decision details{margin:16px 0;border:1px solid #dce6f5;border-radius:12px;padding:15px}.formal-decision summary{color:#31578f;font-weight:700;cursor:pointer}.formal-decision p{line-height:1.7}.formal-questions>.calc-details{margin:17px 0}.formal-child{border:1px solid #d8e4f4;border-radius:14px;padding:18px;margin:16px 0}.rights-guide{margin-top:28px}.rights-guide .term-explanations{margin:0}

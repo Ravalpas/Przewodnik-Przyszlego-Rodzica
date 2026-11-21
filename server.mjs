@@ -21,7 +21,7 @@ const server=http.createServer(async(req,res)=>{
   try {
     const url=new URL(req.url,`http://${req.headers.host||'localhost'}`);
     if(url.pathname.startsWith('/api/')){
-      const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>50000){res.writeHead(413).end();return;}chunks.push(chunk);}
+      const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>(url.pathname.startsWith('/api/calculator/')?150000:50000)){res.writeHead(413).end();return;}chunks.push(chunk);}
       const request=new Request(url,{method:req.method,headers:req.headers,...(!['GET','HEAD'].includes(req.method)?{body:Buffer.concat(chunks)}:{})});
       const response=await handleApi(request,monitor,{adminToken:process.env.ADMIN_TOKEN,bielik,clientKey:req.socket.remoteAddress});
       res.writeHead(response.status,Object.fromEntries(response.headers));res.end(Buffer.from(await response.arrayBuffer()));return;

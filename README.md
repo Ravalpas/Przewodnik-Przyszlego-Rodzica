@@ -34,3 +34,7 @@ W zakładce „Dane i dokumenty” rzeczywiście działają lokalny odczyt formu
 [Pokrycie pełnego zadania i granice](docs/REALIZACJA-ZADANIA.md), [audyt 16 stron](docs/research/contest-full-audit.md), [rzeczywisty zakres integracji i XSD](docs/research/identity-integration.md), [analiza przepisów ZUS](docs/research/zus-options-review.md).
 
 Materiały źródłowe `szablony` i `materialy istotne` są zbędne do uruchomienia. Nie dodawaj do Git pliku `backend/.env`, baz i plików roboczych; zachowano `.gitignore` i kontrolę `npm run check:secrets`. Nie umieszczaj w publicznym repozytorium nieuprawnionych kopii konkursowych zestawów spraw. Udostępnione przykłady PDF w `dist/examples` są własne i syntetyczne.
+
+## Kontrola formalna i wspólna historia
+
+Wdrożenie ustaleń z 22.11.2026: [raport punktów 1–20 i jawne granice](docs/USTALENIA-FORMALNE.md). Trzy stany wyniku, odrębne daty, wersje dokumentów, historia rodzinnych limitów, wykrywanie zbiegów i procedury ustalenia złożonych spraw. Test desktopowy: `node tests/formal-browser.mjs`. System nie ma instytucjonalnego zatwierdzenia ZUS ani produkcyjnego rejestru decyzji.

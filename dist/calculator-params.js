@@ -71,5 +71,5 @@ export function calculatorRulesFor(bundle,date){
   if(!bundle?.parameters)throw new CalculatorError('Nie udało się wczytać zasad kalkulatora. Odśwież informacje.');
   const versions=[{id:bundle.version,validFrom:bundle.validFrom,parameters:bundle.parameters},...(bundle.versions||[])].filter(v=>v.validFrom<=date).sort((a,b)=>a.validFrom.localeCompare(b.validFrom));
   const version=versions.at(-1);if(!version)throw new CalculatorError('Dla tej daty nie ma zweryfikowanej wersji zasad. Wybierz późniejszą datę lub skonsultuj ją z ZUS.','eventDate');
-  return {...bundle,parameters:version.parameters,appliedVersion:version.id,appliedFrom:version.validFrom};
+  return {...bundle,parameters:version.parameters,legalReview:version.review||null,appliedVersion:version.id,appliedFrom:version.validFrom};
 }

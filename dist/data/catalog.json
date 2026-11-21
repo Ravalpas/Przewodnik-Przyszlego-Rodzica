@@ -1,6 +1,6 @@
 {
-  "version": "2026-11-21.3",
-  "reviewedAt": "2026-11-21",
+  "version": "2026-11-22.1",
+  "reviewedAt": "2026-11-22",
   "sources": [
     {
       "id": "usc",
@@ -250,6 +250,20 @@
       "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/wskazniki/minimalne-i-przecietne-wynagrodzenie",
       "section": "Przeciętne wynagrodzenie kwartalne",
       "quote": "2026"
+    },
+    {
+      "id": "formal-z15",
+      "name": "ZUS — wersja formularza Z-15",
+      "url": "https://www.zus.pl/-/oswiadczenie-zus-z-15",
+      "section": "Formularz od 24 października 2026",
+      "quote": "24 października 2026"
+    },
+    {
+      "id": "formal-transition-2027",
+      "name": "ZUS — przepisy od 1 stycznia 2027",
+      "url": "https://psz.zus.pl/web/guest/o-zus/aktualnosci/-/asset_publisher/aktualnosci/content/id/13705743",
+      "section": "Niezdolność i kilka tytułów ubezpieczenia",
+      "quote": "1 stycznia 2027"
     }
   ],
   "events": [

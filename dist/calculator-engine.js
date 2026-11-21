@@ -1,3 +1,5 @@
+import {normalizeFamilyHistory,applyFamilyHistory,familyConflicts} from './family-ledger.js';
+import {formalInputAssessment,formalProcedureResult,attachFormalAssessment,calculateFuneralProcedure} from './formal-registry.js';
 import {dayNumber,shiftDate,todayString} from './age.js';
 import {addMonths} from './timeline.js';
 import {CalculatorError,calculatorRulesFor} from './calculator-params.js';
@@ -44,16 +46,22 @@ function calculatorTopUps(input,periods,rules){
     out.push({parent,month:input.topUpMonth,days,threshold:calcRound(floor),netReceived:net,topUp:calcRound(Math.max(0,floor-net)),source:'calc-rates'});
   }return out;
 }
-export function calculateIntegrated(raw,bundle,today=todayString()){
+export function calculateIntegrated(raw,bundle,today=todayString(),context={}){
   const input=calcNormalizeInput(raw),effectiveEvent=['sickness','rehab','prebirth'].includes(input.focus)?input.sickness.start||input.eventDate:input.focus==='care'?input.care.start||input.eventDate:input.familyType==='adoption'&&input.adoptionApplicationDate&&input.adoptionApplicationDate>input.eventDate?input.adoptionApplicationDate:input.eventDate,rules=calculatorRulesFor(bundle,effectiveEvent);
   if(input.dateKind==='actual'&&effectiveEvent>today)throw new CalculatorError('Data rzeczywistego zdarzenia nie może być przyszła. Wybierz datę planowaną.','dateKind');
+  const history=normalizeFamilyHistory(context.history||[]),historyNotes=applyFamilyHistory(input,history);
+  const formalAssessment=formalInputAssessment(input);formalAssessment.facts.push(...historyNotes);
+  if(input.formalCase.topic==='funeral')return calculateFuneralProcedure(input,rules,today);
+  if(formalAssessment.manual)return formalProcedureResult(input,rules,formalAssessment,today);
   const parents=input.parents.map(parent=>calcParent(parent,input.eventDate,rules));
   let calculation;
   if(input.focus==='family')calculation={...calcFamily(input,rules,parents),parents};
   else if(input.focus==='business')calculation=calcBusiness(input,rules);
   else if(input.focus==='care')calculation=calcCare(input,rules);
   else calculation=calcPregnancy(input,rules);
-  const all=calculation.periods;
+  const all=calculation.periods,conflicts=familyConflicts(input,all,history);
+  for(const conflict of conflicts.filter(c=>c.blocking))formalAssessment.issues.push({id:'family-conflict',message:conflict.message,field:'formalCase.recordStatus',source:'maternity'});
+  formalAssessment.facts.push(...conflicts.filter(c=>!c.blocking).map(c=>c.message));
   const totals=[0,1].map(parent=>{const owned=all.filter(p=>p.parent===parent&&p.kind!=='information');return {parent,days:calcMergeIntervals(owned).reduce((s,p)=>s+calcDays(p.start,p.end),0),gross:owned.length&&owned.every(p=>p.gross!==null)?calcRound(owned.reduce((s,p)=>s+p.gross,0)):null};});
   const variants=[];
   if(input.focus==='family'&&input.loss==='none')for(const choice of ['standard','averaged']){const variant=calcFamily({...input,rateChoice:choice},rules,parents);variants.push({id:choice,label:choice==='standard'?'100% macierzyński + 70% rodzicielski':'81,5% po terminowym wniosku',available:choice==='standard'||variant.averaged,gross:[0,1].map(parent=>{const periods=variant.periods.filter(p=>p.parent===parent);return periods.length&&periods.every(p=>p.gross!==null)?calcRound(periods.reduce((s,p)=>s+p.gross,0)):null;})});}
@@ -65,7 +73,7 @@ export function calculateIntegrated(raw,bundle,today=todayString()){
   const usedSources=[...new Set([...all,...calculation.deadlines].map(p=>p.source))];
   const affected=rules.sources.filter(s=>(usedSources.includes(s.id)||['calc-documents','calc-rates'].includes(s.id))&&['changed','missing','unavailable'].includes(s.status));
   if(affected.length)warnings.unshift('Nie potwierdzono bieżącej treści części źródeł: '+affected.map(s=>s.name).join('; ')+'. Obliczenia zachowują ostatnią zatwierdzoną wersję zasad. Przed decyzją sprawdź aktualne warunki w ZUS; sama zmiana strony nie zmienia automatycznie parametrów.');
-  return {version:1,input,rulesVersion:rules.appliedVersion,rulesRevision:bundle.revision,reviewedAt:bundle.reviewedAt,calculatedOn:today,title:CALCULATOR_LABELS[input.focus],...calculation,totals,variants,monthly:calcMonthly(all.filter(p=>p.kind!=='information')),topUps:input.focus==='family'?calculatorTopUps(input,all,rules):[],facts:[...new Set(facts)],warnings:[...new Set(warnings)],documents:calculatorDocuments(input,calculation.parents||parents),sources:rules.sources.filter(s=>usedSources.includes(s.id)||['calc-documents','calc-forms','calc-rates','calc-base','calc-business-base','calc-postcap','calc-pip','calc-family','calc-business-ulga','calc-small2026','calc-z3b'].includes(s.id)),support:input.loss!=='none'||input.hospitals.length||input.life?rules.support:[],generalGuidance:[
+  return attachFormalAssessment({version:1,input,rulesVersion:rules.appliedVersion,rulesRevision:bundle.revision,legalReview:rules.legalReview||null,reviewedAt:bundle.reviewedAt,calculatedOn:today,title:CALCULATOR_LABELS[input.focus],...calculation,totals,variants,monthly:calcMonthly(all.filter(p=>p.kind!=='information')),topUps:input.focus==='family'?calculatorTopUps(input,all,rules):[],familyConflicts:conflicts,facts:[...new Set(facts.concat(formalAssessment.facts))],warnings:[...new Set(warnings)],documents:calculatorDocuments(input,calculation.parents||parents),sources:rules.sources.filter(s=>usedSources.includes(s.id)||['calc-documents','calc-forms','calc-rates','calc-base','calc-business-base','calc-postcap','calc-pip','calc-family','calc-business-ulga','calc-small2026','calc-z3b'].includes(s.id)),support:input.loss!=='none'||input.hospitals.length||input.life?rules.support:[],generalGuidance:[
     'Urlop pracowniczy i zasiłek to różne uprawnienia. ZUS albo uprawniony płatnik ustala prawo i dokładną wypłatę na podstawie dokumentów.',
     'Płatnik zgłaszający ponad 20 ubezpieczonych zasadniczo wypłaca zasiłki; przy 20 lub mniej wypłaca ZUS. Liczbę ustala się według właściwego dnia ustawowego. Wniosek o urlop kieruj do pracodawcy.',
     'Gdy dokumenty przekazuje płatnik do ZUS, ma na to nie więcej niż 7 dni od otrzymania. Termin wypłaty ZUS liczy się od wyjaśnienia ostatniej niezbędnej okoliczności, nie od naciśnięcia przycisku.',
@@ -78,5 +86,5 @@ export function calculateIntegrated(raw,bundle,today=todayString()){
     'Podczas osobistej opieki państwo może finansować składki, ale nie jest to wypłata dla rodzica. Zakres zależy m.in. od wcześniejszych 6 miesięcy ubezpieczenia i tytułu; przy zleceniu dochodzą granice wcześniejszej podstawy. Urlop wychowawczy wymaga osobnej oceny podstawy i innych tytułów.',
     'Zasiłek macierzyński przy kolejnym porodzie w trakcie wychowawczego może przysługiwać. Finansowanie składek z wychowawczego zmienia się, gdy powstaje inny obowiązkowy tytuł.',
     'Świadczenie rodzicielskie poza ZUS, 800+ i Aktywny Rodzic mają odrębne warunki. Brak zasiłku macierzyńskiego ZUS nie oznacza braku wszelkiego wsparcia. Sprawdź karty i wskazane instytucje.'
-  ]};
+  ]},formalAssessment,today);
 }

@@ -18,9 +18,9 @@ export async function handleApi(request,monitor,{adminToken,bielik,clientKey}={}
   if(request.method==='GET'&&path==='/api/chat/status')return json(bielik?.status()||{available:false});
   if(path==='/api/calculator/rules'){
     if(request.method==='GET')return json(publicCalculatorRules(await monitor.read()));
-    if(adminToken&&request.headers.get('Authorization')!==`Bearer ${adminToken}`)return json({error:'Brak uprawnienia do zmiany zasad.'},403);
+    if(!adminToken||request.headers.get('Authorization')!==`Bearer ${adminToken}`)return json({error:'Brak uprawnienia do zmiany zasad.'},403);
   }
-  if(path==='/api/review'&&adminToken&&request.headers.get('Authorization')!==`Bearer ${adminToken}`)return json({error:'Brak uprawnienia do przeglądu źródeł.'},403);
+  if(path==='/api/review'&&(!adminToken||request.headers.get('Authorization')!==`Bearer ${adminToken}`))return json({error:'Brak uprawnienia do przeglądu źródeł.'},403);
   if(request.method==='GET'&&path==='/api/review'){
     const state=await monitor.read();return json({sources:state.catalog.sources.map(source=>({...source,...state.sources[source.id]})),events:state.catalog.events});
   }
@@ -40,7 +40,7 @@ export async function handleApi(request,monitor,{adminToken,bielik,clientKey}={}
     if(path.startsWith('/api/calculator/')){
       const text=await request.text();if(text.length>150000)return json({error:'Za dużo danych kalkulatora.'},413);
       let body;try{body=JSON.parse(text);}catch{return json({error:'Nieprawidłowy JSON.'},400);}
-      if(path==='/api/calculator/calculate'){try{return json(calculateIntegrated(body.input,publicCalculatorRules(await monitor.read()),warsawDay()));}catch(error){return json({error:error.message,field:error.field||''},400);}}
+      if(path==='/api/calculator/calculate'){try{return json(calculateIntegrated(body.input,publicCalculatorRules(await monitor.read()),warsawDay(),{history:body.history||[]}));}catch(error){return json({error:error.message,field:error.field||''},400);}}
       if(path==='/api/calculator/rules')return json(await monitor.updateCalculator(body));
       if(path==='/api/calculator/simulate')return json(calculatorSimulation(body,warsawDay()));
     }
