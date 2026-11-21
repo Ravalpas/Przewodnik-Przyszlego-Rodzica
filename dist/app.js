@@ -5,7 +5,7 @@ import { cleanName, validateName, normalizeProfile, completedStages, usageDays }
 import { resetForFreshStart } from './reset.js';
 import { avatar, genderLabel } from './avatars.js';
 import { createPlanner,refreshIcon } from './planner.js';
-import { ageUnitLabel, pluralWord, quantity, ordinal } from './polish.js';
+import { ageUnitLabel, pluralWord, quantity, ordinal, calendarDate, periodText } from './polish.js';
 import {createBielikChat,doctorPortrait,chatIcon} from './chat.js';
 import {createNotesStore,NOTES_KEY} from './notes.js';
 
@@ -105,6 +105,13 @@ function mapArtwork(mode) {
   if(mode==='pregnancy')return `<g class="pregnancy-start-rays" aria-hidden="true"><path d="M600 25H720V155H630L608 129 586 100Z" fill="white"/><circle cx="622" cy="146" r="12" fill="white"/><g transform="translate(520 190)" fill="none" stroke="#ffc400" stroke-width="10" stroke-linecap="round">${[-90,-60,-30,0,30,60,90].map(angle=>`<path transform="rotate(${angle})" d="M0 -128V-151"/>`).join('')}</g></g>`;
   return `<g class="map-artwork" aria-hidden="true"><rect x="45" y="3090" width="300" height="420" fill="white"/><image data-art="pacifier" href="assets/pacifier.png" x="-60" y="3020" width="540" height="540" preserveAspectRatio="xMidYMid meet"/><rect x="730" y="5700" width="330" height="420" fill="white"/><image data-art="bear" href="assets/bear.png" x="660" y="5670" width="460" height="460" preserveAspectRatio="xMidYMid meet"/><rect x="45" y="6540" width="300" height="450" fill="white"/><image data-art="onesie" href="assets/onesie.png" x="-20" y="6470" width="430" height="430" preserveAspectRatio="xMidYMid meet"/></g>`;
 }
+function journeyPanels(){
+  const upcoming=notesStore.snapshot().notes.filter(note=>note.date>=todayString()).slice(0,2);
+  const tasks=planner.events().filter(e=>!e.done&&!e.notApplicable).sort((a,b)=>Number(b.required)-Number(a.required)).slice(0,4);
+  const noteHtml=upcoming.length?upcoming.map(note=>`<button class="aside-note" data-side-note="${escape(note.id)}"><small>${calendarDate(note.date)}${note.time?' · '+escape(note.time):''}</small><strong>${escape(note.text.split('\n')[0].slice(0,120))}</strong></button>`).join(''):'<p>W kalendarzu możecie zapisać wizytę lub ważne przypomnienie.</p>';
+  const taskHtml=tasks.length?tasks.map(e=>`<button class="settings-row aside-task" data-side-event="${e.id}">${icon(e.required?'target':'calendar')}<span><strong>${escape(e.title)}</strong><small>${e.preview?'Podgląd na przyszłość':escape(periodText(e))}</small></span></button>`).join(''):'<p>Nie macie otwartych spraw w wybranym zakresie informacji.</p>';
+  return `<aside class="journey-aside journey-aside-left"><span class="eyebrow">Pod ręką</span><h2>Wasza codzienność</h2><p class="aside-role">Profil rodzica: <strong>${parentRoleLabel(profile.parentRole)}</strong></p><div class="aside-stats"><div><strong>${profile.planning?94:completedStages(profile)}</strong><span>${profile.planning?'Etapy do poznania':'Zaliczone etapy'}</span></div><div><strong>${usageDays(profile)}</strong><span>${pluralWord(usageDays(profile),'Dzień','Dni','Dni')} z aplikacją</span></div></div><button class="secondary" id="aside-calendar">${icon('calendar')}Otwórz kalendarz</button><section class="aside-notes"><h3>Najbliższe notatki</h3>${noteHtml}</section></aside><aside class="journey-aside journey-aside-right"><span class="eyebrow">Warto pamiętać</span><h2>Wasze sprawy</h2><p>${profile.planning?'Poznajcie świadczenia i formalności, które mogą przydać się na kolejnych etapach.':'Sprawdźcie sprawy na Waszej drodze i przygotujcie dokumenty na odpowiedni moment.'}</p><div id="aside-tasks">${taskHtml}</div><button class="aside-chat" id="aside-chat">${doctorPortrait()}<span><strong>Doktor Bielik</strong><small>Zapytajcie o Wasze sprawy</small></span></button><button class="secondary" id="aside-doctor">${icon('doctor')}Kontakt z lekarzem</button></aside>`;
+}
 function renderJourney(center=true) {
   resizeObserver?.disconnect();
   const mode=profile.planning?previewMode:profile.mode,age=profile.planning?{days:0,weeks:-1,stage:0,extraDays:0}:ageAt(profile.anchor),map=maps[mode],total=maxWeeks(mode),beyond=age.stage>total;
@@ -116,9 +123,10 @@ function renderJourney(center=true) {
     app.querySelectorAll('[data-preview]').forEach(b=>b.addEventListener('click',()=>{previewMode=b.dataset.preview;renderJourney(false);app.querySelector('#map-scroll').scrollTop=0;}));
   }
   const doctorNav=document.createElement('button');doctorNav.id='nav-doctor';doctorNav.className='nav-item';doctorNav.innerHTML='<span class="nav-icon">'+icon('doctor')+'</span>Lekarz';app.querySelector('#nav-profile').before(doctorNav);doctorNav.addEventListener('click',showDoctor);
-  app.insertAdjacentHTML('beforeend','<aside class="journey-aside journey-aside-left"><span class="eyebrow">Wasza droga</span><h2>'+parentRoleLabel(profile.parentRole)+'</h2><p>'+ (profile.planning?'Poznajcie kolejne etapy, zanim zacznie się Wasza wspólna historia.':'Każdy tydzień to nowy krok. Tutaj znajdziecie sprawy przypisane do Waszego etapu.')+'</p><button class="secondary" id="aside-calendar">Otwórz kalendarz</button></aside><aside class="journey-aside journey-aside-right"><span class="eyebrow">Warto pamiętać</span><h2>Wasze sprawy</h2><p>Sprawdźcie dostępne świadczenia i przygotujcie dokumenty na odpowiedni moment.</p><div id="aside-tasks"></div><button class="secondary" id="aside-doctor">Kontakt z lekarzem</button></aside>');
+  app.insertAdjacentHTML('beforeend',journeyPanels());
   app.querySelector('#aside-calendar').addEventListener('click',showCalendar);app.querySelector('#aside-doctor').addEventListener('click',showDoctor);
-  app.querySelector('#aside-tasks').innerHTML=planner.events().filter(e=>!e.done&&!e.notApplicable).slice(0,3).map(e=>'<button class="settings-row" data-side-event="'+e.id+'">'+escape(e.title)+'</button>').join('');
+  app.querySelector('#aside-chat').addEventListener('click',showChat);
+  app.querySelectorAll('[data-side-note]').forEach(b=>b.addEventListener('click',()=>planner.openNote(b.dataset.sideNote)));
   app.querySelectorAll('[data-side-event]').forEach(b=>b.addEventListener('click',()=>planner.openEvent(b.dataset.sideEvent)));
   app.querySelector('#edit-top').addEventListener('click',openSettings);
   const topActions=document.createElement('div');topActions.className='top-actions';

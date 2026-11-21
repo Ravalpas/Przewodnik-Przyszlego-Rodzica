@@ -60,3 +60,9 @@ Kalendarz w planowaniu pokazuje własne notatki, przygotowania bez terminu oraz 
 Od 900 px początkowy wybór ma szeroki układ, kalendarz i informacje dnia są w dwóch kolumnach, czat ma większą przestrzeń, a droga zachowuje szerokość, kształt i numerację. Po bokach znajdują się skróty do spraw i kalendarza. Zakładka „Lekarz” jest dostępna dla każdego etapu; kontakt z lekarzem prowadzącym pojawia się tylko w ciąży.
 
 Weryfikacja nowej wersji: `npm test`, `npm run check`, `npm run build`, `node scripts/check-worker.mjs`, `npm run check:secrets`. Testy przeglądarkowe: `node tests/desktop-planning-browser.mjs` (domyślnie port 61619, inny przez `TEST_URL`). Obejmują wymagane wybory, planowanie, źródła, role, notatki, układ 390/1000/1366/1440 px, zakładkę Lekarz i kolory punktów. Nie wysyłają zapytań do modelu.
+
+## Czytelność i wykorzystanie ekranu
+
+`dist/readability.css` zawiera wspólne rozmiary tekstu, mocniejszy kontrast i dostosowanie dużych ekranów. Układ komputerowy wykorzystuje całą szerokość okna, z logo, podsumowaniem i ustawieniami w jednym pasie. Boczne panele drogi pokazują statystyki, najbliższe notatki i skróty do istniejących spraw. Przebieg i numeracja drogi są zachowane. Powitanie czatu i propozycje pytań mają osobne kolumny; pasek bieżącego etapu zawiera również przycisk nowej rozmowy.
+
+Test `node tests/readability-browser.mjs` sprawdza szerokości 320, 390, 1024, 1366, 1440 i 1800 px, w tym niższy ekran laptopa. Kontroluje wielkość ważnego tekstu i przycisków, widoczność pytań czatu, układ kalendarza i brak nakładania bocznych paneli na drogę. Odpowiedzi modelu nie są wywoływane.

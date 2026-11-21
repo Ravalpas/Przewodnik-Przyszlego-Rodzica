@@ -1,0 +1,358 @@
+:root {
+  --muted: #52627a;
+  --line: #dce4f0;
+  --body-ink: #344963;
+}
+
+p, .field-help, .local-note, .welcome-foot, .task-group-description,
+.profile-facts dt, .profile-age span, .usage-stats span, .optional,
+.stage-correction summary, .stage-correction p, .settings-row small,
+.official-source small, .summary-top small, .summary-bottom p,
+.child-name, .legend, .calendar-legend, .calendar-weekdays {
+  color: var(--muted);
+}
+p, .stage-detail p, .note-full-text, .note-preview { font-size: 16px; line-height: 1.7; }
+.field-help, .local-note, .welcome-foot, .optional { font-size: 14px; line-height: 1.65; }
+.brand { gap: 12px; }
+.brand img { width: 42px; height: 50px; }
+.brand b { font-size: 14px; }
+.brand small { font-size: 12px; color: #52627a; }
+.eyebrow { font-size: 13px; letter-spacing: 1.2px; }
+.primary, .secondary { font-size: 16px; }
+.text-button, .field-label, .gender-choice span { font-size: 14px; }
+.settings-row > span { font-size: 15px; }
+.settings-row small, .profile-hero p, .profile-age span,
+.profile-facts dt, .profile-facts dd, .usage-stats span { font-size: 14px; }
+.event-detail p, .official-source p { color: var(--body-ink); font-size: 16px; line-height: 1.7; }
+.event-card strong { font-size: 16px; color: #253d60; }
+.event-card small, .event-card span span { font-size: 14px; color: #526783; }
+.event-card b { font-size: 14px; }
+.event-kind, .event-range, .event-range-label { font-size: 14px; }
+.event-kind.group-optional { color: #526783; }
+.event-kind.group-recommended { color: #426957; }
+.event-range { color: #315d9c; }
+.event-range-label { color: #485f83; }
+.official-source a { font-size: 16px; }
+.source-notice, .not-applicable-notice { font-size: 14px!important; }
+.profile-age small, .profile-label, .name-feedback { font-size: 14px; color: #52627a; }
+.source-notice { color: #705a36; }
+.official-source small { display: block; font-size: 13px; line-height: 1.6; }
+.task-group > h4, .task-group > h5, .stage-events > h4 { font-size: 16px; }
+.task-group-description { font-size: 14px; }
+.task-group > h4 > span, .task-group > h5 > span { font-size: 13px; color: #435c80; }
+.event-neutral-icon, .important-icon { width: 32px; height: 32px; }
+.period-row span { font-size: 15px; }
+.period-row small { font-size: 14px; color: #526783; }
+.source-list a, .source-list span { font-size: 14px; }
+.excluded-tasks summary, .not-applicable-action { font-size: 14px; color: #50627c; }
+.bottom-nav .nav-item { color: #576a84; font-size: 10px; }
+.bottom-nav .nav-item.active { color: #304a91; }
+.nav-item svg { width: 25px; height: 25px; }
+.refresh-sources { font-size: 12px; gap: 4px; color: #365c9b; }
+.refresh-sources svg { width: 28px; height: 28px; }
+.map-lead p, .map-lead .eyebrow, .map-tail p { font-size: 14px; color: #526783; }
+.legend { font-size: 12px; }
+.summary-top span, .summary-top small, .summary-bottom p { font-size: 13px; }
+.child-name { font-size: 14px; }
+.calendar-top .eyebrow { font-size: 12px; }
+.calendar-weekdays { font-size: 12px; }
+.calendar-legend { font-size: 12px; }
+.calendar-day small { color: #53647c; }
+.chat-toolbar { display: flex; align-items: center; justify-content: space-between; background: #eef3fd; border-bottom: 1px solid #dce5f4; }
+.chat-context { flex: 1; font-size: 13px; background: transparent; color: #405e90; }
+.chat-conversation-actions { background: transparent; border: 0; padding: 8px 12px; }
+.chat-conversation-actions button { min-height: 40px; padding: 8px 14px; font-size: 13px; color: #36578d; background: white; }
+.chat-header h2 { font-size: 20px; }
+.chat-header p { font-size: 12px; color: #526783; }
+.chat-header .chat-history-toggle { width: 54px; height: 52px; }
+.chat-history-toggle span { font-size: 11px; }
+.chat-header .icon-button svg { width: 25px; height: 25px; }
+.chat-header-portrait { width: 50px; height: 50px; }
+.chat-header-portrait .doctor-portrait { width: 60px; height: 60px; }
+.chat-welcome-intro > .doctor-portrait { width: 112px; height: 112px; margin: 0 auto 14px; }
+.chat-welcome h3 { font-size: 23px; }
+.chat-welcome p { max-width: 44ch; font-size: 16px; color: #4b607e; }
+.chat-suggestions button { font-size: 16px; color: #35588c; min-height: 58px; }
+.chat-message, .chat-answer { font-size: 16px; line-height: 1.7; }
+.chat-message-assistant { color: #304764; border-color: #d6e1f0; }
+.chat-sources h4, .chat-source, .chat-task strong, .chat-task small,
+.chat-related > span, .chat-source-note, .chat-thinking { font-size: 14px; }
+.chat-related > span, .chat-task small, .chat-source-note { color: #526783; }
+.chat-thinking { color: #466187; }
+.chat-thinking > .doctor-portrait { width: 48px; height: 48px; }
+.chat-history-row strong { font-size: 16px; }
+.chat-history-row small, .chat-session-stamp, .chat-history-empty { font-size: 13px; color: #526783; }
+.chat-history-heading h3 { font-size: 21px; }
+.chat-history-heading button { font-size: 14px; }
+.chat-delete { width: 54px; }
+.chat-delete svg { width: 24px; height: 24px; }
+#chat-input::placeholder, #note-text::placeholder { color: #64758e; }
+.chat-bottom { padding-top: 12px; }
+.chat-error { font-size: 14px; }
+.chat-welcome-compact .chat-welcome-intro > .doctor-portrait { display: none; }
+.aside-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+.aside-stats > div { padding: 18px 12px; border-radius: 17px; background: #edf3ff; }
+.aside-stats strong { display: block; font-size: 30px; color: #304a91; }
+.aside-stats span { display: block; font-size: 14px; line-height: 1.5; color: #4c6284; margin-top: 5px; }
+.aside-notes { margin-top: 26px; border-top: 1px solid #dce5f3; padding-top: 22px; }
+.aside-notes h3 { font-size: 19px; margin-bottom: 12px; }
+.aside-note { display: block; width: 100%; text-align: left; border: 1px solid #dce5f3; border-left: 4px solid #6f91c5; background: #f7faff; border-radius: 12px; padding: 14px; margin: 10px 0; }
+.aside-note strong { display: block; font-size: 15px; line-height: 1.5; color: #304a6f; overflow-wrap: anywhere; }
+.aside-note small { display: block; font-size: 13px; color: #4c6387; margin-bottom: 7px; }
+.aside-task { display: flex; gap: 12px; align-items: flex-start; }
+.aside-task > svg { width: 30px; height: 30px; padding: 5px; background: #edf3ff; border-radius: 9px; }
+.aside-task > span { min-width: 0; }
+.aside-task strong { display: block; font-size: 17px; line-height: 1.5; }
+.aside-task small { font-size: 14px; line-height: 1.5; }
+.aside-chat { display: flex; align-items: center; gap: 14px; border: 1px solid #d5e1f4; border-radius: 18px; background: #edf3ff; padding: 14px; margin-top: 22px; width: 100%; text-align: left; }
+.aside-chat .doctor-portrait { width: 64px; height: 64px; }
+.aside-chat strong { display: block; font-size: 18px; }
+.aside-chat small { display: block; font-size: 14px; line-height: 1.5; color: #526783; margin-top: 4px; }
+
+@media (min-width: 900px) {
+  .phone-shell { max-width: none; width: 100%; box-shadow: none; }
+  .app-header { display: grid; grid-template-columns: minmax(220px,.9fr) minmax(320px,1.5fr) auto; align-items: center; gap: 24px; padding: 18px 28px; }
+  .top-row { display: contents; }
+  .app-header .brand { grid-column: 1; grid-row: 1; }
+  .brand { gap: 17px; }
+  .brand img { width: 64px; height: 76px; }
+  .brand b { font-size: 19px; }
+  .brand small { font-size: 14px; margin-top: 5px; }
+  .top-actions { grid-column: 3; grid-row: 1; gap: 18px; }
+  .icon-button { width: 54px; height: 54px; border-radius: 16px; }
+  .icon-button svg { width: 29px; height: 29px; }
+  .refresh-sources { font-size: 14px; min-width: 66px; }
+  .refresh-sources svg { width: 32px; height: 32px; }
+  .journey-summary { grid-column: 2; grid-row: 1; max-width: none; width: 100%; margin: 0; padding: 14px 20px; border-radius: 20px; }
+  .summary-top { margin-bottom: 5px; }
+  .summary-top span, .summary-top small, .summary-bottom p { font-size: 14px; }
+  .child-summary { margin: 6px 0; gap: 14px; }
+  .child-summary .baby-avatar { width: 54px; height: 54px; }
+  .child-name { font-size: 16px; }
+  .child-summary h1 { font-size: 27px; }
+  .summary-bottom p { margin: 0; }
+  .progress-track { height: 7px; margin-top: 10px; }
+  .app-header:has(.journey-summary[hidden]) { grid-template-columns: 1fr auto; }
+  .app-header:has(.journey-summary[hidden]) .top-actions { grid-column: 2; }
+  .map-lead { padding: 20px 18px 10px; }
+  .map-lead .eyebrow, .map-lead p { font-size: 14px; }
+  .legend { font-size: 14px; gap: 18px; margin-top: 12px; }
+  .legend i { width: 9px; height: 9px; }
+  .journey-aside { width: calc((100% - 480px)/2 - 48px); left: auto; right: auto; padding: 24px; border-color: #d7e2f2; box-shadow: 0 5px 20px #304a9105; }
+  .journey-aside-left { left: 28px; }
+  .journey-aside-right { right: 28px; }
+  .journey-aside h2 { font-size: 28px; margin: 12px 0; }
+  .journey-aside .eyebrow { font-size: 14px; }
+  .journey-aside p { font-size: 17px; color: #4c617e; }
+  .journey-aside .settings-row { margin-top: 12px; padding: 16px; }
+  .journey-aside .secondary { font-size: 16px; }
+  .journey-aside button { margin-top: 14px; }
+  .bottom-nav { padding: 10px 24px; gap: 10px; }
+  .bottom-nav .nav-item { font-size: 15px; min-height: 74px; gap: 7px; max-width: none; padding: 8px; border-radius: 16px; }
+  .nav-icon { width: 58px; height: 38px; border-radius: 13px; }
+  .nav-item svg { width: 30px; height: 30px; }
+  .recenter { font-size: 16px; min-height: 50px; padding: 12px 18px; }
+  .recenter svg { width: 23px; height: 23px; }
+  .doctor-launcher { width: 88px; height: 88px; }
+  .doctor-launcher .doctor-portrait { width: 104px; height: 104px; }
+  .calendar-view { padding: 24px 28px; }
+  .calendar-layout { max-width: none; gap: 24px; grid-template-columns: minmax(0,1.15fr) minmax(360px,1fr); }
+  .calendar-month, .calendar-detail { padding: 24px; border-color: #d7e2f2; }
+  .calendar-top h2 { font-size: 29px; margin: 7px 0 14px; }
+  .calendar-top .eyebrow, .calendar-weekdays { font-size: 14px; }
+  .calendar-controls input { font-size: 18px; }
+  .calendar-day { min-height: clamp(66px,8vh,100px); padding: 9px 3px; }
+  .calendar-day > span { font-size: 21px; }
+  .calendar-day small { font-size: 14px; }
+  .calendar-day i { font-size: 11px; height: 14px; }
+  .calendar-day.other-month { opacity: 1; color: #65748a; background: #f6f8fc; }
+  .calendar-day.other-month.has-period { border-bottom-color: #b7c8e2; }
+  .calendar-weekdays { margin-bottom: 10px; }
+  .calendar-legend { font-size: 14px; line-height: 1.5; }
+  .calendar-legend .note-pin { width: 24px; height: 29px; }
+  .day-note-pins { width: 36px; height: 45px; }
+  .day-note-pins .note-pin { width: 36px; height: 45px; }
+  .calendar-day .day-note-count { width: 20px; height: 20px; font-size: 12px; }
+  .calendar-agenda h3, .calendar-agenda .day-agenda-heading h3 { font-size: 22px; }
+  .note-add { min-height: 45px; padding: 10px 15px; font-size: 16px; }
+  .event-card { gap: 14px; padding: 18px; }
+  .event-card strong { font-size: 18px; }
+  .event-card small, .event-card span span, .event-card b { font-size: 15px; }
+  .event-neutral-icon, .important-icon { width: 36px; height: 36px; }
+  .task-group > h4, .task-group > h5, .stage-events > h4 { font-size: 20px; }
+  .task-group-description { font-size: 16px; }
+  .period-row { padding: 17px; }
+  .period-row span { font-size: 17px; }
+  .period-row small { font-size: 15px; line-height: 1.7; }
+  .personal-note { padding: 18px; }
+  .note-preview, .note-full-text { font-size: 18px; }
+  .note-actions button, .personal-note-heading strong, .personal-note-heading > div > span { font-size: 15px; }
+  .day-notes > h4 { font-size: 19px; }
+  .day-notes > h4 span { font-size: 14px; }
+  .note-pin { width: 44px; height: 54px; }
+  .chat-view { padding-left: 28px; padding-right: 28px; background: #f4f7fd; }
+  .chat-header { padding: 16px 24px; gap: 16px; }
+  .chat-header h2 { font-size: 28px; }
+  .chat-header p { font-size: 16px; }
+  .chat-header .icon-button { width: 46px; height: 50px; font-size: 32px; }
+  .chat-header .chat-history-toggle { width: 76px; height: 62px; }
+  .chat-history-toggle span { font-size: 14px; }
+  .chat-header-portrait { width: 64px; height: 64px; }
+  .chat-header-portrait .doctor-portrait { width: 78px; height: 78px; }
+  .chat-context { font-size: 16px; padding: 14px 24px; }
+  .chat-conversation-actions { padding: 10px 20px; }
+  .chat-conversation-actions button { font-size: 16px; min-height: 44px; padding: 10px 20px; }
+  .chat-messages { padding: 24px; }
+  .chat-welcome { display: grid; grid-template-columns: minmax(260px,.85fr) minmax(350px,1.15fr); gap: 40px; align-items: center; text-align: left; min-height: 100%; padding: 12px; }
+  .chat-welcome-intro { padding: 0 16px; }
+  .chat-welcome-intro > .doctor-portrait { width: 132px; height: 132px; margin: 0 0 16px; }
+  .chat-welcome h3 { font-size: clamp(28px,2.2vw,38px); line-height: 1.25; margin-bottom: 18px; }
+  .chat-welcome p { font-size: 19px; max-width: 44ch; margin: 0; }
+  .chat-suggestions { grid-template-columns: 1fr; gap: 14px; margin: 0; }
+  .chat-suggestions button { min-height: 72px; padding: 20px 24px; border-radius: 18px; font-size: 18px; border-color: #cbd9ef; box-shadow: 0 3px 12px #304a9105; }
+  .chat-message { max-width: min(84%,80ch); padding: 20px 24px; margin: 16px 0; }
+  .chat-message-user { margin-left: auto; }
+  .chat-answer { font-size: 18px; line-height: 1.75; }
+  .chat-source, .chat-sources h4, .chat-task strong, .chat-task small, .chat-related > span, .chat-source-note { font-size: 15px; }
+  .chat-source { padding: 12px 0; }
+  .chat-thinking { font-size: 17px; gap: 16px; }
+  .chat-thinking > .doctor-portrait { width: 58px; height: 58px; }
+  .chat-bottom { padding: 16px 24px; }
+  #chat-input { font-size: 18px; min-height: 60px; padding: 16px 18px; border-color: #bacbe7; background: #fff; }
+  #chat-send { width: 58px; height: 58px; }
+  #chat-send svg { width: 30px; height: 30px; }
+  .chat-history-panel { padding: 26px; }
+  .chat-history-row { margin-bottom: 16px; }
+  .chat-history-row > [data-open-chat] { padding: 22px; }
+  .chat-history-row strong { font-size: 19px; }
+  .chat-history-row small, .chat-session-stamp { font-size: 14px; }
+  .doctor-view { padding: 32px 40px; }
+  .doctor-view h1 { font-size: 38px; max-width: none; }
+  .doctor-options { gap: 24px; }
+  .doctor-options article { padding: 30px; border-color: #d7e2f2; }
+  .doctor-options h2 { font-size: 28px; }
+  .doctor-options p { font-size: 19px; max-width: 80ch; color: #445c7a; }
+  .doctor-options .primary { max-width: 440px; }
+  .welcome.onboarding-page { padding: 28px 40px; }
+  .onboarding-layout { max-width: none; grid-template-columns: .9fr 1.1fr; gap: 60px; padding-top: 26px; }
+  .onboarding-intro { padding: 25px 30px; }
+  .onboarding-intro h1 { font-size: clamp(42px,3.5vw,60px); }
+  .onboarding-intro p { font-size: 21px; }
+  .onboarding-hero { width: 270px; height: 290px; }
+  .onboarding-page legend { font-size: 21px; }
+  .onboarding-choice { font-size: 17px; padding: 17px 12px; }
+  .onboarding-choice img { width: 82px; height: 82px; }
+  .onboarding-page fieldset { padding: 24px; }
+  .choice-error, .onboarding-page .field-help { font-size: 16px; }
+  .welcome.age-setup { max-width: none; padding: 28px 48px; }
+  .age-setup-layout { gap: 70px; grid-template-columns: .85fr 1.15fr; }
+  .age-setup-intro h1 { font-size: 48px; }
+  .age-setup-intro p { font-size: 20px; }
+  .welcome.age-setup .age-form { max-width: none; }
+  .field-label { font-size: 17px; }
+  input, select { font-size: 18px; min-height: 58px; }
+  input[type=number] { font-size: 27px; }
+  .field-help { font-size: 16px; }
+  .conversion strong { font-size: 20px; }
+  .conversion small { font-size: 16px; }
+  dialog { width: min(1040px,94vw); max-width: 1040px; }
+  .sheet-body { padding: 24px 32px 30px; }
+  .sheet-heading h2 { font-size: 28px; }
+  .sheet-heading .icon-button { width: 46px; height: 46px; }
+  .event-detail h3 { font-size: 30px; line-height: 1.4; }
+  .event-detail p, .stage-detail p, .sheet-body > p { font-size: 18px; line-height: 1.75; }
+  .event-kind, .event-range, .event-range-label { font-size: 16px; }
+  .official-source small { font-size: 14px; color: #50627c; }
+  .official-source .field-help { font-size: 16px; }
+  .official-source a { font-size: 17px; }
+  .source-notice, .not-applicable-notice { font-size: 16px!important; }
+  .primary, .secondary { min-height: 58px; font-size: 17px; }
+  .profile-hero h3 { font-size: 30px; }
+  .profile-hero .baby-avatar, .stage-identity .baby-avatar { width: 96px; height: 96px; }
+  .profile-hero p, .profile-age span, .profile-facts dt, .profile-facts dd, .usage-stats span { font-size: 16px; }
+  .profile-age strong, .usage-stats strong { font-size: 32px; }
+  .settings-row > span { font-size: 17px; }
+  .settings-row small, .optional, .gender-choice span { font-size: 15px; }
+  .gender-choice .baby-avatar { width: 70px; height: 70px; }
+  .stage-correction summary, .stage-correction p, .stage-correction button, .settings-section-title { font-size: 16px; }
+  .local-note, .welcome-foot { font-size: 15px; }
+}
+
+@media (min-width: 1200px) {
+  .calendar-month { display: grid; grid-template-columns: minmax(0,1fr) minmax(240px,1fr); column-gap: 18px; }
+  .calendar-top { grid-column: 1; }
+  .calendar-top .text-button { padding: 10px 4px; }
+  .calendar-top h2 { font-size: 27px; }
+  .calendar-controls { grid-column: 2; align-self: center; margin-bottom: 10px; gap: 8px; }
+  .calendar-controls .icon-button { width: 44px; height: 46px; }
+  .calendar-controls input { padding-left: 6px; padding-right: 6px; font-size: 16px; }
+  .calendar-weekdays, .calendar-grid, .calendar-legend, #calendar-dates { grid-column: 1/-1; }
+  .calendar-day { display: grid; grid-template-columns: auto auto; justify-content: center; align-content: center; gap: 3px 7px; min-height: clamp(62px,7.5vh,88px); padding: 6px; }
+  .calendar-day > small { margin: 0; }
+  .calendar-day > i { grid-column: 1/-1; width: 100%; }
+  .calendar-day.has-note { grid-template-columns: auto 8px; justify-content: start; column-gap: 4px; padding-left: 7px; padding-right: 25px; }
+  .calendar-day.has-note > span:first-child { grid-column: 1; grid-row: 1; }
+  .calendar-day.has-note > small { grid-column: 1; grid-row: 2; }
+  .calendar-day.has-note > i { grid-column: 2; grid-row: 2; }
+  .calendar-day.has-note > span:first-child, .calendar-day.has-note > small { margin-left: 0; }
+}
+
+@media (min-width: 900px) and (max-width: 1099px) {
+  .app-header { gap: 14px; padding: 16px 22px; }
+  .brand img { width: 52px; height: 64px; }
+  .brand b { font-size: 16px; }
+  .brand small { font-size: 12px; }
+  .journey-aside-left { display: none; }
+  .journey-aside-right { width: 280px; right: 20px; padding: 20px; }
+  .map-canvas, .map-lead, .map-tail { margin-left: calc((100% - 320px - 480px)/2); margin-right: 0; }
+  .recenter, .doctor-launcher { right: 332px; }
+  .chat-welcome { gap: 18px; grid-template-columns: .9fr 1.1fr; padding: 0; }
+  .chat-welcome-intro { padding: 0; }
+  .chat-welcome h3 { font-size: 27px; }
+  .chat-welcome p { font-size: 17px; }
+  .chat-suggestions button { font-size: 17px; padding: 16px; }
+  .onboarding-layout { gap: 25px; }
+  .onboarding-intro { padding: 20px 0; }
+}
+
+@media (min-width: 1500px) {
+  .journey-aside { padding: 28px; }
+  .journey-aside p { font-size: 18px; }
+  .chat-welcome { gap: 70px; padding: 16px 40px; }
+  .chat-welcome-intro > .doctor-portrait { width: 155px; height: 155px; }
+  .chat-suggestions button { min-height: 82px; font-size: 20px; }
+  .chat-welcome p { font-size: 21px; }
+  .chat-welcome h3 { font-size: 40px; }
+}
+
+@media (max-width: 899px) {
+  .chat-conversation-actions button { font-size: 12px; padding: 8px 10px; }
+  .chat-toolbar { gap: 0; }
+  .chat-context { padding: 10px 12px; }
+  .chat-conversation-actions { padding: 8px; }
+  .bottom-nav { padding-left: 4px; padding-right: 4px; }
+  .bottom-nav .nav-item { padding-left: 1px; padding-right: 1px; }
+}
+
+@media (min-width: 900px) and (max-height: 850px) {
+  .chat-header { padding: 10px 20px; }
+  .chat-header-portrait { width: 52px; height: 52px; }
+  .chat-header-portrait .doctor-portrait { width: 64px; height: 64px; }
+  .chat-header h2 { font-size: 25px; }
+  .chat-header p { font-size: 14px; }
+  .chat-header .chat-history-toggle { height: 52px; }
+  .chat-toolbar .chat-context { padding: 10px 20px; }
+  .chat-conversation-actions { padding: 7px 16px; }
+  .chat-conversation-actions button { min-height: 40px; }
+  .chat-messages { padding: 16px 22px; }
+  .chat-welcome { gap: 30px; padding: 0; }
+  .chat-welcome-intro { padding: 0; }
+  .chat-welcome-intro > .doctor-portrait { width: 88px; height: 88px; margin-bottom: 10px; }
+  .chat-welcome h3 { font-size: 28px; margin-bottom: 12px; }
+  .chat-welcome p { font-size: 17px; line-height: 1.6; }
+  .chat-suggestions { gap: 10px; }
+  .chat-suggestions button { min-height: 58px; padding: 14px 18px; font-size: 17px; }
+  .chat-bottom { padding: 12px 22px; }
+  #chat-input { min-height: 54px; padding: 13px 16px; }
+  #chat-send { width: 52px; height: 52px; }
+}
