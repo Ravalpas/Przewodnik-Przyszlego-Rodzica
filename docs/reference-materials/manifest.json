@@ -1,0 +1,47 @@
+{
+  "reviewedAt": "2026-11-21",
+  "files": [
+    {
+      "original": "ISTOTNE sprawy.txt",
+      "file": "01.txt",
+      "bytes": 26347,
+      "sha256": "b5a3dc7932ac676ea16fd4e175651bce71cbb7af2f3f1271addc569b494e8b7e"
+    },
+    {
+      "original": "co zrobić WAZNE.txt",
+      "file": "02.txt",
+      "bytes": 2278,
+      "sha256": "c6f53b4fa4fc51f034ed9b3036b8d8b7d5911ba1b45b926ead71ec9342d5e442"
+    },
+    {
+      "original": "Kodeks pracy (wyciąg z przepisów).pdf",
+      "file": "03.pdf",
+      "bytes": 182178,
+      "sha256": "8cea3a13e32dd8db0c3a00c0329ebd4f035d181b312fc312b967462ce08a88c4"
+    },
+    {
+      "original": "Poradnik dla rodziców, ZUS 2026.pdf",
+      "file": "04.pdf",
+      "bytes": 5211121,
+      "sha256": "0563cb35f54a84d2f3e1681f52fd614fac1efd29d0716968054285ad62a04dcf"
+    },
+    {
+      "original": "rozporządzenie w spr. zakresu informacji o okolicznościach mających wpływ na prawo do zasiłków ...pdf",
+      "file": "05.pdf",
+      "bytes": 230462,
+      "sha256": "1a81c9aaa3f41b8f97763494fcb1ebbeeefd870694b5fc69fd09c1098d911395"
+    },
+    {
+      "original": "rozporządzenie w sprawie wniosków dot. uprawnień pracowników związanych z rodzicielstwem .pdf",
+      "file": "06.pdf",
+      "bytes": 173108,
+      "sha256": "af34d9dbb36e12b4a3b20fff528a89e87e9dbbaa0b38ad4fee743839154e6b87"
+    },
+    {
+      "original": "wyciąg z ustawy o świadczeniach pieniężnych z ubezpieczeń społecznych w razie choroby i macierzyństwa (ustawa zasiłkowa).pdf",
+      "file": "07.pdf",
+      "bytes": 295038,
+      "sha256": "ae7820edd5439d1322e028b71ac0d07a47c1aaacd17e184e95cdd89170b0655c"
+    }
+  ]
+}

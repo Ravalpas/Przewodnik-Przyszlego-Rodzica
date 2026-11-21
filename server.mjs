@@ -9,11 +9,12 @@ import {createBielik} from './backend/bielik.mjs';
 loadBackendEnvironment();
 const root=resolve(import.meta.dirname,'dist'),dataDir=resolve(process.env.DATA_DIR||resolve(import.meta.dirname,'.data'));
 const catalog=JSON.parse(await readFile(resolve(root,'data/catalog.json'),'utf8'));
+const calculatorRules=JSON.parse(await readFile(resolve(root,'data/calculator-rules.json'),'utf8'));
 const store={
   read:async()=>{try{return JSON.parse(await readFile(resolve(dataDir,'monitor.json'),'utf8'));}catch(e){if(e.code==='ENOENT')return null;throw e;}},
   write:async state=>{await mkdir(dataDir,{recursive:true});await writeFile(resolve(dataDir,'monitor.tmp'),JSON.stringify(state));await rename(resolve(dataDir,'monitor.tmp'),resolve(dataDir,'monitor.json'));}
 };
-const monitor=createMonitor({catalog,store}),types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+const monitor=createMonitor({catalog,store,calculatorRules}),types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
 const bielik=createBielik({monitor,env:process.env});
 const port=Number(process.env.PORT||3000);
 const server=http.createServer(async(req,res)=>{

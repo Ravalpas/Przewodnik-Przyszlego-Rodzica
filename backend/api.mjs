@@ -1,5 +1,8 @@
-import { publicMonitorState } from './monitor.mjs';
+import { publicMonitorState,publicCalculatorRules } from './monitor.mjs';
 import {BielikError} from './fabryka.mjs';
+import {calculateIntegrated} from '../dist/calculator-engine.js';
+import {calculatorSimulation} from './calculator-simulations.mjs';
+import {warsawDay} from './monitor.mjs';
 async function chatBody(request) {
   const reader=request.body?.getReader();if(!reader)throw new BielikError('Wymagane jest pytanie.',400,'invalid_body');
   const chunks=[];let size=0;
@@ -13,6 +16,10 @@ export async function handleApi(request,monitor,{adminToken,bielik,clientKey}={}
   if(request.method==='GET'&&path==='/api/catalog')return json(publicMonitorState(await monitor.read()));
   if(request.method==='GET'&&path==='/api/health')return json({ok:true,timezone:'Europe/Warsaw',nextCheckAt:(await monitor.read()).nextCheckAt});
   if(request.method==='GET'&&path==='/api/chat/status')return json(bielik?.status()||{available:false});
+  if(path==='/api/calculator/rules'){
+    if(request.method==='GET')return json(publicCalculatorRules(await monitor.read()));
+    if(adminToken&&request.headers.get('Authorization')!==`Bearer ${adminToken}`)return json({error:'Brak uprawnienia do zmiany zasad.'},403);
+  }
   if(path==='/api/review'&&adminToken&&request.headers.get('Authorization')!==`Bearer ${adminToken}`)return json({error:'Brak uprawnienia do przeglądu źródeł.'},403);
   if(request.method==='GET'&&path==='/api/review'){
     const state=await monitor.read();return json({sources:state.catalog.sources.map(source=>({...source,...state.sources[source.id]})),events:state.catalog.events});
@@ -30,6 +37,13 @@ export async function handleApi(request,monitor,{adminToken,bielik,clientKey}={}
     }
   }
   try {
+    if(path.startsWith('/api/calculator/')){
+      const text=await request.text();if(text.length>150000)return json({error:'Za dużo danych kalkulatora.'},413);
+      let body;try{body=JSON.parse(text);}catch{return json({error:'Nieprawidłowy JSON.'},400);}
+      if(path==='/api/calculator/calculate'){try{return json(calculateIntegrated(body.input,publicCalculatorRules(await monitor.read()),warsawDay()));}catch(error){return json({error:error.message,field:error.field||''},400);}}
+      if(path==='/api/calculator/rules')return json(await monitor.updateCalculator(body));
+      if(path==='/api/calculator/simulate')return json(calculatorSimulation(body,warsawDay()));
+    }
     if(path==='/api/refresh'){const body=await request.json();if(body.scope!==undefined&&!['zus','all'].includes(body.scope))return json({error:'Wybierz zakres źródeł.'},400);return json(publicMonitorState(await monitor.refresh('manual',body.scope)));}
     if(path==='/api/scheduled-refresh')return json(publicMonitorState(await monitor.refresh('scheduled')));
     if(path==='/api/review'){

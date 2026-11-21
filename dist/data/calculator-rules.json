@@ -1,0 +1,285 @@
+{
+  "version": "2026-11-21.1",
+  "revision": 1,
+  "validFrom": "2025-03-19",
+  "reviewedAt": "2026-11-21",
+  "parameters": {
+    "rates": {
+      "maternity": 100,
+      "parental": 70,
+      "averaged": 81.5,
+      "reserved": 70,
+      "pregnancy": 100,
+      "sickness": 80,
+      "rehabFirst": 90,
+      "rehabLater": 75,
+      "contributions": 13.71
+    },
+    "limits": {
+      "maternity1": 20,
+      "maternity2": 31,
+      "maternity3": 33,
+      "maternity4": 35,
+      "maternity5": 37,
+      "parental1": 41,
+      "parentalMany": 43,
+      "life1": 65,
+      "lifeMany": 67,
+      "adoptionShort": 38,
+      "adoptionLife": 62,
+      "adoptionMinimum": 9,
+      "reserved": 9,
+      "paternity": 14,
+      "prenatal": 42,
+      "parentalParts": 5,
+      "pregnancySick": 270,
+      "sick": 182,
+      "rehab": 360,
+      "waitCompulsory": 30,
+      "waitVoluntary": 90,
+      "care": 60,
+      "careDisabled": 30,
+      "careAdult": 14
+    },
+    "deadlines": {
+      "averaged": 21,
+      "parental": 21,
+      "supplement": 21,
+      "paternity": 7
+    },
+    "money": {
+      "parentalFloor": 1000,
+      "debtPercent": 1,
+      "funeral": 7000
+    },
+    "business": {
+      "startMonths": 6,
+      "preferenceMonths": 24,
+      "lookbackMonths": 60,
+      "smallRevenue": 120000,
+      "forecast2026": 9420,
+      "regularShare": 60,
+      "preferredShare": 30,
+      "smallShare": 50,
+      "sicknessCapShare": 250
+    },
+    "minimumWage": {
+      "2026": 4806,
+      "2027": 4950
+    },
+    "rehabIndex": {
+      "2026-1": 100,
+      "2026-2": 105.1,
+      "2026-3": 109,
+      "2026-4": 100.4
+    },
+    "postInsuranceCap": [],
+    "forecastWage": {
+      "2026": 9420
+    }
+  },
+  "versions": [],
+  "sources": [
+    {
+      "id": "calc-maternity",
+      "name": "ZUS — okresy macierzyńskiego i adopcja",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-urlopu-macierzynskiego-albo-urlopu-na-warunkach-urlopu-macierzynskiego",
+      "section": "Prawo i okres przysługiwania",
+      "quote": "20 tygodni"
+    },
+    {
+      "id": "calc-parental",
+      "name": "ZUS — rodzicielski i łączenie z pracą",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-dodatkowego-urlopu-rodzicielskiego",
+      "section": "Urlop rodzicielski",
+      "quote": "9 tygodni"
+    },
+    {
+      "id": "calc-rates",
+      "name": "ZUS — wysokość i podwyższenie zasiłku",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/wysokosc",
+      "section": "Wysokość zasiłku macierzyńskiego",
+      "quote": "81,5"
+    },
+    {
+      "id": "calc-supplement",
+      "name": "ZUS — uzupełniający macierzyński",
+      "url": "https://www.zus.pl/-/zasi%C5%82ek-macierzy%C5%84ski-za-okres-uzupe%C5%82niaj%C4%85cego-urlopu-macierzy%C5%84skiego",
+      "section": "Hospitalizacja noworodka",
+      "quote": "1000 g"
+    },
+    {
+      "id": "calc-sickness",
+      "name": "ZUS — chorobowe i wyczekiwanie",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-chorobowy/z-ubezpieczenia-chorobowego/prawo-do-zasilku-i-okres-przyslugiwania",
+      "section": "Prawo do zasiłku chorobowego",
+      "quote": "270 dni"
+    },
+    {
+      "id": "calc-base",
+      "name": "ZUS — podstawa pracownika",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-chorobowy/podstawa-wymiaru/dla-pracownikow",
+      "section": "Podstawa wymiaru",
+      "quote": "12 miesięcy"
+    },
+    {
+      "id": "calc-business-base",
+      "name": "ZUS — podstawa niepracowników",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-opiekunczy/podstawa-wymiaru/dla-ubezpieczonych-niebedacych-pracownikami",
+      "section": "Podstawa przy krótszym ubezpieczeniu",
+      "quote": "13,71"
+    },
+    {
+      "id": "calc-rehab",
+      "name": "ZUS — świadczenie rehabilitacyjne",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/swiadczenie-rehabilitacyjne/z-ubezpieczenia-chorobowego/prawo-do-swiadczenia-i-okres-przyslugiwania",
+      "section": "Prawo do świadczenia",
+      "quote": "12 miesięcy"
+    },
+    {
+      "id": "calc-indices",
+      "name": "ZUS — wskaźniki i waloryzacja",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/wskazniki/zasilki",
+      "section": "Wskaźniki waloryzacji",
+      "quote": "2026"
+    },
+    {
+      "id": "calc-documents",
+      "name": "ZUS — dokumenty macierzyńskiego",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/niezbedne-dokumenty",
+      "section": "Niezbędne dokumenty",
+      "quote": "ZAM"
+    },
+    {
+      "id": "calc-forms",
+      "name": "ZUS — aktualne formularze",
+      "url": "https://www.zus.pl/-/kolejne-uproszczenia-w-zasi%C5%82kach",
+      "section": "Zmiany od 24 października 2026 r.",
+      "quote": "ZAM"
+    },
+    {
+      "id": "calc-care",
+      "name": "ZUS — opiekuńczy",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-opiekunczy/prawo-do-zasilku-i-okres-przyslugiwania",
+      "section": "Okres przysługiwania",
+      "quote": "60 dni"
+    },
+    {
+      "id": "calc-contributions",
+      "name": "ZUS — składki i ulgi",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/skladki/wysokosc-skladek-na-ubezpieczenia-spoleczne",
+      "section": "Podstawy składek",
+      "quote": "2026"
+    },
+    {
+      "id": "calc-funeral",
+      "name": "ZUS — pogrzebowe",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-pogrzebowy",
+      "section": "Warunki i termin wniosku",
+      "quote": "7000"
+    },
+    {
+      "id": "calc-worklaw",
+      "name": "Kodeks pracy — tekst urzędowy",
+      "url": "https://www.dziennikustaw.gov.pl/DU/2026/1245",
+      "section": "Art. 177–186",
+      "quote": ""
+    },
+    {
+      "id": "calc-benefitlaw",
+      "name": "Ustawa zasiłkowa — tekst urzędowy",
+      "url": "https://api.sejm.gov.pl/eli/acts/DU/2026/854/text/U/D20260854Lj.pdf",
+      "section": "Art. 2a–31, 36–63",
+      "quote": ""
+    },
+    {
+      "id": "calc-min2027",
+      "name": "Minimalne wynagrodzenie 2027",
+      "url": "https://eli.gov.pl/eli/DU/2026/1213/ogl",
+      "section": "Rozporządzenie na 2027 r.",
+      "quote": "4950"
+    },
+    {
+      "id": "calc-min2026",
+      "name": "Minimalne wynagrodzenie 2026",
+      "url": "https://eli.gov.pl/eli/DU/2025/1242/ogl",
+      "section": "Rozporządzenie na 2026 r.",
+      "quote": "4806"
+    },
+    {
+      "id": "calc-family",
+      "name": "Ministerstwo Rodziny — rodzicielski",
+      "url": "https://www.gov.pl/web/rodzina/urlop-rodzicielski",
+      "section": "Uprawnienia rodziców",
+      "quote": ""
+    },
+    {
+      "id": "calc-pip",
+      "name": "Państwowa Inspekcja Pracy — rodzicielstwo",
+      "url": "https://www.pip.gov.pl/dla-pracodawcow/porady-prawne/rodzicielstwo",
+      "section": "Prawa pracownicze",
+      "quote": ""
+    },
+    {
+      "id": "calc-business-ulga",
+      "name": "ZUS — warunki ulgi na start i preferencji",
+      "url": "https://www.zus.pl/-/ulga-na-start-preferencyjna-podstawa-dzialalnosc-nieewidencjonowana-jakie-sa-warunki-uprawnienia-i-skutk-1",
+      "section": "Warunki, uprawnienia i skutki",
+      "quote": "60 miesięcy"
+    },
+    {
+      "id": "calc-small2026",
+      "name": "ZUS — nowe zasady Małego ZUS Plus od 2026 r.",
+      "url": "https://www.zus.pl/pl/-/%E2%80%9Ema%C5%82y-zus-plus-nowe-zasady-od-2026-r.",
+      "section": "Nowy okres 36 miesięcy w 60 miesiącach",
+      "quote": "36 miesięcy"
+    },
+    {
+      "id": "calc-z3b",
+      "name": "ZUS — techniczne przywrócenie Z-3b dla pełnomocników",
+      "url": "https://www.zus.pl/-/tymczasowe-przywr%C3%B3cenie-formularza-z-3b-na-profilu-p%C5%82atnika-w-zwi%C4%85zku-z-ograniczeniami-na-ezus-dla-pe%C5%82nomocnik%C3%B3w",
+      "section": "Komunikat z 20 listopada 2026 r.",
+      "quote": "20 listopada 2026"
+    }
+  ],
+  "support": [
+    {
+      "name": "Fundacja Ernesta",
+      "situations": "Strata ciąży, trudności okołoporodowe, wcześniactwo",
+      "description": "Bezpłatne wsparcie psychologiczne i prawne; osobny program dla rodziców wcześniaków.",
+      "url": "https://fundacjaernesta.pl/kontakt/",
+      "email": "pomoc.psychologiczna@fundacjaernesta.pl",
+      "phone": "223500050"
+    },
+    {
+      "name": "Fundacja Wcześniak Rodzice–Rodzicom",
+      "situations": "Przedwczesny poród",
+      "description": "Bezpłatny Niezbędnik, program Mentor i wypożyczalnia sprzętu. Dostępność pomocy sprawdźcie w fundacji.",
+      "url": "https://wczesniak.pl/kontakt/",
+      "email": "wczesniak@wczesniak.pl",
+      "phone": "221218055"
+    },
+    {
+      "name": "Fundacja Gajusz",
+      "situations": "Ciężka, nieuleczalna choroba prenatalna",
+      "description": "Bezpłatna opieka hospicjum perinatalnego w Łodzi, również dla rodzin spoza województwa. Objecie opieką wymaga skierowania.",
+      "url": "https://gajusz.org.pl/jak-pomagamy/hospicjum-perinatalne/pomoc/",
+      "phone": "722003003"
+    },
+    {
+      "name": "Fundacja Nagle Sami — bezpłatny telefon",
+      "situations": "Żałoba i strata",
+      "description": "Bezpłatna, anonimowa linia wsparcia. Pozostałe usługi fundacji mogą mieć inne zasady; sprawdźcie aktualne dyżury na stronie.",
+      "url": "https://naglesami.org.pl/telefon-wsparcia-zaloba/",
+      "phone": "800108108"
+    },
+    {
+      "name": "Tumbo Pomaga — Fundacja Hospicyjna",
+      "situations": "Rodzeństwo i opiekunowie w żałobie",
+      "description": "Materiały i wsparcie po stracie. Zakres i dostępność bezpłatnej pomocy sprawdźcie bezpośrednio w organizacji.",
+      "url": "https://tumbopomaga.pl/jak-pomagamy.html",
+      "email": "info@tumbopomaga.pl",
+      "phone": "800111123"
+    }
+  ]
+}

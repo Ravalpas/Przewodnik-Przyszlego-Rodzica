@@ -1,4 +1,5 @@
 import {scopeCatalog} from '../dist/source-scope.js';
+import {validateCalculatorParameters} from '../dist/calculator-params.js';
 export function warsawDay(date=new Date()) {
   return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Warsaw',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
 }
@@ -47,11 +48,12 @@ export async function sourceSnapshot(source,fetcher=fetch) {
   }
   throw new Error('Zbyt wiele przekierowań.');
 }
-export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),defaultScope='zus'}) {
+export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),defaultScope='zus',calculatorRules=null}) {
   let running=null,runningScope=null;
-  const initial=()=>({catalog:structuredClone(catalog),seedVersion:catalog.version,sources:{},sourceScope:defaultScope,history:[],lastCheckedAt:null,lastScheduledDay:null});
+  const initial=()=>({catalog:structuredClone(catalog),calculatorRules:calculatorRules?structuredClone(calculatorRules):null,seedVersion:catalog.version,sources:{},sourceScope:defaultScope,history:[],lastCheckedAt:null,lastScheduledDay:null});
   const read=async()=>{
     const state=await store.read();if(!state)return initial();
+    if(!state.calculatorRules&&calculatorRules)state.calculatorRules=structuredClone(calculatorRules);
     if(state.seedVersion!==catalog.version){
       state.catalog.sources=[...state.catalog.sources,...catalog.sources.filter(s=>!state.catalog.sources.some(old=>old.id===s.id))];
       state.catalog.events=[...state.catalog.events,...catalog.events.filter(e=>!state.catalog.events.some(old=>old.id===e.id))];state.seedVersion=catalog.version;
@@ -82,6 +84,18 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),
   }
   return {
     read:async()=>({...await read(),nextCheckAt:nextMidnight(clock())}),
+    updateCalculator:({parameters,validFrom,previousRevision,verified,note})=>exclusive(async()=>{
+      if(running)throw new Error('Poczekaj na zakończenie sprawdzania źródeł.');
+      const state=await read(),current=state.calculatorRules;if(!current)throw new Error('Brak zasad kalkulatora.');
+      if(verified!==true)throw new Error('Potwierdź weryfikację zasad w oficjalnych źródłach.');
+      if(previousRevision!==current.revision)throw new Error('Zasady zmieniły się w innym oknie. Wczytaj aktualną wersję.');
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(validFrom||'')||Number.isNaN(Date.parse(validFrom))||new Date(validFrom+'T12:00Z').toISOString().slice(0,10)!==validFrom)throw new Error('Podaj prawidłową datę obowiązywania.');
+      const checked=validateCalculatorParameters(parameters),revision=current.revision+1,id=`${warsawDay(clock())}.${revision}`;
+      const versions=[...(current.versions||[]).filter(v=>v.validFrom!==validFrom),{id,validFrom,parameters:checked,note:String(note||'').trim().slice(0,1000),reviewedAt:warsawDay(clock())}].sort((a,b)=>a.validFrom.localeCompare(b.validFrom));
+      if(versions.length>40)throw new Error('Osiągnięto limit wersji; przed kolejną zmianą potrzebna jest archiwizacja przez administratora.');
+      state.calculatorHistory=[{at:clock().toISOString(),previous:current,revision:id},...(state.calculatorHistory||[])].slice(0,8);
+      state.calculatorRules={...current,revision,reviewedAt:warsawDay(clock()),versions};await store.write(state);return state.calculatorRules;
+    }),
     refresh:(reason,scope)=>{
       if(scope&&!['zus','all'].includes(scope))throw new Error('Nieprawidłowy zakres źródeł.');
       if(running&&scope&&scope!==runningScope)return Promise.reject(new Error('Trwa odświeżanie innego zakresu. Poczekaj na jego zakończenie.'));
@@ -120,7 +134,11 @@ export function createMonitor({catalog,store,fetcher=fetch,clock=()=>new Date(),
     })
   };
 }
+export function publicCalculatorRules(state){
+  if(!state.calculatorRules)return null;
+  return {...state.calculatorRules,sources:state.calculatorRules.sources.map(s=>({...s,status:state.sources?.[s.id]?.status||'reviewed',checkedAt:state.sources?.[s.id]?.lastCheckedAt||null}))};
+}
 export function publicMonitorState(state) {
   const scope=state.sourceScope||'zus',catalog=scopeCatalog(state.catalog,scope),ids=new Set(catalog.sources.map(s=>s.id));
-  return {sourceScope:scope,catalog,lastCheckedAt:state.lastCheckedAt,nextCheckAt:state.nextCheckAt,schedule:{time:'00:00',timezone:'Europe/Warsaw'},sources:Object.fromEntries(Object.entries(state.sources).filter(([id])=>ids.has(id)).map(([id,s])=>[id,{status:s.status,lastCheckedAt:s.lastCheckedAt,lastError:s.lastError,newLinks:s.newLinks||[],reviewedAt:s.reviewedAt}])),history:state.history.filter(h=>ids.has(h.sourceId))};
+  return {sourceScope:scope,catalog,calculatorRules:publicCalculatorRules(state),lastCheckedAt:state.lastCheckedAt,nextCheckAt:state.nextCheckAt,schedule:{time:'00:00',timezone:'Europe/Warsaw'},sources:Object.fromEntries(Object.entries(state.sources).filter(([id])=>ids.has(id)).map(([id,s])=>[id,{status:s.status,lastCheckedAt:s.lastCheckedAt,lastError:s.lastError,newLinks:s.newLinks||[],reviewedAt:s.reviewedAt}])),history:state.history.filter(h=>ids.has(h.sourceId))};
 }

@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-21.1",
+  "version": "2026-11-21.2",
   "reviewedAt": "2026-11-21",
   "sources": [
     {
@@ -124,6 +124,125 @@
       "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-urlopu-macierzynskiego-albo-urlopu-na-warunkach-urlopu-macierzynskiego",
       "section": "Prawo do zasiłku macierzyńskiego",
       "quote": "ubezpieczenia chorobowego"
+    },
+    {
+      "id": "calc-maternity",
+      "name": "ZUS — okresy macierzyńskiego i adopcja",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-urlopu-macierzynskiego-albo-urlopu-na-warunkach-urlopu-macierzynskiego",
+      "section": "Prawo i okres przysługiwania",
+      "quote": "20 tygodni"
+    },
+    {
+      "id": "calc-parental",
+      "name": "ZUS — rodzicielski i łączenie z pracą",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-macierzynski/prawo-do-zasilku-i-okres-przyslugiwania/za-okres-dodatkowego-urlopu-rodzicielskiego",
+      "section": "Urlop rodzicielski",
+      "quote": "9 tygodni"
+    },
+    {
+      "id": "calc-rates",
+      "name": "ZUS — wysokość i podwyższenie zasiłku",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/wysokosc",
+      "section": "Wysokość zasiłku macierzyńskiego",
+      "quote": "81,5"
+    },
+    {
+      "id": "calc-supplement",
+      "name": "ZUS — uzupełniający macierzyński",
+      "url": "https://www.zus.pl/-/zasi%C5%82ek-macierzy%C5%84ski-za-okres-uzupe%C5%82niaj%C4%85cego-urlopu-macierzy%C5%84skiego",
+      "section": "Hospitalizacja noworodka",
+      "quote": "1000 g"
+    },
+    {
+      "id": "calc-sickness",
+      "name": "ZUS — chorobowe i wyczekiwanie",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-chorobowy/z-ubezpieczenia-chorobowego/prawo-do-zasilku-i-okres-przyslugiwania",
+      "section": "Prawo do zasiłku chorobowego",
+      "quote": "270 dni"
+    },
+    {
+      "id": "calc-base",
+      "name": "ZUS — podstawa pracownika",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-chorobowy/podstawa-wymiaru/dla-pracownikow",
+      "section": "Podstawa wymiaru",
+      "quote": "12 miesięcy"
+    },
+    {
+      "id": "calc-business-base",
+      "name": "ZUS — podstawa niepracowników",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-opiekunczy/podstawa-wymiaru/dla-ubezpieczonych-niebedacych-pracownikami",
+      "section": "Podstawa przy krótszym ubezpieczeniu",
+      "quote": "13,71"
+    },
+    {
+      "id": "calc-rehab",
+      "name": "ZUS — świadczenie rehabilitacyjne",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/swiadczenie-rehabilitacyjne/z-ubezpieczenia-chorobowego/prawo-do-swiadczenia-i-okres-przyslugiwania",
+      "section": "Prawo do świadczenia",
+      "quote": "12 miesięcy"
+    },
+    {
+      "id": "calc-indices",
+      "name": "ZUS — wskaźniki i waloryzacja",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/wskazniki/zasilki",
+      "section": "Wskaźniki waloryzacji",
+      "quote": "2026"
+    },
+    {
+      "id": "calc-documents",
+      "name": "ZUS — dokumenty macierzyńskiego",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/niezbedne-dokumenty",
+      "section": "Niezbędne dokumenty",
+      "quote": "ZAM"
+    },
+    {
+      "id": "calc-forms",
+      "name": "ZUS — aktualne formularze",
+      "url": "https://www.zus.pl/-/kolejne-uproszczenia-w-zasi%C5%82kach",
+      "section": "Zmiany od 24 października 2026 r.",
+      "quote": "ZAM"
+    },
+    {
+      "id": "calc-care",
+      "name": "ZUS — opiekuńczy",
+      "url": "https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-opiekunczy/prawo-do-zasilku-i-okres-przyslugiwania",
+      "section": "Okres przysługiwania",
+      "quote": "60 dni"
+    },
+    {
+      "id": "calc-contributions",
+      "name": "ZUS — składki i ulgi",
+      "url": "https://www.zus.pl/baza-wiedzy/skladki-wskazniki-odsetki/skladki/wysokosc-skladek-na-ubezpieczenia-spoleczne",
+      "section": "Podstawy składek",
+      "quote": "2026"
+    },
+    {
+      "id": "calc-funeral",
+      "name": "ZUS — pogrzebowe",
+      "url": "https://www.zus.pl/swiadczenia/zasilki/zasilek-pogrzebowy",
+      "section": "Warunki i termin wniosku",
+      "quote": "7000"
+    },
+    {
+      "id": "calc-business-ulga",
+      "name": "ZUS — warunki ulgi na start i preferencji",
+      "url": "https://www.zus.pl/-/ulga-na-start-preferencyjna-podstawa-dzialalnosc-nieewidencjonowana-jakie-sa-warunki-uprawnienia-i-skutk-1",
+      "section": "Warunki, uprawnienia i skutki",
+      "quote": "60 miesięcy"
+    },
+    {
+      "id": "calc-small2026",
+      "name": "ZUS — nowe zasady Małego ZUS Plus od 2026 r.",
+      "url": "https://www.zus.pl/pl/-/%E2%80%9Ema%C5%82y-zus-plus-nowe-zasady-od-2026-r.",
+      "section": "Nowy okres 36 miesięcy w 60 miesiącach",
+      "quote": "36 miesięcy"
+    },
+    {
+      "id": "calc-z3b",
+      "name": "ZUS — techniczne przywrócenie Z-3b dla pełnomocników",
+      "url": "https://www.zus.pl/-/tymczasowe-przywr%C3%B3cenie-formularza-z-3b-na-profilu-p%C5%82atnika-w-zwi%C4%85zku-z-ograniczeniami-na-ezus-dla-pe%C5%82nomocnik%C3%B3w",
+      "section": "Komunikat z 20 listopada 2026 r.",
+      "quote": "20 listopada 2026"
     }
   ],
   "events": [

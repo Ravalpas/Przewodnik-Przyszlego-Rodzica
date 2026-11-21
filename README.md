@@ -2,6 +2,8 @@
 
 Aktualny opis kalendarza, oficjalnych kart, panelu weryfikacji, harmonogramu 00:00 i wdrożenia kontenerowego: [AKTUALIZACJE.md](AKTUALIZACJE.md).
 
+**Zintegrowany Kalkulator:** wspólny formularz uprawnień i kwot, scenariusze rodziców, zapis do kalendarza, dokumenty i demonstracje usług urzędowych. Zakres, źródła, parametry administracyjne i granice automatyzacji: [dokumentacja kalkulatora](docs/ZINTEGROWANY-KALKULATOR.md).
+
 Aplikacja na telefon trzymany pionowo i komputer. Pierwsza konfiguracja obejmuje rolę rodzica, planowanie / ciążę / narodziny oraz płeć dziecka. Zawiera mapy 42 i 52 tygodni, oficjalne sprawy, kalendarz z notatkami oraz czat z Bielikiem. Na komputerze kalendarz i informacje dnia mają osobne kolumny, a droga zachowuje swój przebieg i numerację.
 
 ## Profil i ustawienia

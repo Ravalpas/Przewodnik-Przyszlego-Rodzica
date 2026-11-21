@@ -3,6 +3,7 @@ import {personalProfileAnswer,chatSuggestions} from './chat-personal.js';
 import {assessChatRequest} from './chat-policy.js';
 import {localNotesAnswer,chatNotesContext,chatRequestBody} from './chat-notes.js';
 import {CHAT_MESSAGE_LIMIT,newConversation,readChatArchive,saveChatConversation,selectChatConversation,deleteChatConversation} from './chat-storage.js';
+import {calculatorChatAnswer} from './calculator-storage.js';
 export {doctorPortrait,chatIcon} from './chat-view.js';
 
 // The profile payload contains dates and task status; selected calendar notes
@@ -12,7 +13,7 @@ export function chatProfileForRequest(profile) {
   return {parentRole:profile.parentRole,planning:profile.planning===true,mode:profile.mode,anchor:profile.anchor,dueDate:profile.dueDate,pregnancyStart:profile.pregnancyStart,dates,completedTasks:profile.completedTasks||[],notApplicableTasks:profile.notApplicableTasks||[]};
 }
 
-export function createBielikChat({getProfile,openTask,openNote=()=>{},onBack,getTasks=()=>null,getNotes=()=>({available:false,notes:[]}),getStorage=()=>globalThis.localStorage}) {
+export function createBielikChat({getProfile,openTask,openNote=()=>{},openCalculator=()=>{},getCalculator=()=>({available:true,cases:[]}),onBack,getTasks=()=>null,getNotes=()=>({available:false,notes:[]}),getStorage=()=>globalThis.localStorage}) {
   let root=null,current=newConversation(),pending=false,error='',notice='',historyOpen=false,dirty=false,draftSaveTimer;
   let archive={version:1,activeId:null,conversations:[]};
   try {
@@ -80,7 +81,7 @@ export function createBielikChat({getProfile,openTask,openNote=()=>{},onBack,get
     if(historyOpen)return;
     const examples=chatSuggestions(getProfile());
     root.querySelectorAll('[data-chat-example]').forEach(button=>button.addEventListener('click',()=>{current.draft=examples[Number(button.dataset.chatExample)];send();}));
-    root.querySelectorAll('[data-chat-task]').forEach(button=>button.addEventListener('click',()=>openTask(button.dataset.chatTask)));
+    root.querySelectorAll('[data-chat-task]').forEach(button=>button.addEventListener('click',()=>button.dataset.chatTask==='integrated-calculator'?openCalculator():openTask(button.dataset.chatTask)));
     root.querySelectorAll('[data-chat-note]').forEach(button=>button.addEventListener('click',()=>openNote(button.dataset.chatNote)));
     const input=root.querySelector('#chat-input');
     const sizeInput=()=>{input.style.height='auto';input.style.height=Math.min(110,Math.max(46,input.scrollHeight))+'px';};
@@ -103,7 +104,7 @@ export function createBielikChat({getProfile,openTask,openNote=()=>{},onBack,get
     const localOptions={assessment,history:current.messages,tasks:getTasks()};
     const noteSnapshot=getNotes(),noteAnswer=localNotesAnswer(question,noteSnapshot,{history:current.messages});
     const profileAnswer=personalProfileAnswer(question,getProfile(),undefined,localOptions);
-    const local=['unrelated','restricted','mixed'].includes(assessment.route)?profileAnswer:noteAnswer||profileAnswer;
+    const local=['unrelated','restricted','mixed'].includes(assessment.route)?profileAnswer:calculatorChatAnswer(question,getCalculator())||noteAnswer||profileAnswer;
     if(local) {
       const prefix=noteAnswer&&profileAnswer?profileAnswer.answer+'\n\n':'';
       current.messages.push({role:'user',content:question,local:true},{role:'assistant',kind:'profile',content:prefix+local.answer,sources:local.sources||[],tasks:local.tasks||[],notes:local.notes||[],local:true});
