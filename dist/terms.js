@@ -23,5 +23,16 @@ export const termButton=id=>`<button type="button" class="term-info" data-term="
 export function explanationsHtml(ids){return `<details class="term-explanations"><summary>Nie wiesz, co oznaczają te pojęcia? Sprawdź wyjaśnienia.</summary><dl>${[...new Set(ids)].filter(id=>TERMS[id]).map(id=>`<div><dt>${TERMS[id].title} ${termButton(id)}</dt><dd>${TERMS[id].text}</dd></div>`).join('')}</dl></details>`;}
 export function showTerm(id){const term=TERMS[id];if(!term)return;let dialog=document.getElementById('term-dialog');if(!dialog){dialog=document.createElement('dialog');dialog.id='term-dialog';dialog.setAttribute('aria-labelledby','term-dialog-title');dialog.className='term-dialog';document.body.append(dialog);}dialog.innerHTML=`<h2 id="term-dialog-title">${term.title}</h2><p>${term.text}</p><a href="${term.source}" target="_blank" rel="noopener noreferrer">Oficjalne źródło</a><button class="secondary" type="button">Zamknij wyjaśnienie</button>`;dialog.querySelector('button').onclick=()=>dialog.close();if(!dialog.open)dialog.showModal();}
 export function bindTerms(root){if(root.dataset.termsBound)return;root.dataset.termsBound='true';root.addEventListener('click',e=>{const button=e.target.closest('[data-term]');if(button&&root.contains(button)){e.preventDefault();e.stopPropagation();showTerm(button.dataset.term);}});}
-export function enhanceTerms(root){if(!root)return;bindTerms(root);const ids=[];const targets=root.querySelectorAll('.calc-field>span,.calc-check>span,h2,h3,h4,legend,.event-detail>p');for(const target of targets){if(target.closest('.term-explanations')||target.querySelector('.term-info'))continue;const content=target.textContent;const matches=Object.entries(TERMS).filter(([,term])=>term.match.test(content));if(matches.length){ids.push(...matches.map(([id])=>id));target.insertAdjacentHTML('beforeend',' '+termButton(matches[0][0]));}}
- const previous=root.querySelector(':scope > .term-explanations');if(previous)previous.remove();if(ids.length)root.insertAdjacentHTML('beforeend',explanationsHtml(ids));}
+export function enhanceTerms(root){
+ if(!root)return;bindTerms(root);
+ root.querySelectorAll('[data-term-auto]').forEach(button=>button.remove());
+ root.querySelectorAll('.term-explanations .term-info').forEach(button=>button.remove());
+ const descriptions=new Set();root.querySelectorAll('.term-explanations dl>div').forEach(item=>{const key=item.querySelector('dt')?.textContent.trim();if(descriptions.has(key))item.remove();else descriptions.add(key);});
+ root.querySelectorAll('.term-explanations').forEach(block=>{if(!block.querySelector('dt'))block.remove();});
+ const seen=new Set();root.querySelectorAll('[data-term]').forEach(button=>{if(seen.has(button.dataset.term))button.remove();else seen.add(button.dataset.term);});
+ for(const target of root.querySelectorAll('.calc-field>span,.calc-check>span,legend,.event-detail>p')){
+  if(target.closest('.term-explanations')||target.querySelector('.term-info'))continue;
+  const match=Object.entries(TERMS).find(([id,term])=>!seen.has(id)&&term.match.test(target.textContent));
+  if(match){seen.add(match[0]);target.insertAdjacentHTML('beforeend',' '+termButton(match[0]));target.lastElementChild.dataset.termAuto='true';}
+ }
+}
