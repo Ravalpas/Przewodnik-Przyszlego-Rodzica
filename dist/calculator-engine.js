@@ -7,7 +7,7 @@ import {calcNormalizeInput,calcParent,calcRound,calcMonthly,calcDays,calcMergeIn
 import {calcFamily} from './calculator-family.js';
 import {calcPregnancy,calcCare,calcBusiness} from './calculator-other.js';
 
-export const CALCULATOR_LABELS={family:'Urlopy i zasiłek macierzyński',sickness:'Chorobowe w ciąży',rehab:'Świadczenie rehabilitacyjne',prebirth:'Świadczenie po utracie pracy przed porodem',care:'Opieka nad dzieckiem lub bliskim',business:'Działalność, składki i ulgi'};
+export const CALCULATOR_LABELS={family:'Urlopy i zasiłek macierzyński',sickness:'Chorobowe rodzica',rehab:'Świadczenie rehabilitacyjne',prebirth:'Świadczenie po utracie pracy przed porodem',care:'Opieka nad dzieckiem lub bliskim',business:'Działalność, składki i ulgi'};
 export function calculatorDocuments(input,parents){
   const result=[],focus=input.focus;
   for(const index of focus==='family'?[0,1]:[focus==='care'?input.care.parent:0]){
@@ -55,14 +55,14 @@ export function calculateIntegrated(raw,bundle,today=todayString(),context={}){
   if(formalAssessment.manual)return formalProcedureResult(input,rules,formalAssessment,today);
   const parents=input.parents.map(parent=>calcParent(parent,input.eventDate,rules));
   let calculation;
-  if(input.focus==='family')calculation={...calcFamily(input,rules,parents),parents};
+  if(input.focus==='family')calculation={...calcFamily(input,rules,parents,today),parents};
   else if(input.focus==='business')calculation=calcBusiness(input,rules);
-  else if(input.focus==='care')calculation=calcCare(input,rules);
+  else if(input.focus==='care')calculation=calcCare(input,rules,{history});
   else calculation=calcPregnancy(input,rules);
   const all=calculation.periods,conflicts=familyConflicts(input,all,history);
   for(const conflict of conflicts.filter(c=>c.blocking))formalAssessment.issues.push({id:'family-conflict',message:conflict.message,field:'formalCase.recordStatus',source:'maternity'});
   formalAssessment.facts.push(...conflicts.filter(c=>!c.blocking).map(c=>c.message));
-  const totals=[0,1].map(parent=>{const owned=all.filter(p=>p.parent===parent&&p.kind!=='information');return {parent,days:calcMergeIntervals(owned).reduce((s,p)=>s+calcDays(p.start,p.end),0),gross:owned.length&&owned.every(p=>p.gross!==null)?calcRound(owned.reduce((s,p)=>s+p.gross,0)):null};});
+  const totals=[0,1].map(parent=>{const owned=all.filter(p=>p.parent===parent&&p.kind!=='information');return {parent,days:calcMergeIntervals(input.focus==='care'?owned.filter(p=>p.eligibility!=='no'):owned).reduce((s,p)=>s+calcDays(p.start,p.end),0),gross:owned.length&&owned.every(p=>p.gross!==null)?calcRound(owned.reduce((s,p)=>s+p.gross,0)):null};});
   const variants=[];
   if(input.focus==='family'&&input.loss==='none')for(const choice of ['standard','averaged']){const variant=calcFamily({...input,rateChoice:choice},rules,parents);variants.push({id:choice,label:choice==='standard'?'100% macierzyński + 70% rodzicielski':'81,5% po terminowym wniosku',available:choice==='standard'||variant.averaged,gross:[0,1].map(parent=>{const periods=variant.periods.filter(p=>p.parent===parent);return periods.length&&periods.every(p=>p.gross!==null)?calcRound(periods.reduce((s,p)=>s+p.gross,0)):null;})});}
   const facts=[...(calculation.facts||[])],warnings=[...(calculation.warnings||[])];

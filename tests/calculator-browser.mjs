@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
 const errors=[],requests=[];
 const context=await browser.newContext({viewport:{width:1440,height:1000},locale:'pl-PL',timezoneId:'Europe/Warsaw',acceptDownloads:true});
-await context.addInitScript(()=>{if(!sessionStorage.getItem('calc-initialized')){localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.2');localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Maja',gender:'girl',parentRole:'mother'}));sessionStorage.setItem('calc-initialized','yes');}});
+await context.addInitScript(()=>{if(!sessionStorage.getItem('calc-initialized')){localStorage.setItem('ppm-test-reset','fresh-start-2026-11-22.1');localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-01',name:'Maja',gender:'girl',parentRole:'mother'}));sessionStorage.setItem('calc-initialized','yes');}});
 const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.url().includes('/api/chat'))requests.push(r.url());});
 try{
  await page.goto('http://localhost:61619');await page.locator('#nav-calculator').click();await page.locator('[data-calc-field="eventDate"]').waitFor();

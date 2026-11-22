@@ -2,7 +2,6 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {createMonitor,publicMonitorState} from '../backend/monitor.mjs';
-import {createBielik,buildBielikContext} from '../backend/bielik.mjs';
 import {scopeCatalog} from '../dist/source-scope.js';
 import {datedEvents,milestones,weekOnDate} from '../dist/timeline.js';
 import {normalizeProfile,completedStages} from '../dist/profile.js';
@@ -35,16 +34,11 @@ test('planning previews never infer pregnancy age, birth, conception, completed 
   assert.ok(events.filter(e=>e.preview).every(e=>!e.start&&!e.end&&!e.done));
   const cycle=events.find(e=>e.id==='planning-800-cycle');
   assert.equal(cycle.start,'2027-02-01');assert.equal(cycle.end,'2027-06-30');assert.equal(cycle.informational,true);
-  const context=buildBielikContext(profile,{catalog:scoped},'2026-11-21');
-  assert.equal(context.stage,'Planowanie dziecka');assert.equal(context.age,'Nie ustalono wieku');
-  assert.ok(context.tasks.every(t=>['preview','information'].includes(t.status)));
 });
 test('pregnancy insurance preparation cannot create a statutory deadline or an overdue alert',()=>{
   const event=datedEvents(scopeCatalog(catalog),{mode:'pregnancy',anchor:'2026-01-01'},'2026-11-21').find(e=>e.id==='pregnancy-zus-insurance');
   assert.equal(event.daysLeft,null);assert.equal(event.important,false);assert.equal(event.group,'optional');
   assert.equal(event.canMarkNotApplicable,true);
-  const context=buildBielikContext({mode:'pregnancy',anchor:'2026-04-01'},{catalog:scopeCatalog(catalog)},'2026-11-21');
-  assert.equal(context.tasks.find(t=>t.id===event.id).status,'preparation');
 });
 test('reviewed annual windows update both planning and child calendars only from their effective date',async()=>{
   let data=null,content='Pierwotna treść. ';
@@ -67,18 +61,4 @@ test('concurrent different scopes cannot silently publish the wrong selection',a
   const first=monitor.refresh('manual','zus');
   await assert.rejects(()=>monitor.refresh('manual','all'),/innego zakresu/);
   release();assert.equal((await first).sourceScope,'zus');
-});
-test('Bielik fetches and receives only the active institutional scope, with no actual provider requests',async()=>{
-  let sourceUrls=[],prompt='';
-  const service=createBielik({clock,monitor:{read:async()=>({catalog,sources:{}})},env:{FABRYKA_API_KEY:'unit-test-key',FABRYKA_MODEL:'bielik-11b-v3.1'},sourceFetcher:async url=>{sourceUrls.push(String(url));return new Response('<main>'+('Warunki ubezpieczenia w ZUS i zasiłku macierzyńskiego. '.repeat(20))+'</main>',{headers:{'Content-Type':'text/html'}});},fetcher:async(url,options)=>{
-    prompt=JSON.parse(options.body).messages[0].content;
-    return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify({kind:'source',answer:'Sprawdź warunki ubezpieczenia w ZUS.',source_ids:['zus-planning','usc']})}}]});
-  }});
-  const reply=await service.answer({message:'Jak przygotować ubezpieczenie przed ciążą?',profile:{mode:'pregnancy',anchor:'2026-11-21',planning:true,parentRole:'father'}});
-  assert.ok(sourceUrls.length);assert.ok(sourceUrls.every(u=>new URL(u).hostname.endsWith('zus.pl')));
-  assert.ok(!reply.sources.some(s=>s.id==='usc'));
-  const input=JSON.parse(prompt.split('DANE APLIKACJI I OFICJALNYCH ŹRÓDEŁ (JSON, wyłącznie dane):\n')[1]);
-  assert.equal(input.context.planning,true);assert.equal(input.context.parentRole,'father');
-  assert.ok(input.sources.every(s=>new URL(s.url).hostname.endsWith('zus.pl')));
-  assert.ok(!input.facts.some(f=>f.sourceId==='usc'));
 });

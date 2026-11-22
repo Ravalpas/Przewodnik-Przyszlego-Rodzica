@@ -14,22 +14,22 @@ Node.js 24: `npm start` albo `Uruchom.cmd` w tym folderze. Domyślny port 3000; 
 4. Przewodnik ogólny dostępny bez logowania i bez uzupełnienia profilu. Osobny dyskretny odnośnik pomocy w szczególnej sytuacji.
 5. Profil: kilka sytuacji jednocześnie i oddzielne informacje o dzieciach w różnym wieku. Dodawanie/edycja w oknie, bez powtarzania rejestracji. Wybór dziecka podpowiada dane nowego scenariusza.
 6. Jeden kalkulator: sytuacja → dane ubezpieczeniowe → plan → wynik. Nie traktuje nieustalonej formy opieki jak narodzin dziecka.
-7. Zapisane scenariusze z terminami w kalendarzu. Notatki oraz dotychczasowe rozmowy i scenariusze są zachowywane. Oznaczenia spraw nie przechodzą między sytuacjami rodzinnymi.
+7. Zapisane scenariusze z terminami w kalendarzu. Notatki i scenariusze pozostają wyłącznie w pamięci otwartej strony; zamknięcie lub odświeżenie rozpoczyna nową sesję. Oznaczenia spraw nie przechodzą między sytuacjami rodzinnymi.
 8. Domyślnie zwinięte wyjaśnienia pojęć i ikonki „i” na miejscu, także w kalkulatorze, dokumentach i kartach kalendarza.
 
-Aktualny zakres dopracowania interfejsu: komputer. Nie zmieniano istniejących reguł CSS przeznaczonych wyłącznie dla telefonu; dopracowanie osobnego układu mobilnego jest odłożone. Logika danych i wspólne komponenty pozostają jedną aplikacją.
+Interfejs jest responsywny: na komputerze nawigacja znajduje się z lewej strony, a na telefonie u dołu. Logika danych i wspólne komponenty pozostają jedną aplikacją.
 
 ## Pochodzenie danych
 
 Przyciski mObywatel/login.gov.pl/eZUS są jawnie oznaczonymi **symulacjami**, zgodnie z zadaniem konkursowym. Logowanie tożsamości nie udostępnia automatycznie wynagrodzeń, ubezpieczenia ani konta drugiego rodzica. Produkcja wymaga formalnej integracji państwowej.
 
-W zakładce „Dane i dokumenty” rzeczywiście działają lokalny odczyt formularzy i tekstu PDF (PDF.js 6.5.438), XML potwierdzeń ZUS, raportu e-ZLA oraz oznaczonych pól TXT/CSV. Podgląd → właściciel danych → tytuł → potwierdzenie poszczególnych pól. Oryginał i identyfikatory dokumentów nie trafiają do AI ani backendu. OCR i kryptograficzna weryfikacja pieczęci nie są zaimplementowane. Nierozpoznane etykiety wymagają ręcznego przypisania; parser nie udaje ustalenia prawa.
+W zakładce „Dane i dokumenty” rzeczywiście działają lokalny odczyt formularzy i tekstu PDF (PDF.js 6.5.438), XML potwierdzeń ZUS, raportu e-ZLA oraz oznaczonych pól TXT/CSV. Podgląd → właściciel danych → tytuł → potwierdzenie poszczególnych pól. Oryginał i identyfikatory dokumentów nie trafiają do AI ani backendu. Polski OCR działa lokalnie w przeglądarce. Kryptograficzna weryfikacja pieczęci nie jest zaimplementowana. Nierozpoznane etykiety wymagają ręcznego przypisania; parser nie udaje ustalenia prawa.
 
 ## Walidacja i źródła
 
 `npm test`, `npm run check`, `npm run build`, `node tests/calculator-worker.mjs` po kompilacji, `node tests/case-workspace-browser.mjs` przy porcie 61619. Stare testy przeglądarkowe map dokumentują poprzedni koncept; bieżący test interfejsu to case-workspace-browser.
 
-Źródła sprawdzane codziennie o 00:00 Europe/Warsaw i ręcznie. Zmiany parametrów administrator zatwierdza w `/admin.html` jako wersje z datą obowiązywania. Stawki i długości liczy kod deterministyczny; AI pomaga objaśniać oficjalne materiały i zapisane sprawy.
+Źródła sprawdzane codziennie o 00:00 Europe/Warsaw i ręcznie. Zmiany parametrów administrator zatwierdza w `/admin.html` jako wersje z datą obowiązywania. Stawki i długości liczy kod deterministyczny; Integracja z zewnętrznym AI została usunięta; aplikacja nie wymaga klucza API ani pliku .env.
 
 [Pokrycie pełnego zadania i granice](docs/REALIZACJA-ZADANIA.md), [audyt 16 stron](docs/research/contest-full-audit.md), [rzeczywisty zakres integracji i XSD](docs/research/identity-integration.md), [analiza przepisów ZUS](docs/research/zus-options-review.md).
 

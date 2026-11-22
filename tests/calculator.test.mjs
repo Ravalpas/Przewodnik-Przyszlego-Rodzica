@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {calculateIntegrated} from '../dist/calculator-engine.js';
 import {calcSupplement} from '../dist/calculator-family.js';
 import {calcNormalizeInput,calcBasis} from '../dist/calculator-core.js';
-import {createCalculatorStore,calculatorCalendarEvents,calculatorChatAnswer} from '../dist/calculator-storage.js';
+import {createCalculatorStore,calculatorCalendarEvents} from '../dist/calculator-storage.js';
 import {validateCalculatorParameters,calculatorRulesFor} from '../dist/calculator-params.js';
 import {createMonitor,publicCalculatorRules} from '../backend/monitor.mjs';
 import {handleApi} from '../backend/api.mjs';
@@ -34,12 +34,6 @@ test('debt threshold is exact and invalid histories, malformed parameters or mix
  const bad=structuredClone(rules.parameters);bad.postInsuranceCap=[{from:'2026-02-30',amount:10000}];assert.throws(()=>validateCalculatorParameters(bad),/prawidłowych dat/);
  const overlap=structuredClone(rules.parameters);overlap.postInsuranceCap=[{from:'2026-01-01',to:'2026-03-31',amount:10000},{from:'2026-03-31',amount:11000}];assert.throws(()=>validateCalculatorParameters(overlap),/nakładać/);
 });
-test('Bielik reads saved scenario dates and routes financial calculations to the integrated tool without reading income into AI history',()=>{
- assert.equal(calculatorChatAnswer('Ile lat ma moje dziecko?',{available:true,cases:[]}),null);
- const redirect=calculatorChatAnswer('Oblicz zasiłek macierzyński',{available:true,cases:[]});assert.equal(redirect.tasks[0].id,'integrated-calculator');
- const answer=calculatorChatAnswer('Pokaż zapisane scenariusze',{available:true,cases:[{title:'Nasz plan',calendarEnabled:true,result:{periods:[{start:'2026-01-01',end:'2026-05-20'}]}}]});assert.match(answer.answer,/2026-01-01/);assert.match(answer.answer,/nie decyzje/);
-});
-
 test('all childbirth counts preserve exact maternity limits, calendar days and own parent bases',()=>{
   for(const [count,days]of [[1,140],[2,217],[3,231],[4,245],[5,259],[6,259]]){const r=run({count});assert.equal(r.periods[0].days,days);assert.equal(r.periods[0].gross,days*200);}
   const r=run({parents:[parent({basisMode:'salary',salary:6000}),parent({basisMode:'salary',salary:9000})],parentalParts:[{parent:0,weeks:32},{parent:1,weeks:9}]});

@@ -1,6 +1,6 @@
 import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises';
 import {resolve,extname} from 'node:path';
-const root=resolve(import.meta.dirname,'..'),types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.png':'image/png','.webmanifest':'application/manifest+json'};
+const root=resolve(import.meta.dirname,'..'),types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.wasm':'application/wasm','.gz':'application/gzip','.pdf':'application/pdf','.bcmap':'application/octet-stream','.png':'image/png','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
 const assets={};
 async function collect(dir,prefix=''){
   for(const item of await readdir(dir,{withFileTypes:true})){
@@ -14,7 +14,7 @@ await collect(resolve(root,'dist'));
 const catalog=await readFile(resolve(root,'dist/data/catalog.json'),'utf8');
 const calculatorSeed=await readFile(resolve(root,'dist/data/calculator-rules.json'),'utf8');
 let code=`const CATALOG=${catalog};\nconst CALCULATOR_SEED=${calculatorSeed};\nconst ASSETS=${JSON.stringify(assets)};\n`;
-for(const name of ['dist/polish.js','dist/age.js','dist/source-scope.js','dist/event-policy.js','dist/timeline.js','dist/chat-policy.js','dist/notes.js','dist/chat-notes.js','dist/calculator-params.js','dist/formal-registry.js','dist/family-ledger.js','dist/calculator-core.js','dist/calculator-family.js','dist/calculator-other.js','dist/calculator-engine.js','backend/calculator-simulations.mjs','backend/monitor.mjs','backend/d1-store.mjs','backend/fabryka.mjs','backend/bielik.mjs','backend/api.mjs','worker/index.mjs']){
+for(const name of ['dist/polish.js','dist/age.js','dist/source-scope.js','dist/event-policy.js','dist/timeline.js','dist/notes.js','dist/calculator-params.js','dist/legal-dates.js','dist/financial.js','dist/insurance.js','dist/formal-registry.js','dist/family-ledger.js','dist/calculator-core.js','dist/calculator-family.js','dist/calculator-other.js','dist/calculator-engine.js','backend/calculator-simulations.mjs','backend/monitor.mjs','backend/d1-store.mjs','backend/api.mjs','worker/index.mjs']){
   const source=await readFile(resolve(root,name),'utf8');
   code+='\n'+source.replace(/^import .*;\r?\n/gm,'').replace(/^export (async function|function|const|class) /gm,'$1 ');
 }

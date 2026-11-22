@@ -1,0 +1,11 @@
+import {calendarDate,periodText} from './polish.js';
+import {pinSvg} from './notes.js';
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function calendarInventory(events,marks,notes){
+ const rows=[],seen=new Set();
+ for(const e of events){if(e.notApplicable||e.preview||!/^\d{4}-\d{2}-\d{2}$/.test(e.start||'')||seen.has('event:'+e.id))continue;seen.add('event:'+e.id);rows.push({type:'event',id:e.id,date:e.start,end:e.end||e.start,title:e.title,done:e.done,event:e,label:e.calculatorCase?'Zapisany scenariusz':e.recordId?'Wpis w rejestrze':e.required?'Obowiązkowa sprawa':'Wydarzenie'});}
+ for(const m of marks){if(!/^\d{4}-\d{2}-\d{2}$/.test(m.start||'')||seen.has('mark:'+m.id))continue;seen.add('mark:'+m.id);rows.push({type:'milestone',id:m.id,date:m.start,end:m.end||m.start,title:m.title,label:'Ważna data'});}
+ for(const n of notes)rows.push({type:'note',id:n.id,date:n.date,end:n.date,time:n.time||'',title:n.text,color:n.color,label:'Twoja notatka'});
+ return rows.sort((a,b)=>b.date.localeCompare(a.date)||(b.time||'').localeCompare(a.time||'')||a.title.localeCompare(b.title,'pl')||a.id.localeCompare(b.id));
+}
+export function calendarInventoryHtml(rows){return `<section class="calendar-agenda calendar-inventory"><div class="calendar-inventory-heading"><h3>W kalendarzu masz zapisane</h3><span aria-label="Liczba wpisów">${rows.length}</span></div>${rows.length?'<div class="calendar-inventory-list">'+rows.map((r,i)=>`<button type="button" class="calendar-inventory-item" data-inventory="${i}" data-inventory-date="${r.date}"><span class="inventory-symbol" aria-hidden="true">${r.type==='note'?pinSvg(r.color):r.done?'✓':r.type==='milestone'?'◆':'▤'}</span><span class="inventory-copy"><small>${esc(r.label)}${r.done?' · Wykonano':''}</small><strong>${esc(r.title)}</strong><time datetime="${r.date}">${esc(r.date===r.end?calendarDate(r.date):periodText({start:r.date,end:r.end}))}${r.time?' · '+esc(r.time):''}</time></span><span class="inventory-chevron" aria-hidden="true">›</span></button>`).join('')+'</div>':'<p class="field-help">Nie masz jeszcze zapisanych wydarzeń ani notatek.</p>'}</section>`;}

@@ -10,3 +10,7 @@ dist/.openai/
 .env
 .env.*
 !.env.example
+.pdf-tooling/
+private-cases/
+Sprawy/
+fixtures/private/

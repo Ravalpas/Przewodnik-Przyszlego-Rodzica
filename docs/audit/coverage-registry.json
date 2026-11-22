@@ -1,0 +1,873 @@
+{
+  "asOf": "2026-11-22",
+  "scope": "Audyt demonstratora; nie certyfikat kompletności prawnej",
+  "functions": [
+    {
+      "id": "insurance",
+      "title": "Kwalifikacja ubezpieczeń i ich zbiegów",
+      "legalBasis": "art.6,8,9,11,14 ustawy systemowej",
+      "implementation": [
+        "dist/insurance.js",
+        "dist/calculator-core.js",
+        "dist/insurance-view.js"
+      ],
+      "codeAnchor": "qualifyInsuranceParent",
+      "implemented": [
+        "Kwalifikacja etatu, dobrowolnego chorobowego, zlecenia studenta, własnego zlecenia, minimum z etatu, kolejnych zleceń",
+        "Oddzielne daty zgłoszenia, zawieszenia i powrotu po macierzyńskim"
+      ],
+      "coveredExceptions": [
+        "26. urodziny",
+        "Samo zdrowotne nie tworzy prawa",
+        "Zawieszenie i brak ponownego zgłoszenia",
+        "Nieznane minimum przyszłego roku nie tworzy obowiązku"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Wszystkie zmienne zbiegi JDG / zlecenia / różnych spółek i przypisanie zlecenia przy kilku pracodawcach nie są rozstrzygane w pełni.",
+          "nextStep": "Rozbudować chronologię tytułów, kolejność wyboru i właściwe podstawy; dodać zweryfikowane przykłady ZUS."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Brak dat i kwot nie oznacza ubezpieczenia.",
+          "nextStep": "Uzupełnić dokumenty płatnika / dane eZUS."
+        }
+      ],
+      "tests": [
+        "insurance:",
+        "contract without sickness",
+        "parallel insurance"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "basis",
+      "title": "Podstawa i wynagrodzenia",
+      "legalBasis": "art.36–47 i 48–52 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-core.js"
+      ],
+      "codeAnchor": "calcBasis",
+      "implemented": [
+        "Podstawa ustalona, stałe wynagrodzenie, historia pracownicza i JDG, składniki zmienne",
+        "Zachowanie poprzedniej podstawy tylko przy potwierdzonych warunkach"
+      ],
+      "coveredExceptions": [
+        "Krótkie ubezpieczenie JDG",
+        "Uzupełnianie niepełnych miesięcy",
+        "Zmiana etatu nie kopiuje automatycznie starej podstawy"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Pełny import wieloletniej płacowej historii i wszystkich wyjątkowych składników nie istnieje.",
+          "nextStep": "Dodać szczegółowe rekordy składników i odrębne reguły ich wliczania."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Dokładna podstawa przy szczególnych składnikach wymaga potwierdzonych danych.",
+          "nextStep": "Użyć ustalenia płatnika, bez zgadywania z kwoty składek emerytalnych."
+        }
+      ],
+      "tests": [
+        "employee history",
+        "missing wage",
+        "three named guide"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "family",
+      "title": "Macierzyński, rodzicielski i ojcowski",
+      "legalBasis": "art.180–183 KP; art.29–31 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-family.js",
+        "dist/family-ledger.js"
+      ],
+      "codeAnchor": "calcFamily",
+      "implemented": [
+        "Liczba dzieci, stawki 100 / 70 / 81,5%, własne podstawy obojga rodziców",
+        "Wspólne pule, części, równoczesność, terminy, prenatalne",
+        "Kontynuacja macierzyńskiego z kompletnego ciągłego początku historii"
+      ],
+      "coveredExceptions": [
+        "Nieprzenoszalne 9 tygodni wewnątrz puli",
+        "Złożenie po terminie wariantu nie usuwa całego prawa",
+        "Wykorzystana historia nie nalicza drugi raz pełnego macierzyńskiego"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Nieciągła historia macierzyńskiego z wieloma przejęciami / przerwami wymaga dalszego algorytmu.",
+          "nextStep": "Odtworzyć oś zdarzeń i części, następnie wydzielić pozostałe uprawnienie."
+        }
+      ],
+      "tests": [
+        "all childbirth counts",
+        "reserved weeks",
+        "averaged payment",
+        "maternity continuation",
+        "prenatal weeks"
+      ],
+      "references": [
+        "MAT-112",
+        "EQ-140"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "work",
+      "title": "Łączenie rodzicielskiego z pracą",
+      "legalBasis": "art.182¹e–f KP; art.31 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-family.js",
+        "dist/family-ledger.js"
+      ],
+      "codeAnchor": "ledgerPoolDays",
+      "implemented": [
+        "Wydłużenie i obniżenie świadczenia, rozróżnienie pełnego etatu i etatu pracownika",
+        "Historia pomniejsza pulę w równoważniku wykorzystania, bez podwajania dat"
+      ],
+      "coveredExceptions": [
+        "Zaokrąglanie niepełnego dnia",
+        "Wydłużenie zachowuje źródłową stawkę"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Zmiana stawki wewnątrz wydłużenia dająca niepełny dzień podziału nadal blokuje pewną kwotę.",
+          "nextStep": "Uzgodnić metodę przypisania niepełnego dnia ze specjalistą płacowym i dodać przykład referencyjny."
+        }
+      ],
+      "tests": [
+        "work extension",
+        "parental work history"
+      ],
+      "references": [
+        "WORK-70"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "adoption",
+      "title": "Adopcja i piecza zastępcza",
+      "legalBasis": "art.183 KP; art.29 ustawy zasiłkowej",
+      "implementation": [
+        "dist/formal-registry.js",
+        "dist/calculator-family.js"
+      ],
+      "codeAnchor": "children-different",
+      "implemented": [
+        "Oddzielne daty każdego dziecka, przyjęcia i wniosku do sądu",
+        "Wspólne przyjęcie dzieci w różnym wieku bez przekraczania granicy w całym planie",
+        "Historia pieczy i adopcji tego samego dziecka nie zeruje wykorzystania"
+      ],
+      "coveredExceptions": [
+        "Granice 7 / 10 / 14 lat i szczególna gwarancja 9 tygodni",
+        "Piecza zawodowa nie daje tego uprawnienia z samej funkcji",
+        "Nieznane daty nie stają się datą porodu"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Różne przyjęcia i zmieniająca się liczba uprawnionych dzieci przy przekraczaniu granic wieku są ścieżką indywidualną.",
+          "nextStep": "Zaimplementować dynamiczną pulę z chronologicznymi zmianami liczby dzieci i zbiorami referencyjnymi."
+        },
+        {
+          "reason": "Wymagane rozstrzygnięcie organu",
+          "detail": "Ocena dokumentu sądu, rzeczywistej pieczy i uprawnień nabytych należy do organu.",
+          "nextStep": "Wprowadzić potwierdzony wynik postępowania i przeliczyć."
+        }
+      ],
+      "tests": [
+        "different-aged adoption",
+        "adoption near age",
+        "foster-to-adoption",
+        "adoption age"
+      ],
+      "references": [
+        "ADOPT-217"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "hospital",
+      "title": "Wcześniactwo i hospitalizacja",
+      "legalBasis": "art.180² KP; art.29 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-family.js",
+        "dist/formal-registry.js"
+      ],
+      "codeAnchor": "calcSupplement",
+      "implemented": [
+        "Uzupełniający wymiar, połączone pobyty, najdłuższy pobyt przy wieloraczkach",
+        "Przerwa po ośmiu tygodniach i powrót po szpitalu"
+      ],
+      "coveredExceptions": [
+        "1000 g włącznie",
+        "Pełne tygodnie po sumowaniu dni",
+        "Dwa kolejne dni przy porodzie o czasie i właściwe okno"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Połączone przerwy i przejęcia wymagają dalszej wspólnej osi zdarzeń.",
+          "nextStep": "Ujednolicić historię szpitala matki, dziecka i korzystania drugiej osoby."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Daty szpitala, ukończone tygodnie + dni i masy wszystkich dzieci muszą pochodzić z dokumentacji.",
+          "nextStep": "Uzupełnić pola z zaświadczenia szpitala."
+        }
+      ],
+      "tests": [
+        "supplement merges",
+        "hospital",
+        "mother-hospital"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "disability",
+      "title": "Ciężka choroba, niepełnosprawność, Za życiem",
+      "legalBasis": "art.182¹a KP; art.32–33 ustawy zasiłkowej; ustawa Za życiem",
+      "implementation": [
+        "dist/formal-registry.js",
+        "dist/calculator-other.js",
+        "dist/rights-guide.js"
+      ],
+      "codeAnchor": "disability-evidence",
+      "implemented": [
+        "Rozróżnienie dokumentów i uprawnień; zwiększona pula rodzicielskiego",
+        "Podział opieki na okres objęty i nieobjęty orzeczeniem; odrębny podlimit"
+      ],
+      "coveredExceptions": [
+        "Zaświadczenie Za życiem nie zastępuje orzeczenia",
+        "Nie przyjmujemy bezterminowości przy pustej dacie"
+      ],
+      "missing": [
+        {
+          "reason": "Wymagane rozstrzygnięcie organu",
+          "detail": "Ocena prawidłowości wskazań orzeczenia i zaświadczenia wymaga dokumentu / właściwego organu.",
+          "nextStep": "Wprowadzić ustalone dane i potwierdzenie rodzaju dokumentu."
+        }
+      ],
+      "tests": [
+        "reserved weeks",
+        "care",
+        "disability"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "loss",
+      "title": "Śmierć dziecka i utrata opieki",
+      "legalBasis": "art.180¹,181,182¹g KP; art.29 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-family.js",
+        "dist/formal-registry.js"
+      ],
+      "codeAnchor": "loss-current",
+      "implemented": [
+        "Odrębna delikatna ścieżka i dokument bez wymogu ustalonej płci",
+        "Minimalny okres po wczesnej stracie, ochrona siedmiu dni, liczba pozostających dzieci",
+        "Brak tworzenia nowego przyszłego rodzicielskiego i ojcowskiego bez dziecka pod opieką"
+      ],
+      "coveredExceptions": [
+        "Śmierć przed / po 8 tygodniach",
+        "Wieloraczki z pozostającymi dziećmi",
+        "Sam wniosek o pogrzebowe nie jest dowodem kosztów"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Zakończenie już trwającego rodzicielskiego / ojcowskiego / pieczy po stracie pozostaje proceduralne.",
+          "nextStep": "Dodać oś faktycznie wykorzystywanych części i odrębne reguły końca dla każdego rodzaju."
+        }
+      ],
+      "tests": [
+        "death before and after",
+        "loss never",
+        "stillbirth"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "transfer",
+      "title": "Przejęcie uprawnień przez ojca / rodzinę",
+      "legalBasis": "art.180 KP; art.29 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-family.js",
+        "dist/formal-registry.js"
+      ],
+      "codeAnchor": "transferRecipient",
+      "implemented": [
+        "Zwykłe przejęcie, hospitalizacja, zgon, niesamodzielność, porzucenie i zatrudnienie matki",
+        "Różne daty początku i wymagania przerwania pracy dla niepracownika"
+      ],
+      "coveredExceptions": [
+        "Zwykłe przejęcie po 14 tygodniach matki",
+        "Wczesny szpital matki nie jest automatycznie przejęciem macierzyńskiego"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Wielokrotne przejęcia i zgon osoby innej niż matka wymagają dodatkowej osi praw i historycznych części.",
+          "nextStep": "Dodać szczegółowy model aktualnego uprawnionego oraz zdarzeń zmiany."
+        }
+      ],
+      "tests": [
+        "transfer",
+        "hospital-first-eight",
+        "parent death",
+        "prenatal weeks"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "care",
+      "title": "Zasiłek opiekuńczy",
+      "legalBasis": "art.32–35 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-other.js",
+        "dist/family-ledger.js"
+      ],
+      "codeAnchor": "calcCare",
+      "implemented": [
+        "Roczne wspólne limity, podlimity, historia wszystkich osób",
+        "Podział przy zmianie roku, urodzinach 2 / 8 / 14 / 18 i ważności orzeczenia"
+      ],
+      "coveredExceptions": [
+        "Chore dziecko do 2 lat i domownik",
+        "Nieprzewidziane zamknięcie: mniej niż 7 dni",
+        "Dodatkowe pierwsze 8 tygodni poza zwykłą pulą",
+        "Brak historii nowego roku nie oznacza zera"
+      ],
+      "missing": [
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Inne urlopy / świadczenia oraz możliwość opieki muszą być ustalone i potwierdzone.",
+          "nextStep": "Uzupełnić widoczne pytania z własnych dokumentów."
+        }
+      ],
+      "tests": [
+        "care reference",
+        "care-evidence",
+        "care",
+        "shared care"
+      ],
+      "references": [
+        "CARE-YEAR"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "sickness",
+      "title": "Chorobowe i rehabilitacyjne",
+      "legalBasis": "art.6–22 ustawy zasiłkowej; art.92 KP",
+      "implementation": [
+        "dist/calculator-other.js",
+        "dist/calculator-core.js"
+      ],
+      "codeAnchor": "calcPregnancy",
+      "implemented": [
+        "Wyczekiwanie, okres po ustaniu, wynagrodzenie chorobowe, waloryzacja i stawki rehabilitacyjnego",
+        "Kontynuacja rehabilitacyjnego: wcześniejsze wykorzystanie, granica 90 / 360 dni, brak ponownej waloryzacji i zmiana 100% po końcu ciąży przy potwierdzonej decyzji i braku wyłączeń."
+      ],
+      "coveredExceptions": [
+        "Reset po przerwie",
+        "50. urodziny a limit od następnego roku",
+        "Brak wskaźnika nie daje zgadywanej kwoty"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "W chorobowym zakończenie ciąży wewnątrz okresu nie jest jeszcze automatycznie dzielone na dalsze prawo i nową stawkę; rehabilitacyjne obsługuje ten podział po potwierdzeniu warunków.",
+          "nextStep": "Dodać potwierdzenie dalszej niezdolności i wyłączeń, oś ciąży oraz reguły pozostałego okresu."
+        },
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Wielotytułowe e-ZLA / praca na przełomie 2026–2027 wymagają pełniejszego algorytmu przejściowego.",
+          "nextStep": "Zaimplementować zaświadczenia i niezdolność per tytuł oraz wspólny okres zasiłkowy."
+        },
+        {
+          "reason": "Wymagane rozstrzygnięcie organu",
+          "detail": "Rehabilitacyjne wymaga orzeczenia i decyzji ZUS; prognoza nie przyznaje świadczenia.",
+          "nextStep": "Zachować odrębny stan plan / przyznane."
+        }
+      ],
+      "tests": [
+        "sickness waiting",
+        "post-insurance",
+        "rehab",
+        "2027",
+        "rehab continuation"
+      ],
+      "references": [
+        "REHAB-90"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "prebirth",
+      "title": "Świadczenie przed porodem po ustaniu pracy",
+      "legalBasis": "art.30 ustawy zasiłkowej",
+      "implementation": [
+        "dist/calculator-other.js",
+        "dist/calculator-core.js"
+      ],
+      "codeAnchor": "prebirth",
+      "implemented": [
+        "Odrębna ścieżka ustawowej przyczyny ustania; granica do porodu; dokumentacja"
+      ],
+      "coveredExceptions": [
+        "Zwykłe rozwiązanie nie jest automatyczną podstawą",
+        "Rozróżnienie przedłużenia do porodu i szczególnej utraty pracy"
+      ],
+      "missing": [
+        {
+          "reason": "Wymagane rozstrzygnięcie organu",
+          "detail": "Naruszenie prawa, szczególna przyczyna i brak innego zatrudnienia wymagają dowodów / prawomocnego orzeczenia.",
+          "nextStep": "Uzupełnić rzeczywiste dokumenty, nie zastępować ich kliknięciem przyznania."
+        }
+      ],
+      "tests": [
+        "prenatal entitlement",
+        "prebirth",
+        "ordinary termination"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "business",
+      "title": "Działalność, ulgi i zadłużenie",
+      "legalBasis": "ustawa systemowa art.18a,18c; ustawa zasiłkowa art.2a",
+      "implementation": [
+        "dist/calculator-other.js",
+        "dist/calculator-core.js",
+        "dist/insurance.js"
+      ],
+      "codeAnchor": "calcBusiness",
+      "implemented": [
+        "Ulga na start, preferencja, Mały ZUS Plus, ograniczenia i właściwe podstawy",
+        "Próg zadłużenia, spłata, termin, porozumienie ratalne"
+      ],
+      "coveredExceptions": [
+        "6 pełnych miesięcy od środkowego dnia miesiąca",
+        "Nowa pula Małego ZUS Plus od 2026",
+        "Zdrowotne nie zastępuje chorobowego"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Pełna historia miesięcy ulg, przerw i wybranych nietypowych spółek nie jest odtwarzana automatycznie.",
+          "nextStep": "Rozbudować oś działalności i zweryfikować wybór tytułów."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Brak zweryfikowanych wskaźników przyszłego roku blokuje pewną kwotę.",
+          "nextStep": "Uzupełnić zatwierdzone parametry, bez automatycznej publikacji ze strony."
+        }
+      ],
+      "tests": [
+        "business",
+        "debt threshold",
+        "short business"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "funeral",
+      "title": "Pogrzebowe i podział",
+      "legalBasis": "art.77–81 ustawy emerytalnej",
+      "implementation": [
+        "dist/formal-registry.js",
+        "dist/financial.js"
+      ],
+      "codeAnchor": "allocateFuneral",
+      "implemented": [
+        "Jednorazowa kwota według daty śmierci i uprawnienia",
+        "Podział kosztów między wielu płatników w groszach, suma zgodna z pulą"
+      ],
+      "coveredExceptions": [
+        "Rodzina i osoby spoza rodziny",
+        "Termin od zgonu i udokumentowany wyjątek od pogrzebu"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Mieszane pokrewieństwo przy kosztach niższych od pełnej kwoty wymaga jeszcze reguły ustalenia łącznej puli.",
+          "nextStep": "Zweryfikować art.78 / 80 i referencyjne rozstrzygnięcie ZUS; dodać algorytm, nie zgadywać."
+        }
+      ],
+      "tests": [
+        "funeral reference",
+        "funeral",
+        "pogrzeb"
+      ],
+      "references": [
+        "FUNERAL-SHARES"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "financial",
+      "title": "Brutto, netto, podwyższenie i wyrównanie",
+      "legalBasis": "art.31 ustawy zasiłkowej; przepisy PIT",
+      "implementation": [
+        "dist/financial.js",
+        "dist/calculator-engine.js",
+        "dist/records-view.js"
+      ],
+      "codeAnchor": "equalizationProjection",
+      "implemented": [
+        "Podwyższenie z rzeczywistego netto, oddzielne wyrównanie po pierwszym roku",
+        "Netto wyłącznie z podanych znanych potrąceń, bez udawania całego PIT",
+        "Po potwierdzonym niewykorzystaniu właściwego rodzicielskiego w pierwszym roku późniejszy rodzicielski ma stawkę 70%; sprzeczna historia blokuje wyrównanie."
+      ],
+      "coveredExceptions": [
+        "Wyrównanie nie jest automatycznie doliczane do przyszłego planu",
+        "Nie odejmujemy drugi raz 13,71% od macierzyńskiego",
+        "Kwota netto nie jest porównywana z brutto jako rzekomy błąd"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Pełny roczny system PIT, ulgi podatkowe i dochody z różnych źródeł nie są implementowane.",
+          "nextStep": "Podawać potrącenia płatnika; osobny pełny moduł podatkowy wymaga dalszej implementacji i weryfikacji."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Dokładne wyrównanie wymaga faktycznej wypłaty i zamkniętej historii.",
+          "nextStep": "Uzupełnić rejestr i potwierdzenie pierwszego roku."
+        }
+      ],
+      "tests": [
+        "net payout",
+        "equalization reference",
+        "top-up compares",
+        "actual payment comparison",
+        "equalization does not coexist"
+      ],
+      "references": [
+        "EQ-140",
+        "NET-6000"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "dates",
+      "title": "Centralny silnik terminów",
+      "legalBasis": "KC111–115; KPA57; KPC165; KP300 i przepisy szczególne",
+      "implementation": [
+        "dist/legal-dates.js",
+        "dist/formal-registry.js"
+      ],
+      "codeAnchor": "legalTerm",
+      "implemented": [
+        "Cywilne dni, tygodnie, miesiące; odrębne reżimy; święta i soboty",
+        "Właściwa kotwica oraz opis skutku i adresata w rejestrze"
+      ],
+      "coveredExceptions": [
+        "Wigilia ustawowo wolna od 2025",
+        "Wielkanoc i Boże Ciało",
+        "Wiek i minimalne wyprzedzenie nie są przesuwane jak odwołanie"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Rejestr nie ma kompletnego zestawu wszystkich szczególnych zawieszeń / przywróceń terminów.",
+          "nextStep": "Dodawać odrębne procedury z podstawą i wyjątkami zamiast uniwersalnego przesuwania."
+        }
+      ],
+      "tests": [
+        "deadlines:",
+        "formal dates",
+        "legal",
+        "formal dates use",
+        "deadline audit"
+      ],
+      "references": [
+        "CAL-MONTH",
+        "HOLIDAY"
+      ],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "documents",
+      "title": "Formularze i checklista",
+      "legalBasis": "Dz.U.2026.1316; Dz.U.2025.322",
+      "implementation": [
+        "dist/formal-registry.js",
+        "dist/calculator-engine.js",
+        "dist/calculator.js"
+      ],
+      "codeAnchor": "formalDocumentRegister",
+      "implemented": [
+        "Dobór wersji po dacie złożenia, odbiorca, cel, załączniki i źródło",
+        "Trwała checklista: brak / przygotowano / złożono / wezwanie / uzupełniono / załatwiono"
+      ],
+      "coveredExceptions": [
+        "ZAM po połączeniu ZUR / ZAO",
+        "Brak przywracania Z-3b przez techniczną dostępność",
+        "Polski akt i dokument zagraniczny rozróżnione"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Pełna kwalifikacja każdego zagranicznego dokumentu i zwolnienia z tłumaczenia nie jest automatyczna.",
+          "nextStep": "Dodać państwo, rodzaj dokumentu i konkretną podstawę wyjątku."
+        },
+        {
+          "reason": "Brak produkcyjnej integracji",
+          "detail": "Wysyłka i odbiór urzędowych potwierdzeń są nadal symulowane.",
+          "nextStep": "Wymagany uprawniony dostęp, interfejs instytucji i zatwierdzenie; żadna operacja rzeczywista nie została wykonana."
+        }
+      ],
+      "tests": [
+        "document checklist",
+        "forms",
+        "government service operations",
+        "formal document recipient"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "ledger",
+      "title": "Wspólna historia rodziny i rejestr rzeczywisty",
+      "legalBasis": "Wspólne limity KP i ustawy zasiłkowej; minimalizacja danych",
+      "implementation": [
+        "dist/case-records.js",
+        "dist/family-ledger.js",
+        "dist/records-view.js"
+      ],
+      "codeAnchor": "recordsHistory",
+      "implemented": [
+        "12 oddzielnych rejestrów ze stałymi identyfikatorami, ręczne korekty, eksport i usuwanie",
+        "Rewizje zależności, wykrywanie konfliktów, oddzielenie planów i wykorzystania",
+        "Scenariusze zużywają wspólne pule, duplikaty dat nie podwajają zużycia",
+        "Potwierdzany import pól ubezpieczenia, wynagrodzenia i daty urodzenia z własnego rejestru oraz daty rejestru w kalendarzu."
+      ],
+      "coveredExceptions": [
+        "Niepowiązany okres nie jest traktowany jak zero",
+        "Decyzja nie staje się rzeczywistym przelewem",
+        "Wypłata przypisana właściwej osobie"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Automatyczne przełożenie relacji i wszystkich zdarzeń medycznych na formularz wymaga dalszego mapowania; import zatrudnienia przenosi wyłącznie wynagrodzenie, bez domyślnego objęcia chorobowym.",
+          "nextStep": "Dodać potwierdzany import pól i selekcję właściwych zakresów dat."
+        },
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Przedziały wydłużenia za pracę z ułamkowym historycznym wykorzystaniem mogą wymagać potwierdzenia.",
+          "nextStep": "Dodać historyczny podział na części i odrębne referencje zaokrągleń."
+        },
+        {
+          "reason": "Brak produkcyjnej integracji",
+          "detail": "Rejestr jest lokalny, bez wieloużytkownikowej instytucjonalnej bazy.",
+          "nextStep": "Zaprojektować uprawnienia i audyt serwerowy przed produkcją."
+        }
+      ],
+      "tests": [
+        "family history reference",
+        "case journal",
+        "incomplete actual history",
+        "actual payment comparison",
+        "document checklist",
+        "fresh-user reset",
+        "actual journal calendar",
+        "journal import"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "ux",
+      "title": "Prosty i szczegółowy tryb, porównania, dostępność",
+      "legalBasis": "Wymagania przejrzystości i dostępności",
+      "implementation": [
+        "dist/calculator.js",
+        "dist/scenario-compare.js",
+        "dist/case-workspace.css",
+        "dist/terms.js"
+      ],
+      "codeAnchor": "compareScenarios",
+      "implemented": [
+        "Cztery prowadzone kroki, tryb prosty / szczegółowy, zachowanie rozwiniętych pytań",
+        "Porównanie zapisów i nowy wariant bez nadpisania starego",
+        "Przyciski telefonu w dwóch kolumnach, krótkie etykiety dolnego paska"
+      ],
+      "coveredExceptions": [
+        "Powrót do zmienianych pól",
+        "Ostrzeżenie po zmianie historii / zasad",
+        "Fokus nagłówka wyniku i nazwy dialogów"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Tryb prosty nie jest jeszcze całkowicie adaptacyjną rozmową po jednym pytaniu.",
+          "nextStep": "Rozdzielić rozbudowane zestawy na warunkowe ekrany bez utraty trybu szczegółowego."
+        },
+        {
+          "reason": "Wymagane rzeczywiste dane",
+          "detail": "Brak pełnego audytu WCAG z czytnikiem i użytkownikami.",
+          "nextStep": "Wykonać niezależny audyt dostępności; bieżące testy nie stanowią certyfikatu."
+        }
+      ],
+      "tests": [
+        "what-if comparison",
+        "questions request",
+        "dates are internally"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "guide",
+      "title": "Przewodnik po dodatkowych świadczeniach",
+      "legalBasis": "Ustawa o świadczeniach rodzinnych; ustawa Aktywny rodzic; KP",
+      "implementation": [
+        "dist/rights-guide.js"
+      ],
+      "codeAnchor": "RIGHTS_GUIDE",
+      "implemented": [
+        "16 kart: organ, warunki, terminy, dokumenty, podstawa i oficjalny link",
+        "Rozdzielenie niepełnosprawności, Za życiem i świadczeń opiekuńczych"
+      ],
+      "coveredExceptions": [
+        "800+ i cykl wniosków",
+        "Trzy różne warianty Aktywnego Rodzica",
+        "Urlopy pracownicze nie są zasiłkami ZUS"
+      ],
+      "missing": [
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Karty są przewodnikiem, nie pełnym indywidualnym kalkulatorem innych świadczeń gminnych.",
+          "nextStep": "Zaprojektować osobne kwalifikatory warunków i testy dochodowe w zintegrowanym kalkulatorze."
+        }
+      ],
+      "tests": [
+        "guide registry"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "monitor",
+      "title": "Wersjonowanie i monitorowanie źródeł",
+      "legalBasis": "Zasada wersjonowania i zatwierdzania reguł",
+      "implementation": [
+        "backend/monitor.mjs",
+        "dist/calculator-params.js",
+        "dist/formal-registry.js"
+      ],
+      "codeAnchor": "FORMAL_REGISTRY_VERSION",
+      "implemented": [
+        "Zasady według dat, przegląd redakcyjny, archiwizacja wyników i wersje algorytmów",
+        "Monitor północy warszawskiej, ręczne odświeżenie i statusy zmian"
+      ],
+      "coveredExceptions": [
+        "Zniknięcie / blokada strony nie usuwa zatwierdzonych reguł",
+        "Nowa treść nie publikuje sama stawek",
+        "Odświeżenie niezależne od matematyki i AI"
+      ],
+      "missing": [
+        {
+          "reason": "Wymagane rozstrzygnięcie organu",
+          "detail": "Żadna wersja nie jest zatwierdzona przez ZUS / niezależnego eksperta w ramach tej pracy.",
+          "nextStep": "Wykonać przegląd ekspercki algorytmów i zbioru referencyjnego przed użyciem urzędowym."
+        },
+        {
+          "reason": "Ograniczony zakres historycznych wersji",
+          "detail": "Automatyczny silnik ma najwcześniejszą zatwierdzoną paczkę od 19.03.2025; starsze zdarzenia nie otrzymują kwoty z nowszej wersji.",
+          "nextStep": "Dodać zweryfikowane wcześniejsze i przejściowe wersje parametrów oraz ich testy."
+        }
+      ],
+      "tests": [
+        "versioned parameters",
+        "changed official pages",
+        "manual requests coalesce",
+        "00:00 Warsaw",
+        "failed checks"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    },
+    {
+      "id": "security",
+      "title": "Bezpieczeństwo i przygotowanie integracji",
+      "legalBasis": "Minimalizacja danych i rozdzielenie symulacji od operacji urzędowych",
+      "implementation": [
+        "backend/api.mjs",
+        "dist/case-records.js",
+        "dist/data-workspace.js",
+        "dist/reset.js"
+      ],
+      "codeAnchor": "createRecordsStore",
+      "implemented": [
+        "Sekret tylko backend; obliczenia bez AI; etykiety danych demo",
+        "Ręczny przegląd retencji, eksport, usunięcie i nowy użytkownik bez obcych danych"
+      ],
+      "coveredExceptions": [
+        "Brak wysłania prawdziwych wniosków",
+        "Bez produkcyjnej migracji i wdrożenia",
+        "Błędny zapis nie jest cicho kasowany"
+      ],
+      "missing": [
+        {
+          "reason": "Brak produkcyjnej integracji",
+          "detail": "Brak rzeczywistej tożsamości publicznej, upoważnień, szyfrowanej bazy i centralnego audytu.",
+          "nextStep": "Wykonać P2 jako odrębny projekt instytucjonalny; obecne logowania pozostają demonstracyjne."
+        },
+        {
+          "reason": "Brak pełnego algorytmu",
+          "detail": "Retencja przypomina datą w rejestrze; nie usuwa automatycznie wszystkich zależnych wersji po dacie.",
+          "nextStep": "Zaprojektować zasady retencji, anonimizacji i usuwania kopii z administratorem danych."
+        }
+      ],
+      "tests": [
+        "provider credentials",
+        "chat API",
+        "government service operations",
+        "fresh-user reset",
+        "case journal"
+      ],
+      "references": [],
+      "status": "partial",
+      "expertApproved": false
+    }
+  ]
+}

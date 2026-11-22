@@ -1,0 +1,2 @@
+import {analyzeDocumentPage} from './document-analysis.js';
+self.onmessage=event=>{const {requestId,page,options}=event.data||{};try{if(!page||!Array.isArray(page.items)||page.items.length>16000)throw new Error();self.postMessage({requestId,result:analyzeDocumentPage(page,options)});}catch{self.postMessage({requestId,error:'Nie udało się przypisać informacji z tej strony. Możesz odczytać ją w podglądzie i wskazać pola ręcznie.'});}};

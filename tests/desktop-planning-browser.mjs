@@ -9,7 +9,7 @@ const errors=[];
 async function newPage(width=1440,height=1000){
   const page=await browser.newPage({viewport:{width,height},locale:'pl-PL',timezoneId:'Europe/Warsaw'});
   page.on('pageerror',e=>errors.push(e.message));
-  await page.addInitScript(()=>localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.2'));
+  await page.addInitScript(()=>localStorage.setItem('ppm-test-reset','fresh-start-2026-11-22.1'));
   await page.goto(url);await page.locator('#onboarding-form').waitFor();return page;
 }
 async function closeSheet(page){await page.locator('#close-sheet').click();}

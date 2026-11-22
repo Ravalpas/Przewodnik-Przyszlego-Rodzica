@@ -1,4 +1,6 @@
-import {dayNumber,shiftDate} from './age.js';
+import {knownMaternityContinuation} from './family-ledger.js';
+import {legalTerm} from './legal-dates.js';
+import {dayNumber,shiftDate,todayString} from './age.js';
 import {addMonths} from './timeline.js';
 import {CalculatorError} from './calculator-params.js';
 import {calcDays,calcMinDate,calcMaxDate,calcMergeIntervals,calcPeriod,calcParent} from './calculator-core.js';
@@ -18,12 +20,12 @@ export function calcSupplement(input){
   const days=Math.max(...totals),weeks=Math.ceil(days/7);
   return {days:weeks*7,weeks,hospitalDays:days,windowStart:start,windowEnd,notes:[early?'Kategoria do 15 tygodni: przed ukończeniem 28. tygodnia lub masa do 1000 g włącznie.':preterm?'Kategoria wcześniacza do 8 tygodni.':'Poród o czasie: sprawdzono co najmniej 2 kolejne dni pobytu z początkiem między 5. a 28. dobą.',input.count>1?'Podaj najniższą masę z porodu; uwzględniono pobyt najdłużej hospitalizowanego dziecka, bez sumowania pobytów różnych dzieci.':'Dni połączono bez podwajania nakładających się pobytów; zaokrąglono dopiero łączną liczbę dni.']};
 }
-export function calcFamily(input,rules,parents){
+export function calcFamily(input,rules,parents,today=todayString()){
   const p=rules.parameters,periods=[],deadlines=[],warnings=[],facts=[],event=input.familyType==='adoption'&&input.adoptionApplicationDate?calcMaxDate(input.eventDate,input.adoptionApplicationDate):input.eventDate,birth=input.familyType==='birth'?event:input.childBirthDate;
   const primary=input.familyType==='birth'?0:input.primaryParent,secondForRates=1-primary;
   const acquired=input.parents.map(parent=>calcParent(parent,event,rules));
   const add=(data)=>{const original=acquired[data.parent],end=shiftDate(data.start,data.days-1),cuts=[data.start,shiftDate(end,1),...input.parents[data.parent].extraTitles.concat(input.parents[data.parent]).map(t=>t.insuranceFrom).filter(d=>d&&d>data.start&&d<=end&&d<event),...original.titles.map(t=>t.paymentFrom).filter(d=>d&&d>data.start&&d<=end),...(data.start<event&&input.familyType==='birth'&&data.id.startsWith('maternity')?[event]:[])].sort();let first;for(let j=0;j<cuts.length-1;j++){if(cuts[j]===cuts[j+1])continue;const beforeBirth=cuts[j]<event&&input.familyType==='birth',at=beforeBirth?calcParent(input.parents[data.parent],cuts[j],rules):original.canPay?original:calcParent(input.parents[data.parent],cuts[j],rules);if(at.canPay&&!parents[data.parent].canPay)parents[data.parent]=at;const period=calcPeriod({...data,id:j?data.id+'-segment-'+j:data.id,start:cuts[j],days:dayNumber(cuts[j+1])-dayNumber(cuts[j])},at);if(period){if(at.status==='no'){period.daily=0;period.gross=0;period.monthly30=0;period.description='Brak prawa w tej części okresu według podanego tytułu i dat ubezpieczenia.';}if(at.titles.some(t=>t.paymentFrom)&&!at.titles.some(t=>['potential','conditional'].includes(t.status)&&(!t.paymentFrom||t.paymentFrom<=cuts[j]))){period.daily=0;period.gross=0;period.monthly30=0;period.eligibility='blocked';period.description='Okres przed późną spłatą zadłużenia — wypłata za tę część nie została odzyskana.';}periods.push(period);first??=period;}}return first;};
-  const deadline=(id,title,date,source='calc-documents',detail='')=>{if(date)deadlines.push({id,title,start:date,end:date,source,kind:'deadline',description:detail});};
+  const deadline=(id,title,date,source='calc-documents',detail='',termCalculation=null)=>{if(date)deadlines.push({id,title,start:date,end:date,source,kind:'deadline',description:detail,termCalculation});};
   if(input.familyType==='professional'){for(const parent of parents){parent.canPay=false;parent.status='no';parent.basis=null;parent.notes.push('Sama zawodowa piecza zastępcza nie daje prawa do zasiłku za okres na warunkach macierzyńskiego.');}return {periods,deadlines,warnings:['Zawodowa rodzina zastępcza nie ma tego uprawnienia na zasadach urlopu na warunkach macierzyńskiego. Sprawdź inne tytuły i wsparcie w ZUS.'],facts,supplement:{days:0},limits:{maternity:0,parental:0}};}
   if(input.familyType==='adoption'&&input.dateKind==='actual'&&!input.adoptionApplicationDate)throw new CalculatorError('Podaj datę wystąpienia do sądu o przysposobienie. Samo przyjęcie lub rozpoczęcie planów nie wystarcza.','adoptionApplicationDate');
   if(input.familyType!=='birth'&&!birth)throw new CalculatorError('Podaj datę urodzenia przyjmowanego dziecka.','childBirthDate');
@@ -41,14 +43,14 @@ export function calcFamily(input,rules,parents){
       if(input.adoptionShort&&!short)warnings.push('Szczególna ścieżka 9 tygodni nie jest dowolnym skróceniem każdej adopcji. Przyjęto zwykły wymiar zgodnie z wiekiem.');
       if(input.count>1&&input.adoptionDifferentAges){if(!Number.isInteger(input.adoptionVerifiedDays)||input.adoptionVerifiedDays<1)throw new CalculatorError('Dzieci w różnym wieku mogą tracić prawo w różnych datach. Wpisz indywidualny wymiar ustalony przez płatnika/ZUS, zamiast przyjmować wspólną datę urodzenia.','adoptionVerifiedDays');maternity=input.adoptionVerifiedDays;warnings.push('Dla dzieci w różnym wieku użyto podanego wymiaru ustalonego przez płatnika. Rodzicielski i granicę wieku najstarszego dziecka trzeba potwierdzić odrębnie w ZUS.');}
       maternity=Math.max(0,maternity-input.previousMaternityDays);
-    deadline('adoption-request','Złóż wniosek o urlop na warunkach macierzyńskiego',shiftDate(event,7),'calc-documents','Wniosek pracownika w ciągu 7 dni; początek urlopu najpóźniej w ciągu 21 dni od spełnienia właściwych warunków.');
+    const adoptionTerm=legalTerm(event,{amount:7,regime:'kc-action'});deadline('adoption-request','Złóż wniosek o urlop na warunkach macierzyńskiego',adoptionTerm.deadline,'calc-documents','Wniosek pracownika w ciągu 7 dni; początek urlopu najpóźniej w ciągu 21 dni od spełnienia właściwych warunków.',adoptionTerm);
   }
-  const exceptionalRate=!acquired[0].canPay&&['mother-death','mother-incapacity','abandonment'].includes(input.transfer)&&input.transferDate,averageAnchor=exceptionalRate?calcMaxDate(event,input.transferDate):event,averageDeadline=shiftDate(averageAnchor,p.deadlines.averaged),application=input.applicationDate;
+  const exceptionalRate=!acquired[0].canPay&&['mother-death','mother-incapacity','abandonment'].includes(input.transfer)&&input.transferDate,averageAnchor=exceptionalRate?calcMaxDate(event,input.transferDate):event,averageTerm=legalTerm(averageAnchor,{amount:p.deadlines.averaged,regime:'kc-action'}),averageDeadline=averageTerm.deadline,application=input.applicationDate;
   let averaged=input.rateChoice==='averaged'&&application&&application>=averageAnchor&&application<=averageDeadline;
   if(input.rateChoice==='averaged'&&!averaged){if(input.dateKind==='expected'&&(!application||application<event)){averaged=true;warnings.push('Wariant uśredniony jest planem: właściwy wniosek trzeba złożyć po zdarzeniu, w ciągu 21 dni.');}else warnings.push('Nie potwierdzono wniosku w 21 dni. Obliczono wariant 100% / 70%, zamiast automatycznie przyznać 81,5%.');}
   if(averaged&&input.familyType==='birth'&&!acquired[0].canPay&&!exceptionalRate){averaged=false;warnings.push('Nie potwierdzono prawa matki do zasiłku w dniu porodu. Sam wniosek nie uruchamia wariantu 81,5% dla ojca; jego samodzielny rodzicielski liczymy według stawki 70%.');}
-  deadline('average-request','Termin wniosku o wariant uśredniony',averageDeadline,'calc-rates','Znaczenie dla stawki 81,5%; to nie koniec prawa do zasiłku.');
-  const maternityRate=averaged?p.rates.averaged:p.rates.maternity,parentRate=averaged?p.rates.averaged:p.rates.parental;
+  deadline('average-request','Termin wniosku o wariant uśredniony',averageDeadline,'calc-rates','Znaczenie dla stawki 81,5%; to nie koniec prawa do zasiłku.',averageTerm);
+  const maternityRate=averaged?p.rates.averaged:p.rates.maternity,parentRate=averaged&&!(input.formalCase.noParentalFirstYear==='yes'&&input.formalCase.historyComplete&&today>=addMonths(event,12))?p.rates.averaged:p.rates.parental;
   let matStart=input.familyType==='birth'?shiftDate(event,-input.prenatalDays):event,matEnd=shiftDate(matStart,maternity-1);
   if(input.loss!=='none'){
     if(input.familyType!=='birth')warnings.push('Sytuacja utraty opieki przy przyjęciu wymaga indywidualnego ustalenia okresów w ZUS.');
@@ -65,6 +67,7 @@ export function calcFamily(input,rules,parents){
       if(input.loss!=='child-care-placement'){deadline('funeral','Sprawdź termin wniosku o pogrzebowe',addMonths(lossDate,12),'calc-funeral','Zasadniczo 12 miesięcy od śmierci; niezależna przeszkoda może uzasadniać termin liczony od pogrzebu.');facts.push(`Jeśli rodzic poniósł koszty pogrzebu, sprawdź prawo do pogrzebowego: w 2026 r. ${p.money.funeral} zł. Świadczenie wymaga spełnienia warunków i dokumentów.`);}
     }
   }
+  const continuation=knownMaternityContinuation(input);if(continuation){if(continuation.used>maternity)throw new CalculatorError('Historia przekracza pełny wymiar macierzyńskiego.','previousMaternityDays');matStart=continuation.start;maternity-=continuation.used;facts.push('Pozostały macierzyński odtworzono z ciągłej, zadeklarowanej jako kompletna historii. Nie naliczamy wykorzystanych dni ponownie.');}
   const maternityName=input.familyType==='birth'?'Macierzyński':'Na warunkach macierzyńskiego';
   let donorEnd=matEnd,takeStart=null,takeEnd=null;
   if(input.transfer!=='none'){

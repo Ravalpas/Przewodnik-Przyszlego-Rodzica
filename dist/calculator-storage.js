@@ -1,15 +1,6 @@
 import {compareCalculatorResults,FAMILY_RECORD_STATUSES} from './family-ledger.js';
 import {dayNumber,todayString} from './age.js';
 export const CALCULATOR_STORAGE_KEY='ppm-calculator-v1';
-export function calculatorChatAnswer(question,snapshot){
-  const folded=question.normalize('NFD').replace(/\p{M}/gu,'').replace(/ł/g,'l').toLowerCase();
-  const asksSaved=/kalkulator|scenariusz|zapisany.*plan|plan.*zapis/.test(folded),asksCalculation=/(oblicz|policz|wylicz|ile.*(?:otrzym|dostan|wynies|zasil|swiadczen))/.test(folded)&&/zasil|urlop|sklad|swiadczen|macierzyn|rodzicielsk|chorobow|rehabilit/.test(folded);
-  if(!asksSaved&&!asksCalculation)return null;
-  const tasks=[{id:'integrated-calculator',title:'Otwórz Zintegrowany Kalkulator',status:'information'}];
-  if(!snapshot.available)return {answer:'Nie mogę teraz odczytać zapisanych scenariuszy. Otwórz Zintegrowany Kalkulator, aby sprawdzić zapis lub wprowadzić dane do wyliczenia.',tasks};
-  if(asksCalculation)return {answer:'Sprawdźmy to w Zintegrowanym Kalkulatorze. Uwzględnia oddzielne ubezpieczenie i podstawę każdego rodzica, podział opieki oraz wybraną wersję zasad. Tam obliczysz i zapiszesz kwoty wraz z terminami w kalendarzu.',tasks};
-  return {answer:snapshot.cases.length?'W zapisanych przez Was scenariuszach:\n'+snapshot.cases.slice(0,5).map(c=>{const periods=c.result.periods;const dates=periods.length?' · '+periods.map(p=>p.start).sort()[0]+' – '+periods.map(p=>p.end).sort().at(-1):'';return c.title+dates+' · '+(c.calendarEnabled?'terminy w kalendarzu':'terminy ukryte w kalendarzu')+'.';}).join('\n')+'\nTo zapisane symulacje, nie decyzje ZUS. Szczegóły i ponowne przeliczenie znajdziesz w kalkulatorze.':'Nie macie jeszcze zapisanych scenariuszy. W Zintegrowanym Kalkulatorze możecie przygotować pierwszy plan i dodać jego terminy do kalendarza.',tasks};
-}
 const calculatorId=()=>globalThis.crypto?.randomUUID?.()||'calc-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
 export function createCalculatorStore({getStorage=()=>globalThis.localStorage,clock=()=>new Date().toISOString(),makeId=calculatorId}={}){
   function read(){
@@ -29,9 +20,9 @@ export function createCalculatorStore({getStorage=()=>globalThis.localStorage,cl
     remove:id=>{const data=read();write({...data,cases:data.cases.filter(c=>c.id!==id)});}
   };
 }
-export function calculatorCalendarEvents(snapshot,bundle,today=todayString()){
+export function calculatorCalendarEvents(snapshot,bundle,today=todayString(),recordsSnapshot=null){
   const sources=bundle?.sources||[];
   return snapshot.cases.filter(c=>c.calendarEnabled).flatMap(record=>[...record.result.periods.filter(p=>p.kind==='information'||['potential','conditional'].includes(p.eligibility)),...(record.result.deadlines||[])].map(period=>({
-    ...period,id:'calc-'+record.id+'-'+period.id,title:period.title,description:`${record.title}. Status: ${FAMILY_RECORD_STATUSES[record.status||'planned']}. ${record.historyRevision!==snapshot.revision?'Po zmianie innej sprawy sprawdź aktualność planu. ':''} ${period.description||''} Plan zapisany w kalkulatorze według zasad ${record.result.rulesVersion}. Nie jest decyzją ZUS ani potwierdzeniem udzielenia urlopu.`,source:sources.find(s=>s.id===period.source)||record.result.sources?.find(s=>s.id===period.source)||{id:'calc-documents',name:'ZUS',url:'https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/niezbedne-dokumenty',section:'Niezbędne dokumenty'},mode:record.input.familyType==='birth'?'child':'planning',group:'optional',kind:period.kind==='deadline'?'Termin z zapisanej kalkulacji':'Plan z kalkulatora',required:false,canMarkNotApplicable:false,informational:true,done:false,notApplicable:false,needsDate:false,important:false,calculatorCase:record.id,calculatorVersion:record.result.rulesVersion,daysLeft:dayNumber(period.end)-dayNumber(today)
+    ...period,id:'calc-'+record.id+'-'+period.id,title:period.title,description:`${record.title}. Status: ${FAMILY_RECORD_STATUSES[record.status||'planned']}. ${record.historyRevision!==snapshot.revision?'Po zmianie innej sprawy sprawdź aktualność planu. ':''} ${recordsSnapshot&&record.result.recordsRevision!==(recordsSnapshot.impactRevision||0)?'Rejestr rzeczywistej historii zmienił się — ten termin wymaga ponownego przeliczenia. ':''}${period.description||''} Plan zapisany w kalkulatorze według zasad ${record.result.rulesVersion}. Nie jest decyzją ZUS ani potwierdzeniem udzielenia urlopu.`,source:sources.find(s=>s.id===period.source)||record.result.sources?.find(s=>s.id===period.source)||{id:'calc-documents',name:'ZUS',url:'https://www.zus.pl/pl/swiadczenia/zasilki/zasilek-macierzynski/niezbedne-dokumenty',section:'Niezbędne dokumenty'},mode:record.input.familyType==='birth'?'child':'planning',group:'optional',kind:period.kind==='deadline'?'Termin z zapisanej kalkulacji':'Plan z kalkulatora',required:false,canMarkNotApplicable:false,informational:true,done:false,notApplicable:false,needsDate:false,important:false,calculatorCase:record.id,calculatorVersion:record.result.rulesVersion,daysLeft:dayNumber(period.end)-dayNumber(today)
   })));
 }

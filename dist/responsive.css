@@ -1,0 +1,82 @@
+/* The same application and data model at every width; only layout changes. */
+.workspace-main,.calc-main,.case-start-panel,.calendar-detail,.calendar-month{min-width:0}
+.workspace-main a,.case-card,.calc-section,.formal-decision,.sheet-body{overflow-wrap:anywhere}
+.calc-table-scroll,.data-preview-wrap{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+button,input,select,textarea{max-width:100%}
+@media(max-width:899px){
+ html,body{width:100%;min-width:0;overflow:hidden}
+ .phone-shell{width:100%;max-width:none;height:100svh;height:100dvh;border:0;box-shadow:none}
+ .phone-shell>.case-header{left:0;right:0;padding:12px max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left))}
+ .case-header .top-row{margin:0;width:100%;gap:12px;align-items:center}
+ .case-header .brand{gap:11px;min-width:0;flex:1}
+ .case-header .brand img{width:42px;height:48px;flex-shrink:0}
+ .case-header .brand b{font-size:15px;line-height:1.25}
+ .case-header .brand small{font-size:11px;line-height:1.4;margin-top:5px}
+ .case-header .brand-copy{min-width:0}
+ .case-header .icon-button{width:44px;height:44px;flex-shrink:0}
+ .phone-shell>.bottom-nav{position:absolute;top:auto;bottom:0;left:0;right:0;width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;gap:2px;padding:7px max(4px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));background:#fff;border-top:1px solid #d3e6da;max-width:none}
+ .phone-shell>.bottom-nav .nav-item{width:100%;max-width:none;min-width:0;min-height:56px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;padding:4px 1px;font-size:11px!important;line-height:1.2;border-radius:12px;text-align:center}
+ .phone-shell>.bottom-nav .nav-icon{width:35px;height:29px;border-radius:10px}
+ .phone-shell>.bottom-nav .nav-item svg{width:25px;height:25px}
+ .nav-full-label{display:none}.nav-short-label{display:inline}
+ .workspace-main{overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:26px}
+ .case-content,.calculator-view,.calendar-view{padding:20px 14px 30px}
+ .case-page-heading h1,.calc-page-header h1{font-size:clamp(25px,5.6vw,32px);line-height:1.25;letter-spacing:-.4px}
+ .case-page-heading p,.case-card p,.calc-section p{font-size:16px;line-height:1.65}
+ .case-page-heading{margin-bottom:20px}
+ .case-card-grid,.case-guide-grid,.case-start-layout,.calendar-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+ .case-card{padding:20px 16px;border-radius:18px}
+ .case-card h2{font-size:23px;line-height:1.3}
+ .case-guide-summary{gap:12px;padding:16px;align-items:flex-start}
+ .case-guide-cta{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+ .case-guide-cta .primary{max-width:none}
+ .case-onboarding{padding:20px 16px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+ .case-start-layout{margin:22px 0;gap:22px}
+ .case-start-intro{position:static;padding:0}
+ .case-start-intro h1{font-size:clamp(29px,7vw,38px);line-height:1.25}
+ .case-start-panel{min-width:0}.case-start-panel h2{font-size:24px;line-height:1.35}
+ .case-choice{min-height:54px;font-size:16px;padding:14px 12px}
+ .case-choice small{font-size:14px}.case-role-options{grid-template-columns:minmax(0,1fr)}
+ .case-progress{gap:5px;margin-bottom:22px}.case-progress span{padding:9px 5px;font-size:12px;line-height:1.4}
+ .case-quiet-actions{flex-direction:column;align-items:stretch}.case-quiet-actions button{min-height:44px}
+ .case-onboarding .brand img{width:42px;height:48px}.case-onboarding .brand b{font-size:15px}.case-onboarding .brand small{font-size:11px}
+ #onboarding-documents{font-size:15px;line-height:1.5;padding:13px 15px;margin-top:18px;white-space:normal}
+ .calc-page-header{align-items:stretch}.calc-page-header>div:first-child{min-width:0}
+ .calc-heading-icon{width:46px;height:54px;flex-shrink:0}
+ .calc-header-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .calc-header-actions #calc-documents{grid-column:1/-1}
+ .calc-header-actions button{min-height:46px;padding:10px;font-size:14px;line-height:1.4}
+ .calc-workspace{gap:16px}.calc-main,.calc-saved{min-width:0;width:100%}
+ .calc-steps{gap:5px}.calc-steps button{min-width:0;font-size:12px;padding:10px 2px}
+ .calc-main>form,.calc-results,.formal-decision,.document-checklist{padding:18px 14px}
+ .calc-fields,.calc-parent-form .calc-fields,.calc-parent-forms,.formal-questions .calc-fields{grid-template-columns:minmax(0,1fr)}
+ .calc-field,.field-label{min-width:0}.calc-field input,.calc-field select,.sheet-body input,.sheet-body select,.sheet-body textarea,.case-onboarding input,.case-onboarding select{font-size:16px;min-height:46px;min-width:0}
+ input[type=checkbox],input[type=radio]{min-height:0!important;flex-shrink:0}
+ .calc-section h2{font-size:23px}.calc-section h3{font-size:21px}
+ .calc-options button{min-height:88px;padding:15px}.calc-options strong{font-size:17px}
+ .calc-value{font-size:clamp(25px,7vw,34px)!important}
+ .calc-table-scroll table,.data-preview{min-width:560px}
+ .calc-action-row,.calc-wizard-actions{flex-wrap:wrap}.calc-action-row button{flex-basis:100%;min-width:0}
+ .calc-source-grid a,.calc-support a{overflow-wrap:anywhere}
+ .calendar-layout{max-width:none;margin:0}.calendar-month{position:static;padding:16px 12px;background:#fff;border:1px solid #d5e9dd;border-radius:18px}
+ .calendar-detail{padding:0;border:0;background:transparent;min-width:0}
+ .calendar-detail>.calendar-agenda{padding:18px 14px;background:#fff;border:1px solid #d5e9dd;border-radius:18px;margin-top:0}
+ .calendar-top{align-items:center}.calendar-top h2{font-size:24px;margin:8px 0 18px}.calendar-top .eyebrow{font-size:11px}
+ .calendar-controls{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px}
+ .calendar-controls input{width:100%;min-width:0;font-size:16px}.calendar-controls .icon-button{width:44px;height:44px}
+ .calendar-grid,.calendar-weekdays{gap:4px}.calendar-weekdays{font-size:12px}.calendar-day{min-height:56px;padding:6px 1px;border-radius:10px}
+ .calendar-day>span{font-size:16px}.calendar-day small{font-size:9px}.calendar-legend{font-size:12px;line-height:1.5;gap:8px 12px}
+ .day-agenda-heading{flex-wrap:wrap;gap:12px}.day-agenda-heading h3{font-size:22px}.day-agenda-heading button{min-height:44px;font-size:15px}
+ .event-card strong{font-size:16px}.event-card small,.event-card span span{font-size:13px}.event-card b{font-size:14px}
+ .calendar-inventory-list{max-height:none}.calendar-inventory-heading h3{font-size:21px}
+ dialog:not(.date-picker):not(.term-dialog):not(.document-dialog){width:calc(100vw - 16px);max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);margin:auto;border-radius:20px}
+ .sheet-body{padding:20px 16px calc(24px + env(safe-area-inset-bottom));min-width:0}
+ .sheet-heading h2{font-size:24px;line-height:1.3}.event-detail h3{font-size:24px}.event-detail p{font-size:16px}
+ .case-facts div{flex-wrap:wrap}.case-facts dd{max-width:100%;text-align:left}
+ .records-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.records-tabs button{font-size:14px;min-width:0}
+ .simulation-table{display:block;overflow-x:auto;max-width:100%;font-size:14px}
+ .toast{bottom:calc(85px + env(safe-area-inset-bottom));font-size:14px;max-width:calc(100% - 28px)}
+ .orientation-note{display:none!important}
+}
+@media(min-width:600px) and (max-width:899px){.case-content,.calculator-view,.calendar-view{padding:26px 24px 36px}.case-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.case-role-options{grid-template-columns:repeat(3,minmax(0,1fr))}.case-start-panel{max-width:760px;margin:auto;width:100%}.calendar-month{padding:22px}.calendar-day{min-height:72px}.calc-fields,.calc-parent-form .calc-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.case-header .brand b{font-size:18px}.case-header .brand small{font-size:12px}}
+@media(min-width:900px) and (max-width:1100px){.phone-shell{--desktop-nav-width:210px}.case-start-layout{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:24px}.case-start-panel{padding:24px 18px}.case-start-intro h1{font-size:39px}.case-guide-grid{grid-template-columns:minmax(0,1fr)}.calendar-layout{grid-template-columns:minmax(0,1fr)}.calendar-month{position:static}.calc-workspace{grid-template-columns:180px minmax(0,1fr)}}

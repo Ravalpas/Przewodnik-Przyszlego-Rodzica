@@ -1,0 +1,127 @@
+{
+  "asOf": "2026-11-22",
+  "purpose": "Audyt kodu przed zmianami, nie deklaracja kompletności",
+  "functions": [
+    {
+      "id": "insurance",
+      "legalBasis": "art. 6,8,9,11,14 ustawy systemowej",
+      "inputs": "rodzaj i daty tytułów, status studenta, własny pracodawca, podstawa, zgłoszenie",
+      "currentRules": "calcEligibility wymaga wskazanego chorobowego; nie kwalifikuje automatycznie zbiegów",
+      "status": "wymaga poprawy",
+      "implementation": "dist/calculator-core.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "family",
+      "legalBasis": "art. 180–183 KP; art.29–31 ustawy zasiłkowej",
+      "inputs": "daty, dzieci, rodzice, części",
+      "currentRules": "limity i stawki działają; pozostałe pule nie są globalnie pomniejszane poza pieczą",
+      "status": "częściowo zaimplementowane",
+      "implementation": "dist/calculator-family.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "children",
+      "legalBasis": "art.183 KP",
+      "inputs": "osobne daty i dokumenty każdego dziecka",
+      "currentRules": "różny wiek zawsze blokowany zamiast obliczalnego podzbioru",
+      "status": "wymaga poprawy",
+      "implementation": "dist/formal-registry.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "care",
+      "legalBasis": "art.32–35 ustawy zasiłkowej",
+      "inputs": "DOB, powód, dokumenty, historia",
+      "currentRules": "przekroczenie urodzin i roku zawsze kieruje do podziału ręcznego",
+      "status": "częściowo zaimplementowane",
+      "implementation": "dist/calculator-other.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "sickness",
+      "legalBasis": "art.4,8,9,11,17–22 ustawy zasiłkowej",
+      "inputs": "historia, eZLA, ciąża, decyzje",
+      "currentRules": "zmiana ciąży i 2027 blokowane globalnie; baza i indeksacja istnieją",
+      "status": "częściowo zaimplementowane",
+      "implementation": "dist/calculator-other.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "funeral",
+      "legalBasis": "art.77–81 ustawy emerytalnej",
+      "inputs": "data, pokrewieństwo, koszty wszystkich osób",
+      "currentRules": "podział kosztów przez kilka osób nie jest liczony",
+      "status": "wymaga poprawy",
+      "implementation": "dist/formal-registry.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "deadlines",
+      "legalBasis": "KC111–115; KPA57; KPC165; odpowiednie przepisy KP",
+      "inputs": "kotwica, rodzaj terminu, święta",
+      "currentRules": "brak rozdzielenia reguł przesunięcia końca terminu",
+      "status": "wymaga poprawy",
+      "implementation": "dist/formal-registry.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "documents",
+      "legalBasis": "rozporządzenie Dz.U.2026.1316 i Dz.U.2025.322",
+      "inputs": "daty i statusy dokumentów",
+      "currentRules": "rejestr istnieje; brak trwałej checklisty i osobnych statusów",
+      "status": "częściowo zaimplementowane",
+      "implementation": "dist/formal-view.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "ledger",
+      "legalBasis": "wspólne limity ustawy zasiłkowej i KP",
+      "inputs": "osoby, dzieci, okresy rzeczywiste",
+      "currentRules": "brak osobnego rejestru decyzji i wypłat; limit rodzicielskiego tylko wewnątrz sprawy",
+      "status": "wymaga poprawy",
+      "implementation": "dist/family-ledger.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "ux",
+      "legalBasis": "przejrzystość i dostępność",
+      "inputs": "odpowiedzi użytkownika",
+      "currentRules": "szczegółowy formularz istnieje; brak trybu prostego i porównywarki zapisanych wariantów",
+      "status": "częściowo zaimplementowane",
+      "implementation": "dist/calculator.js",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    },
+    {
+      "id": "privacy",
+      "legalBasis": "minimalizacja i ochrona danych",
+      "inputs": "zapis lokalny",
+      "currentRules": "jawne symulacje i brak AI w matematyce; brak instytucjonalnej autoryzacji i bazy użytkowników",
+      "status": "wymaga zatwierdzenia merytorycznego przez specjalistę",
+      "implementation": "backend/api.mjs",
+      "exceptions": [],
+      "tests": [],
+      "institutionApproved": false
+    }
+  ]
+}

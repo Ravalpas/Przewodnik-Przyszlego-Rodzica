@@ -1,0 +1,37 @@
+const months=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+const monthForms=['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+const dateString=(y,m,d)=>String(y).padStart(4,'0')+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+const monthDays=(y,m)=>{const d=new Date(0);d.setUTCFullYear(y,m+1,0);return d.getUTCDate();};
+const parts=s=>/^\d{4}-\d{2}-\d{2}$/.test(s)?s.split('-').map(Number):null;
+const icon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M7 3v5m10-5v5M3 11h18M7 15h3m4 0h3m-10 3h3"/></svg>';
+
+export function installDatePickers(){
+ let dialog=null,source=null,year=0,month=0,cursor='',today='';
+ function eligible(date){return (!source.min||date>=source.min)&&(!source.max||date<=source.max);}
+ function finish(value){const input=source;if(value!==undefined&&input?.isConnected){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}dialog?.close();}
+ function position(){if(!dialog?.open)return;const r=source.getBoundingClientRect(),w=dialog.getBoundingClientRect().width,h=dialog.getBoundingClientRect().height;dialog.style.left=Math.max(12,Math.min(r.left,innerWidth-w-12))+'px';dialog.style.top=Math.max(12,Math.min(r.bottom+8,innerHeight-h-12))+'px';}
+ function render(focus=false){
+  const initial=new Date(0);initial.setUTCFullYear(year,month,1);const offset=(initial.getUTCDay()+6)%7,n=monthDays(year,month);
+  dialog.innerHTML=`<div class="date-picker-top"><h2 id="date-picker-title">Wybierz datę</h2><button type="button" class="date-picker-close" aria-label="Zamknij kalendarz">×</button></div><div class="date-picker-heading"><button type="button" data-month-shift="-1" aria-label="Poprzedni miesiąc" ${year===1&&month===0?'disabled':''}>‹</button><select aria-label="Miesiąc">${months.map((name,i)=>`<option value="${i}" ${month===i?'selected':''}>${name}</option>`).join('')}</select><input type="number" aria-label="Rok" min="1" max="9999" step="1" value="${year}"><button type="button" data-month-shift="1" aria-label="Następny miesiąc" ${year===9999&&month===11?'disabled':''}>›</button></div><div class="date-picker-week" aria-hidden="true">${['Pn','Wt','Śr','Cz','Pt','So','Nd'].map(d=>'<span>'+d+'</span>').join('')}</div><div class="date-picker-grid" role="grid" aria-label="${months[month]} ${year}">${Array.from({length:offset},()=>'<span role="presentation"></span>').join('')}${Array.from({length:n},(_,i)=>{const date=dateString(year,month,i+1),selected=date===source.value;return `<button type="button" role="gridcell" data-pick-date="${date}" tabindex="${date===cursor?0:-1}" aria-label="${i+1} ${monthForms[month]} ${year}" aria-selected="${selected}" ${date===today?'aria-current="date"':''} class="${selected?'selected':''} ${date===today?'today':''}" ${eligible(date)?'':'disabled'}>${i+1}</button>`;}).join('')}</div><div class="date-picker-bottom"><button type="button" data-date-today ${eligible(today)?'':'disabled'}>Dzisiaj</button>${source.required?'':'<button type="button" data-date-clear>Wyczyść datę</button>'}</div>`;
+  dialog.querySelector('.date-picker-close').onclick=()=>finish();
+  dialog.querySelectorAll('[data-month-shift]').forEach(b=>b.onclick=()=>moveMonth(Number(b.dataset.monthShift)));
+  dialog.querySelector('select').onchange=e=>{month=Number(e.target.value);cursor=dateString(year,month,1);render(true);};
+  const yearField=dialog.querySelector('input');yearField.onchange=()=>{if(!yearField.value||!Number.isInteger(Number(yearField.value))||yearField.valueAsNumber<1||yearField.valueAsNumber>9999){yearField.value=year;return;}year=Number(yearField.value);cursor=dateString(year,month,1);render(true);};
+  dialog.querySelectorAll('[data-pick-date]').forEach(b=>b.onclick=()=>finish(b.dataset.pickDate));
+  dialog.querySelector('[data-date-today]').onclick=()=>finish(today);
+  dialog.querySelector('[data-date-clear]')?.addEventListener('click',()=>finish(''));
+  position();if(focus){const target=dialog.querySelector(`[data-pick-date="${cursor}"]:not(:disabled)`)||dialog.querySelector('[data-pick-date]:not(:disabled)')||dialog.querySelector('select');target.focus();}
+ }
+ function moveMonth(amount){const next=year*12+month+amount,newYear=Math.floor(next/12);if(newYear<1||newYear>9999)return;year=newYear;month=next%12;cursor=dateString(year,month,1);render(true);}
+ function open(input){
+  if(input.disabled||input.readOnly)return;source=input;
+  today=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Warsaw',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+  const initial=parts(input.value)||parts(input.min&&today<input.min?input.min:input.max&&today>input.max?input.max:today);year=initial[0];month=initial[1]-1;cursor=dateString(year,month,initial[2]);
+  dialog=document.createElement('dialog');dialog.className='date-picker';dialog.setAttribute('aria-labelledby','date-picker-title');document.body.append(dialog);render();dialog.showModal();position();render(true);
+  dialog.addEventListener('close',()=>{const old=dialog;old.remove();if(source?.isConnected)source.focus({preventScroll:true});dialog=null;});
+  dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)finish();});
+  dialog.addEventListener('keydown',e=>{const focused=e.target.closest('[data-pick-date]');if(!focused)return;const shifts={ArrowLeft:-1,ArrowRight:1,ArrowUp:-7,ArrowDown:7};if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();moveMonth(e.key==='PageUp'?-1:1);return;}let delta=shifts[e.key];if(e.key==='Home'||e.key==='End'){const d=new Date(focused.dataset.pickDate+'T12:00:00Z').getUTCDay(),offset=(d+6)%7;delta=e.key==='Home'?-offset:6-offset;}if(delta===undefined)return;e.preventDefault();const d=new Date(focused.dataset.pickDate+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+delta);const next=dateString(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());if(d.getUTCFullYear()<1||d.getUTCFullYear()>9999||!eligible(next))return;cursor=next;year=d.getUTCFullYear();month=d.getUTCMonth();render(true);});
+ }
+ function enhance(){document.querySelectorAll('input[type="date"]:not([data-date-enhanced])').forEach(input=>{input.dataset.dateEnhanced='true';const wrap=document.createElement('span');wrap.className='date-input-shell';input.before(wrap);wrap.append(input);const button=document.createElement('button');button.type='button';button.className='date-input-button';button.innerHTML=icon;const label=input.closest('label')?.querySelector('span')?.textContent?.trim()||input.getAttribute('aria-label')||'data';button.setAttribute('aria-label','Otwórz kalendarz: '+label);button.disabled=input.disabled||input.readOnly;button.onclick=e=>{e.preventDefault();e.stopPropagation();open(input);};wrap.append(button);input.addEventListener('keydown',e=>{if(e.altKey&&e.key==='ArrowDown'){e.preventDefault();open(input);}});});}
+ let scheduled=false;const observer=new MutationObserver(()=>{if(scheduled)return;scheduled=true;queueMicrotask(()=>{scheduled=false;enhance();});});observer.observe(document.body,{childList:true,subtree:true});enhance();window.addEventListener('resize',position);
+}

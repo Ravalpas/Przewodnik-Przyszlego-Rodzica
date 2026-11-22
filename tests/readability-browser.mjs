@@ -8,7 +8,7 @@ try{
     const page=await browser.newPage({viewport,locale:'pl-PL',timezoneId:'Europe/Warsaw'});
     page.on('pageerror',e=>errors.push(e.message));
     await page.addInitScript(()=>{
-      localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.2');
+      localStorage.setItem('ppm-test-reset','fresh-start-2026-11-22.1');
       localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'pregnancy',anchor:'2026-10-24',parentRole:'mother',gender:'girl',name:'Anna Maria',firstUsedAt:'2026-11-20T12:00:00Z',statsStartedAt:'2026-11-20T12:00:00Z'}));
       localStorage.setItem('ppm-calendar-notes-v1',JSON.stringify({version:1,notes:[{id:'visit',date:'2026-11-25',time:'14:30',text:'Wizyta kontrolna — zabrać listę pytań',color:'blue'}]}));
     });

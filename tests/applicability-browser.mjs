@@ -6,7 +6,7 @@ page.on('pageerror',e=>errors.push(e.message));
 const data=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('ppm-profile-v1')));
 const close=()=>page.getByRole('button',{name:'Zamknij',exact:true}).click();
 await page.clock.install({time:new Date('2026-11-16T10:00:00+01:00')});
-await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.2');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-15',name:'Rafał',dates:{birthCardDate:'2026-11-15',peselDate:'2026-11-15'}}));});
+await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-22.1');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-11-15',name:'Rafał',dates:{birthCardDate:'2026-11-15',peselDate:'2026-11-15'}}));});
 try{
   await page.goto('http://127.0.0.1:3001');await page.locator('.map-node.current').waitFor();await page.locator('.map-node.current').click();
   assert.deepEqual(await page.locator('.stage-events>[data-task-group]').evaluateAll(nodes=>nodes.map(n=>n.dataset.taskGroup)),['required','recommended','optional']);

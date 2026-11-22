@@ -1,3 +1,5 @@
+import {ledgerFamilyDays} from './family-ledger.js';
+import {qualifyInsuranceParent} from './insurance.js';
 import {dayNumber,shiftDate} from './age.js';
 import {addMonths} from './timeline.js';
 import {CalculatorError} from './calculator-params.js';
@@ -5,13 +7,13 @@ import {calcDays,calcRound,calcPeriod,calcParent,calcEligibility,calcBasis} from
 
 export function calcPregnancy(input,rules){
   const p=rules.parameters,s=input.sickness,start=s.start||input.eventDate,prebirth=input.focus==='prebirth',rehab=input.focus==='rehab',warnings=[],facts=[],periods=[],deadlines=[];
-  const parentInput=input.parents[0],parents=[calcParent(parentInput,start,rules),calcParent(input.parents[1],input.eventDate,rules)],results=[];
+  const parentInput=qualifyInsuranceParent(input.parents[0],start,rules),parents=[calcParent(parentInput,start,rules),calcParent(input.parents[1],input.eventDate,rules)],results=[];
   const titleList=[parentInput,...parentInput.extraTitles];
   for(let index=0;index<titleList.length;index++){
     const title=titleList[index],eligibility=calcEligibility(title,start,rules,{sickness:!prebirth&&!rehab,prebirth,rehab}),basisInfo=calcBasis(title,rules,start,parentInput.fte);
     let state={...eligibility,...basisInfo,notes:[eligibility.reason,...eligibility.notes,...basisInfo.notes],canPay:['potential','conditional'].includes(eligibility.status)};
-    let paidStart=start,used=s.usedDays;
-    if(s.previousEnd){const gap=dayNumber(start)-dayNumber(s.previousEnd)-1;if(gap<0)throw new CalculatorError('Poprzednia choroba nakłada się na nową.','sickness.previousEnd');if(gap>60||gap>0&&s.pregnant)used=0;}
+    let paidStart=start,used=rehab?s.rehabUsedDays:s.usedDays;
+    if(s.previousEnd&&!rehab){const gap=dayNumber(start)-dayNumber(s.previousEnd)-1;if(gap<0)throw new CalculatorError('Poprzednia choroba nakłada się na nową.','sickness.previousEnd');if(gap>60||gap>0&&s.pregnant)used=0;}
     if(!rehab&&!prebirth&&eligibility.status==='waiting'){
       if(title.insuranceTo&&eligibility.availableFrom>shiftDate(title.insuranceTo,1)){state.status='no';state.canPay=false;state.notes.push('Ubezpieczenie ustało przed ukończeniem okresu wyczekiwania. Nie nabywa się go przez dalszy upływ czasu po ustaniu.');}
       else{paidStart=eligibility.availableFrom;const afterWait=calcEligibility(title,paidStart,rules,{sickness:true});state={...state,...afterWait,notes:[...state.notes,afterWait.reason,...afterWait.notes],canPay:['potential','conditional'].includes(afterWait.status)};}
@@ -25,10 +27,11 @@ export function calcPregnancy(input,rules){
     let days=prebirth?dayNumber(input.eventDate)-dayNumber(start):Math.max(0,s.days-(dayNumber(paidStart)-dayNumber(start)));
     if(prebirth&&days<=0)throw new CalculatorError('Szczególne świadczenie musi poprzedzać poród.','sickness.start');
     const max=rehab?p.limits.rehab:s.pregnant?p.limits.pregnancySick:p.limits.sick;
-    if(!prebirth)days=Math.min(days,Math.max(0,max-(rehab?0:used)));
+    if(!prebirth)days=Math.min(days,Math.max(0,max-used));
     if(!rehab&&!prebirth&&!s.pregnant&&title.insuranceTo){const pre=Math.max(0,dayNumber(title.insuranceTo)-dayNumber(paidStart)+1);days=Math.min(days,pre+Math.max(0,91-(s.usedAfterEndDays||0)));}
     let base=state.basis;
-    if(rehab&&!s.rehabAlreadyIndexed){const q=Math.floor((Number(start.slice(5,7))-1)/3)+1,v=p.rehabIndex[start.slice(0,4)+'-'+q];if(v===undefined){base=null;warnings.push('Brak wskaźnika waloryzacji dla początku rehabilitacyjnego. Podaj podstawę już zwaloryzowaną.');}else if(base!==null)base=calcRound(base*Math.max(1,v/100));}
+    if(rehab&&used>0&&!s.rehabAlreadyIndexed){base=null;warnings.push('Kontynuacja rehabilitacyjnego wymaga podstawy już zwaloryzowanej dla początku pierwotnego prawa. Nie waloryzujemy jej według kwartału późniejszej części.');}
+    if(rehab&&!s.rehabAlreadyIndexed&&used===0){const q=Math.floor((Number(start.slice(5,7))-1)/3)+1,v=p.rehabIndex[start.slice(0,4)+'-'+q];if(v===undefined){base=null;warnings.push('Brak wskaźnika waloryzacji dla początku rehabilitacyjnego. Podaj podstawę już zwaloryzowaną.');}else if(base!==null)base=calcRound(base*Math.max(1,v/100));}
     let employerUsed=s.usedEmployerDays,lastYear=paidStart.slice(0,4),benefitContinues=false,last=null;
     for(let offset=0;offset<days;offset++){
       const date=shiftDate(paidStart,offset),ended=title.insuranceTo&&date>title.insuranceTo,year=Number(date.slice(0,4)),fiftieth=parentInput.birthDate?Number(parentInput.birthDate.slice(0,4))+50:null,employerLimit=fiftieth!==null&&year>fiftieth?14:33;
@@ -37,7 +40,8 @@ export function calcPregnancy(input,rules){
       if(wage)employerUsed++;else if(!rehab&&!prebirth)benefitContinues=true;
       let dailyBase=base;
       if(ended&&!prebirth){const cap=p.postInsuranceCap.find(c=>c.from<=date&&(!c.to||c.to>=date));if(cap&&dailyBase!==null)dailyBase=Math.min(dailyBase,cap.amount);else if(title.basisMode!=='known'){dailyBase=null;warnings.push('Po ustaniu ubezpieczenia potrzebny jest właściwy limit podstawy chorobowego/rehabilitacyjnego. Bez niego podaj podstawę już ustaloną przez płatnika; nie pokazujemy niepewnej kwoty.');}}
-      const rate=prebirth?p.rates.maternity:s.pregnant?p.rates.pregnancy:rehab?(offset<90?p.rates.rehabFirst:p.rates.rehabLater):p.rates.sickness;
+      const pregnantAtDate=s.pregnant&&(!input.formalCase.pregnancyEnd||date<=input.formalCase.pregnancyEnd);
+      const rate=prebirth?p.rates.maternity:pregnantAtDate?p.rates.pregnancy:rehab?(offset+used<90?p.rates.rehabFirst:p.rates.rehabLater):p.rates.sickness;
       const titleText=prebirth?'Zasiłek w wysokości macierzyńskiego przed porodem':rehab?'Świadczenie rehabilitacyjne':wage?'Wynagrodzenie chorobowe od pracodawcy':'Zasiłek chorobowy'+(ended?' po ustaniu ubezpieczenia':'');
       const canPayAtDate=state.canPay&&(!state.paymentFrom||date>=state.paymentFrom),signature=[titleText,rate,dailyBase,canPayAtDate].join('|');
       if(last&&last.signature===signature){last.days++;last.end=date;if(last.daily!==null)last.gross=calcRound(last.daily*last.days);}
@@ -53,7 +57,7 @@ export function calcPregnancy(input,rules){
   return {periods,deadlines,warnings:[...new Set(warnings)],facts,parents};
 }
 
-export function calcCare(input,rules){
+function calcCareSingle(input,rules){
   const c=input.care,p=rules.parameters,parentIndex=c.parent,start=c.start||input.eventDate,parents=input.parents.map(parent=>calcParent(parent,start,rules)),parent=parents[parentIndex],warnings=[],facts=[],deadlines=[];
   const underTwo=c.ageMonths<24;
   let qualifies=true,limit=p.limits.care;
@@ -68,6 +72,7 @@ export function calcCare(input,rules){
   let remaining=limit;
   if(c.type!=='extra-newborn'){const aggregate=c.onlyOlderDisabled?p.limits.careDisabled:p.limits.care;remaining=Math.max(0,Math.min(aggregate-c.usedAll,limit-(c.type==='adult'||c.type==='sick-child'&&c.ageMonths>=168?c.usedAdult:c.type==='disabled-child'?c.usedDisabled:c.usedAll)));}
   const days=Math.min(c.days,remaining),period=calcPeriod({id:'care',title:c.type==='extra-newborn'?'Dodatkowy zasiłek opiekuńczy':'Zasiłek opiekuńczy',parent:parentIndex,start,days,rate:p.rates.sickness,source:'calc-care'},parent);
+  if(period&&!qualifies){period.daily=0;period.gross=0;period.monthly30=0;period.eligibility='no';}
   facts.push('Opiekuńczy nie ma wyczekiwania chorobowego. Limity roczne są wspólne dla uprawnionych członków rodziny, a nie osobno po 60 dni dla mamy i taty.',`Pozostało w tej konfiguracji do ${remaining} dni, z czego zaplanowano ${days}.`);
   if(days<c.days)warnings.push('Wnioskowany okres przekracza pozostały limit; wynik został ograniczony.');
   if(days&&shiftDate(start,days-1).slice(0,4)!==start.slice(0,4)&&c.type!=='extra-newborn')throw new CalculatorError('Opiekę przekraczającą koniec roku rozdziel na dwa zapisane scenariusze z właściwymi rocznymi limitami.','care.days');
@@ -94,4 +99,23 @@ export function calcBusiness(input,rules){
   if(b.parentalLeave)facts.push('Rozpoczęcie obowiązkowo ubezpieczonej działalności podczas wychowawczego zmienia tytuł składek: nie są nadal finansowane z wychowawczego, gdy istnieje inny obowiązkowy tytuł.');
   facts.push('Preferencja dotyczy podstawy składek, nie automatycznie podstawy zasiłku. Chorobowe na JDG jest dobrowolne przy spełnieniu warunków i wymaga zgłoszenia.','Ulga na start obejmuje 6 pełnych miesięcy; rozpoczęcie w środku miesiąca nie zużywa pełnego miesiąca ulgi. Preferencyjna podstawa może przysługiwać przez kolejne 24 miesiące.','Zbiegi etatu, zlecenia, spółek i działalności wymagają oceny tytułu. Etat z co najmniej minimum płacowym może wyłączyć społeczne z JDG i możliwość dobrowolnego chorobowego z niej.');
   return {periods,deadlines,warnings,facts,business:values,parents:[]};
+}
+
+export function calcCare(input,rules,{history=[]}={}){
+ const c=input.care,start=c.start||input.eventDate,end=shiftDate(start,c.days-1),dob=input.childBirthDate,cuts=new Set([start,shiftDate(end,1)]),lastYear=Number(end.slice(0,4));
+ if(dob)for(const year of [2,8,14,18]){const date=addMonths(dob,year*12);if(date>start&&date<=end)cuts.add(date);}
+ for(let y=Number(start.slice(0,4))+1;y<=lastYear;y++)cuts.add(y+'-01-01');
+ for(const date of [input.formalCase.disabilityFrom,input.formalCase.disabilityTo?shiftDate(input.formalCase.disabilityTo,1):''])if(date&&date>start&&date<=end)cuts.add(date);
+ const edges=[...cuts].sort(),periods=[],warnings=[],facts=[],yearUse=new Map(),usedHistory=history.filter(r=>r.focus==='care'&&r.careType!=='extra-newborn'&&['used','paid'].includes(r.status));let parents;
+ for(let i=0;i<edges.length-1;i++){
+  const a=edges[i],b=shiftDate(edges[i+1],-1),year=a.slice(0,4),known=year===start.slice(0,4)?{usedAll:c.usedAll,usedDisabled:c.usedDisabled,usedAdult:c.usedAdult}:c.yearUsage?.[year];
+  if(!yearUse.has(year)){const yStart=year+'-01-01',yEnd=year+'-12-31';yearUse.set(year,{all:Math.max(known?.usedAll||0,ledgerFamilyDays(usedHistory,yStart,yEnd)),disabled:Math.max(known?.usedDisabled||0,ledgerFamilyDays(usedHistory.filter(r=>r.careType==='disabled-child'),yStart,yEnd)),adult:Math.max(known?.usedAdult||0,ledgerFamilyDays(usedHistory.filter(r=>['adult','sick-child-older'].includes(r.careType)),yStart,yEnd))});}
+  const used=yearUse.get(year),part=structuredClone(input);part.care={...part.care,start:a,days:calcDays(a,b),usedAll:used.all,usedDisabled:used.disabled,usedAdult:used.adult};
+  if(dob){let months=(Number(a.slice(0,4))-Number(dob.slice(0,4)))*12+Number(a.slice(5,7))-Number(dob.slice(5,7));if(addMonths(dob,months)>a)months--;part.care.ageMonths=months;}
+  if(part.care.type==='disabled-child'&&(input.formalCase.disabilityFrom&&a<input.formalCase.disabilityFrom||input.formalCase.disabilityTo&&a>input.formalCase.disabilityTo))part.care.disabled=false;
+  const result=calcCareSingle(part,rules);parents??=result.parents;
+  for(const period of result.periods){period.id='care-'+i;period.description='Okres '+a+' – '+b+'; wiek '+part.care.ageMonths+' pełnych miesięcy; limit roku '+year+'.';if(year!==start.slice(0,4)&&known?.usedAll==null&&!input.formalCase.historyComplete){period.daily=null;period.gross=null;period.monthly30=null;period.eligibility='assessment';warnings.push('Uzupełnij wspólne wykorzystanie opieki w roku '+year+'; brak danych nie jest zerem.');}periods.push(period);if(period.eligibility==='potential'||period.eligibility==='conditional'){used.all+=part.care.type==='extra-newborn'?0:period.days;if(part.care.type==='disabled-child'&&!(input.formalCase.careReason==='sick'&&part.care.ageMonths<168))used.disabled+=period.days;if(part.care.type==='adult'||part.care.type==='sick-child'&&part.care.ageMonths>=168)used.adult+=period.days;}}
+  warnings.push(...result.warnings);facts.push(...result.facts);
+ }
+ return {periods,deadlines:[],warnings:[...new Set(warnings)],facts:[...new Set(facts)].concat(edges.length>2?['Okres podzielono automatycznie przy zmianie wieku, roku lub ważności orzeczenia; pozostałe limity przechodzą między odcinkami.']:[]),parents:parents||input.parents.map(p=>calcParent(p,start,rules)),careUsage:[...yearUse].map(([year,usage])=>({year,...usage}))};
 }

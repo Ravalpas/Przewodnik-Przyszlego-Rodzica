@@ -5,7 +5,6 @@ import {normalizeCaseProfile} from '../dist/case-profile.js';
 import {calculatorInitial} from '../dist/calculator.js';
 import {calculateIntegrated} from '../dist/calculator-engine.js';
 import {suggestionsFromText,applyImportedFields,occupationFromZusCode} from '../dist/data-import.js';
-import {buildBielikContext} from '../backend/bielik.mjs';
 const rules=JSON.parse(await readFile(new URL('../dist/data/calculator-rules.json',import.meta.url),'utf8'));
 const insured=(p={})=>({occupation:'employee',coverage:'compulsory',insuranceFrom:'2020-01-01',basis:6000,basisMode:'known',...p});
 const fixture=p=>({eventDate:'2026-01-01',dateKind:'actual',parents:[insured(),insured()],parentalParts:[],...p});
@@ -16,7 +15,6 @@ test('formal profiles migrate real dates without inventing a due date or adoptio
  const waiting=normalizeCaseProfile({formal:true,parentRole:'mother',caseStage:'pregnancy'});assert.equal(calculatorInitial(waiting).eventDate,'');
  const adoption=normalizeCaseProfile({formal:true,parentRole:'father',caseStage:'adopted',childBirthDate:'2020-05-02',placementDate:'2026-09-01',adoptionApplicationDate:'2026-09-15',adoptionCourtDate:'2026-11-01',childCount:2});const input=calculatorInitial(adoption);assert.equal(input.familyType,'adoption');assert.equal(input.eventDate,'2026-09-01');assert.equal(input.adoptionApplicationDate,'2026-09-15');assert.equal(input.count,2);
  assert.throws(()=>normalizeCaseProfile({...adoption,adoptionCourtDate:'2026-08-01'}),/przyjęcia/);
- const context=buildBielikContext(waiting,{catalog:{sources:[],events:[]}},waiting.anchor);assert.equal(context.stage,'Oczekiwanie narodzin');assert.ok(!context.age.includes('tydzień'));
 });
 test('import never maps pension contribution bases or empty PDF labels to money and preserves unrelated parent fields',()=>{
  const parsed=suggestionsFromText('Podstawa skladek emerytalnych: 9000\nStale wynagrodzenie brutto: 6000\nPodstawa zasilku:   \nData porodu: 01.11.2026');assert.equal(parsed.suggestions.length,2);assert.equal(parsed.suggestions[0].field,'salary');

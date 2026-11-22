@@ -4,7 +4,7 @@ const browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Micr
 const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'pl-PL',timezoneId:'Europe/Warsaw'}),errors=[];
 page.on('pageerror',error=>errors.push(error.message));
 await page.clock.install({time:new Date('2026-11-13T10:00:00+01:00')});
-await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-19.2');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-10-25',name:'Rafał',pregnancyStart:'2026-01-22',dates:{birthCardDate:'2026-10-26',peselDate:'2026-11-03'},birthTime:'08:30'}));});
+await page.addInitScript(()=>{localStorage.setItem('ppm-test-reset','fresh-start-2026-11-22.1');if(!localStorage.getItem('ppm-profile-v1'))localStorage.setItem('ppm-profile-v1',JSON.stringify({mode:'child',anchor:'2026-10-25',name:'Rafał',pregnancyStart:'2026-01-22',dates:{birthCardDate:'2026-10-26',peselDate:'2026-11-03'},birthTime:'08:30'}));});
 try{
   await page.goto('http://127.0.0.1:3001');await page.locator('.map-node.current').waitFor();
   await page.locator('.map-node.current').click();assert.ok(await page.locator('dialog [data-event="usc"]').count());

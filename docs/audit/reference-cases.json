@@ -1,0 +1,66 @@
+{
+  "expertApproved": false,
+  "origin": "Ręcznie określone oczekiwane wyniki arytmetyczne i granice; nie są oficjalnymi decyzjami ZUS.",
+  "cases": [
+    {
+      "id": "MAT-112",
+      "given": "Podstawa 6000; 28 wykorzystanych z 140 dni od 1.01.2026",
+      "expected": "29.01–20.05.2026; 112 dni; 22400 zł brutto",
+      "test": "maternity continuation reference"
+    },
+    {
+      "id": "EQ-140",
+      "given": "140 dni, podstawa 6000, pobrane 22820 przy 81,5%",
+      "expected": "Pełne 100% 28000; wyrównanie 5180 zł",
+      "test": "equalization reference"
+    },
+    {
+      "id": "ADOPT-217",
+      "given": "Dwoje dzieci 2020 / 2021 przyjęte 1.01.2026; podstawa 6000",
+      "expected": "217 dni; 43400 zł brutto",
+      "test": "different-aged adoption reference"
+    },
+    {
+      "id": "CARE-YEAR",
+      "given": "30.12.2026–3.01.2027; 59 dni wcześniej w 2026; 14. urodziny 1.01.2027; podstawa 6000",
+      "expected": "1 + 3 dni; 640 zł brutto",
+      "test": "care reference"
+    },
+    {
+      "id": "FUNERAL-SHARES",
+      "given": "Członkowie rodziny: koszty 2000 i 1000; pula 7000",
+      "expected": "4666,67 + 2333,33 = 7000",
+      "test": "funeral reference"
+    },
+    {
+      "id": "WORK-70",
+      "given": "70 dni historii przy pracy na 0,5 etatu; duplikat",
+      "expected": "35 dni puli, nie 70 ani 140",
+      "test": "parental work history"
+    },
+    {
+      "id": "NET-6000",
+      "given": "Brutto 6000; PIT 600; inne potrącenia 100",
+      "expected": "5300 netto z deklarowanych potrąceń; bez danych brak kwoty",
+      "test": "net payout"
+    },
+    {
+      "id": "CAL-MONTH",
+      "given": "31.01.2026 + miesiąc",
+      "expected": "28.02.2026",
+      "test": "deadlines:"
+    },
+    {
+      "id": "HOLIDAY",
+      "given": "23.03.2026 +14 dni KPA",
+      "expected": "7.04.2026 po świątecznym poniedziałku; okres kalendarzowy bez takiego przesunięcia",
+      "test": "deadlines:"
+    },
+    {
+      "id": "REHAB-90",
+      "given": "Podstawa już zwaloryzowana 6000; wcześniej 85 dni; nowy okres 1–10.11.2026; koniec ciąży 2.11; potwierdzona kontynuacja bez wyłączeń",
+      "expected": "2 dni po 200 + 3 po 180 + 5 po 150 = 1690 zł brutto",
+      "test": "rehab continuation reference"
+    }
+  ]
+}
