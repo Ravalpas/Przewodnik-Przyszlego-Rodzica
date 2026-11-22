@@ -14,3 +14,8 @@ dist/.openai/
 private-cases/
 Sprawy/
 fixtures/private/
+
+.cloudflare/
+.wrangler/
+.dev.vars
+.dev.vars.*

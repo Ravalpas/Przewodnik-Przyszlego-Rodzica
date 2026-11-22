@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "przewodnik-przyszlego-rodzica",
+  "main": "worker/cloudflare.mjs",
+  "compatibility_date": "2026-11-22",
+  "workers_dev": true,
+  "assets": {
+    "directory": ".cloudflare/assets",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "404-page"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "przewodnik-przyszlego-rodzica",
+    "migrations_dir": "drizzle"
+  }],
+  "triggers": {"crons": ["0 22 * * *", "0 23 * * *"]},
+  "observability": {"enabled": false}
+}
